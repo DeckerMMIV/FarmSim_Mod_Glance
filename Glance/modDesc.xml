@@ -1,17 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<modDesc descVersion="13">
-    <author>Decker_MMIV</author>
-    <version>1.2.1</version>
-
+<modDesc descVersion="21">
+    <author>Freelance Modding Crew</author>
+    
     <title>
         <en>Glance</en>
         <de>Glance</de> <!-- German  (de) translations by: SchorschiBW   -->
         <pl>Glance</pl> <!-- Polish  (pl) translations by: ja_pizgam     -->
         <ru>Glance</ru> <!-- Russian (ru) translations by: Gonimy_Vetrom -->
     </title>
+
+    <version>2.1.8</version>
+
     <description>
         <en>
-<![CDATA[A notification-and-status utility that can be configured to show only what you need to see
+<![CDATA[A notification-and-status utility that can be configured to show only what
+you need to see
 
 
 Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
@@ -19,22 +22,25 @@ Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
         
         <!-- Needs proper translations to other languages - Send me a PM with your translation, if you want to contribute. -->
         <de> 
-<![CDATA[A notification-and-status utility that can be configured to show only what you need to see
+<![CDATA[A notification-and-status utility that can be configured to show only what
+you need to see
 
 German translation: SchorschiBW
 Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
         </de>
         
         <pl> 
-<![CDATA[Użyteczne narzędzie powiadamiania i statusu, które może być skonfigurowane tak, aby pokazywać to, co chcesz zobaczyć. 
+<![CDATA[Użyteczne narzędzie powiadamiania i statusu, które może być skonfigurowane
+tak, aby pokazywać to, co chcesz zobaczyć. 
 
 Polish translation: Ziuta (ja_pizgam)  
 Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
         </pl>         
         
         <ru> 
-<![CDATA[Утилита для отображения уведомлений и статуса может работать в соответствии с настройками, чтобы показать только то,
-что Вы хотите видеть. 
+<![CDATA[Утилита для отображения уведомлений и статуса может работать в соответствии
+с настройками, чтобы показать только то, что Вы хотите видеть. 
+
 Russian translation: Gonimy_Vetrom
 Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
         </ru>
@@ -43,101 +49,7 @@ Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
     <iconFilename>store_Glance.dds</iconFilename>
     <multiplayer supported="true"/>
 
-    <l10n>
-        <!-- Needs proper translations to other languages - Send me a PM with your translation, if you want to contribute. -->
-        <text name="hired">         <en>(hired)      </en> <de>(Helfer aktiv) </de> <pl>(Pracownik)   </pl> <ru>(работник)   </ru> </text>
-        <text name="dismissed">     <en>(finished!)  </en> <de>(fertig!)      </de> <pl>(gotowe!)     </pl> <ru>(закончил!)  </ru> </text>
-        <text name="courseplay">    <en>(courseplay) </en> <de>(courseplay)   </de> <pl>(courseplay)  </pl> <ru>(courseplay) </ru> </text>
-        <text name="followme">      <en>(followme)   </en> <de>(followme)     </de> <pl>(followme)    </pl> <ru>(конвой)     </ru> </text>
-        <text name="broken">        <en>(broken!)    </en> <de>(defekt!)      </de> <pl>(uszkodzony!) </pl> <ru>(сломался!)  </ru> </text>
-                                    
-        <text name="north">         <en>N </en> <de>N </de> <cz>S </cz> <pl>Pn     </pl> <fr>N </fr> <es>N </es> <ru>С </ru> <jp>北</jp>   </text>
-        <text name="northeast">     <en>NE</en> <de>NO</de> <cz>SV</cz> <pl>Pn-Wsch</pl> <fr>NE</fr> <es>NE</es> <ru>СВ</ru> <jp>北東</jp> </text>
-        <text name="east">          <en>E </en> <de>O </de> <cz>V </cz> <pl>Wsch   </pl> <fr>E </fr> <es>E </es> <ru>В </ru> <jp>東</jp>   </text>
-        <text name="southeast">     <en>SE</en> <de>SO</de> <cz>JV</cz> <pl>Pd-Wsch</pl> <fr>SE</fr> <es>SE</es> <ru>ЮВ</ru> <jp>南東</jp> </text>
-        <text name="south">         <en>S </en> <de>S </de> <cz>J </cz> <pl>Pd     </pl> <fr>S </fr> <es>S </es> <ru>Ю </ru> <jp>南</jp>   </text>
-        <text name="southwest">     <en>SW</en> <de>SW</de> <cz>JZ</cz> <pl>Pd-Zach</pl> <fr>SO</fr> <es>SO</es> <ru>ЮЗ</ru> <jp>南西</jp> </text>
-        <text name="west">          <en>W </en> <de>W </de> <cz>Z </cz> <pl>Zach   </pl> <fr>O </fr> <es>O </es> <ru>З </ru> <jp>西</jp>   </text>
-        <text name="northwest">     <en>NW</en> <de>NW</de> <cz>SZ</cz> <pl>Pn-Zach</pl> <fr>NO</fr> <es>NO</es> <ru>СЗ</ru> <jp>北西</jp> </text>
-        <text name="center">        <en>C </en> <de>Z </de>             <pl>Srodek </pl>                         <ru>Ц </ru>               </text>
-        
-        <text name="closestfield">  <en>F%d</en> <de>F%d</de> <pl>(Pole %d)</pl> <ru>П%d</ru> </text>
-                                    
-        <text name="fuellow">       <en>Fuel Low (%s%%) </en> <de>Tank leer (%s%%)</de> <pl>Resztka paliwa (%s%%) </pl> <ru>Мало топлива (%s%%) </ru> </text>
-        <text name="engineon">      <en>Engine is ON!   </en> <de>Motor ist AN!   </de> <pl>Silnik wlaczony!      </pl> <ru>Двигатель запущен!  </ru> </text>
-        <text name="collision">     <en>Blocked         </en> <de>Blockiert       </de> <pl>Zablokowany           </pl> <ru>Застрял             </ru> </text>
-        <text name="damageLevel">   <en>Damaged (%s)    </en> <de>Defekt (%s)     </de> <pl>Uszkodzenia (%s)      </pl> <ru>Повреждение (%s)    </ru> </text>
-                                    
-        <text name="speed+Unit">    <en>%.1f %s    </en> <de>%.1f %s    </de> <pl>%.1f %s        </pl> <ru>%.1f %s         </ru> </text>
-        <text name="speedSlow">     <en>High RPM   </en> <de>Hohe RPM   </de> <pl>Wysokie obroty </pl> <ru>Высокие обороты </ru> </text>
-        <text name="speedIdle">     <en>Idle       </en> <de>Leerlauf   </de> <pl>Bezczynny      </pl> <ru>Стоит           </ru> </text>
-        <text name="cp_waiting">    <en>Waiting    </en> <de>Warten     </de> <pl>Oczekiwanie    </pl> <ru>Ожидание        </ru> </text>
-        
-        <text name="unknownFillType">   <en>(unknown)    </en> <de>(unknown)    </de> <pl>(nieznane) </pl> <ru>(неизвестно) </ru> </text>
-        <text name="bales">             <en>Bales        </en> <de>Bales        </de> <pl>Bele       </pl> <ru>Тюки         </ru> </text>
-<!--
-        <text name="liquidManure">      <en>Slurry       </en> <de>Gülle        </de> <pl>Plynny obornik   </pl> <ru>Жидкий навоз   </ru> </text>
-        <text name="manure">            <en>Manure       </en> <de>Mist         </de> <pl>Obornik          </pl> <ru>Навоз          </ru> </text>
-        <text name="seeds">             <en>Seeds        </en> <de>Saatgut      </de> <pl>Nasiona          </pl> <ru>Семена         </ru> </text>
-        <text name="fertilizer">        <en>Fertilizer   </en> <de>Dünger       </de> <pl>Oprysk/Nawóz     </pl> <ru>Удобрения      </ru> </text>
-        <text name="fuel">              <en>Fuel         </en> <de>Kraftstuff   </de> <pl>Paliwo           </pl> <ru>Топливо        </ru> </text>
-        <text name="grass_windrow">     <en>Straw/Grass  </en> <de>Grasschwad   </de> <pl>Trawa            </pl> <ru>Трава          </ru> </text>
-        <text name="dryGrass_windrow">  <en>Straw/Hay    </en> <de>Heuschwad    </de> <pl>Siano            </pl> <ru>Сено           </ru> </text>
-        <text name="barley_windrow">    <en>Straw/Barley </en> <de>Stroh        </de> <pl>Sloma jeczmienna </pl> <ru>Солома/Ячмень  </ru> </text>
-        <text name="wheat_windrow">     <en>Straw/Wheat  </en> <de>Stroh        </de> <pl>Sloma pszenna    </pl> <ru>Солома/Пшеница </ru> </text>
--->        
-        <text name="task_Harvesting">       <en>Harvesting     </en> <de>Ernten         </de> <pl>Zniwa           </pl> <ru>Уборка            </ru> </text>
-        <text name="task_Defoliator">       <en>Defoliation    </en> <de>Krautschläger  </de> <pl>Scinka lisci    </pl> <ru>Удаление ботвы    </ru> </text>
-        <text name="task_Loading_bales">    <en>Loading bales  </en> <de>Ballen laden   </de> <pl>Ladowanie bel   </pl> <ru>Погрузка тюков    </ru> </text>
-        <text name="task_Wrapping_bale">    <en>Wrapping bale  </en> <de>Ballen wickeln </de> <pl>Owijanie bel    </pl> <ru>Обертывание тюков </ru> </text>
-        <text name="task_Baling">           <en>Baling         </en> <de>Balln pressen  </de> <pl>Prasowanie      </pl> <ru>Тюковка           </ru> </text>
-        <text name="task_Foraging">         <en>Foraging       </en> <de>Füttern        </de> <pl>Karmienie pasza </pl> <ru>Фуражирование     </ru> </text>
-        <text name="task_Tedding">          <en>Tedding        </en> <de>Wenden         </de> <pl>Przetrzasanie   </pl> <ru>Ворошит сено      </ru> </text>
-        <text name="task_Swathing">         <en>Swathing       </en> <de>Schwaden       </de> <pl>Zgarnianie      </pl> <ru>Валкование        </ru> </text>
-        <text name="task_Mowing">           <en>Mowing         </en> <de>Mähen          </de> <pl>Sianokosy       </pl> <ru>Покос/Mowing      </ru> </text>
-        <text name="task_Spraying">         <en>Spraying       </en> <de>Spritzen       </de> <pl>Oprysk          </pl> <ru>Опрыскивание      </ru> </text>
-        <text name="task_Seeding">          <en>Seeding        </en> <de>Säen           </de> <pl>Siew            </pl> <ru>Посев             </ru> </text>
-        <text name="task_Bedding">          <en>Bedding        </en> <de>Einstreuen     </de> <pl>Scielenie       </pl> <ru>Подстилка         </ru> </text>
-        <text name="task_Feeding">          <en>Feeding        </en> <de>Füttern        </de> <pl>Karmienie       </pl> <ru>Кормление         </ru> </text>
-        <text name="task_Cutting">          <en>Cutting        </en> <de>Cutting        </de> <pl>Ciecie          </pl> <ru>Косит/Cutting     </ru> </text>
-        <text name="task_Cultivating">      <en>Cultivating    </en> <de>Kultivieren    </de> <pl>Uprawa          </pl> <ru>Культивация       </ru> </text>
-        <text name="task_Ploughing">        <en>Ploughing      </en> <de>Pflügen        </de> <pl>Orka            </pl> <ru>Вспашка           </ru> </text>
-        <text name="task_Unloading">        <en>Unloading      </en> <de>Abladen        </de> <pl>Rozladunek      </pl> <ru>Разгрузка         </ru> </text>
-        <text name="task_Transporting">     <en>Transporting   </en> <de>Transportieren </de> <pl>Transport       </pl> <ru>Транспортировка   </ru> </text>
-
-        <text name="config_error">
-            <en>
-'Glance' had a problem when loading its GlanceConfig.XML file. Please check in-game console or LOG.TXT for details. Or just remove the GlanceConfig.XML file.
-(%d)
-            </en>
-            <de>
-'Glance' ein Problem mit dem Laden der GlanceConfig.XML. Bitte kontrolliere die Konsole im Spiel, die LOG.TXT für Details oder lösche die GlanceConfig.XML.
-(%d)
-            </de>
-            <pl> 
-'Glance' ma problem z zaladowaniem pliku "GlanceConfig.XML". Prosze sprawdzic w kolnsoli w grze lub w "LOG.TXT" szczególy lub po prosru usunac "GlanceConfig.XML".
-(%d) 
-            </pl> 
-            <ru>
-'Glance' не может загрузить GlanceConfig.XML файл. Пожалуйста, проверьте в игре консоль или LOG.TXT для деталей. Или просто удалить GlanceConfig.XML файл.
-(%d)
-            </ru>
-        </text>
-        
-        <text name="GlanceMore">      <en>Glance:More notify</en> <de>Glance:Mehr anzeigen   </de> <pl>Glance:Wiecej info.</pl> <ru>Glance:Больше уведомлений </ru> </text>
-        <text name="GlanceLess">      <en>Glance:Less notify</en> <de>Glance:Weniger anzeigen</de> <pl>Glance:Mniej info. </pl> <ru>Glance:Меньше уведомлений </ru> </text>
-        
-        <text name="GlanceMinLevel">  <en>Minimum notification level is set to: %d</en> <de>Anzeigelevel: %d</de> <pl>Minimalny poziom powiadomien ustawiono na: %d</pl> <ru>Минимальный уровень уведомление установлен на: %d</ru> </text>
-        
-        <!-- Support for SoilMod -->
-        <!-- TODO: Needs translations to German, Polish, Russian, etc. -->
-        <text name="SoilCondition"               ><en>Soil condition    </en><de>Soil condition    </de><pl>Soil condition    </pl><ru>Soil condition    </ru></text>
-        <text name="SoilpH_value_denomination"   ><en>Soil pH %.1f/%s   </en><de>Soil pH %.1f/%s   </de><pl>Soil pH %.1f/%s   </pl><ru>Soil pH %.1f/%s   </ru></text>
-        <text name="FertilizerOrganic_Level"     ><en>Organic %.1f      </en><de>Organic %.1f      </de><pl>Organic %.1f      </pl><ru>Organic %.1f      </ru></text>
-        <text name="FertilizerSynthetic_Type_pct"><en>Synthetic %s/%d%% </en><de>Synthetic %s/%d%% </de><pl>Synthetic %s/%d%% </pl><ru>Synthetic %s/%d%% </ru></text>
-        <text name="Herbicide_Type_pct"          ><en>Herbicide %s/%d%% </en><de>Herbicide %s/%d%% </de><pl>Herbicide %s/%d%% </pl><ru>Herbicide %s/%d%% </ru></text>
-        <text name="WeedInfestation_pct"         ><en>Weeds %d%%        </en><de>Weeds %d%%        </de><pl>Weeds %d%%        </pl><ru>Weeds %d%%        </ru></text>
-    </l10n>
+    <l10n filenamePrefix="modDesc_l10n" /> <!-- Load the corresponding modDesc_l10n_<language>.XML file, or revert to 'en'/'de'. -->
 
     <extraSourceFiles>
         <sourceFile filename="Glance.lua" />

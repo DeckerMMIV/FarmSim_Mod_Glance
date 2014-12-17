@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+    <!-- German -->
+    <texts>
+        <text name="hired"              text="(Helfer aktiv)"  />
+        <text name="dismissed"          text="(fertig!)"       />
+        <text name="courseplay"         text="(courseplay)"    />
+        <text name="followme"           text="(followme)"      />
+        <text name="broken"             text="(defekt!)"       />
+
+        <text name="north"              text="N"  />
+        <text name="northeast"          text="NO" />
+        <text name="east"               text="O"  />
+        <text name="southeast"          text="SO" />
+        <text name="south"              text="S"  />
+        <text name="southwest"          text="SW" />
+        <text name="west"               text="W"  />
+        <text name="northwest"          text="NW" />
+        <text name="center"             text="Z"  />
+
+        <text name="closestfield"       text="F%d" />
+
+        <text name="fuellow"            text="Tank leer (%s%%)" />
+        <text name="engineon"           text="Motor ist AN!"    />
+        <text name="collision"          text="Blockiert"        />
+
+        <text name="speed+Unit"         text="%.1f %s"     />
+        <text name="speedSlow"          text="Hohe RPM"    />
+        <text name="speedIdle"          text="Leerlauf"    />
+        <text name="cp_waiting"         text="Warten"      />
+
+        <text name="unknownFillType"    text="(unknown)"     />   <!-- needs translations -->
+        <text name="bales"              text="Bales"         />   <!-- needs translations -->
+
+        <text name="task_Harvesting"    text="Ernten"          />
+        <text name="task_Defoliator"    text="Krautschläger"   />
+        <text name="task_Loading_bales" text="Ballen laden"    />
+        <text name="task_Wrapping_bale" text="Ballen wickeln"  />
+        <text name="task_Baling"        text="Balln pressen"   />
+        <text name="task_Foraging"      text="Füttern"         />
+        <text name="task_Tedding"       text="Wenden"          />
+        <text name="task_Swathing"      text="Schwaden"        />
+        <text name="task_Mowing"        text="Mähen"           />
+        <text name="task_Spraying"      text="Spritzen"        />
+        <text name="task_Seeding"       text="Säen"            />
+        <text name="task_Bedding"       text="Einstreuen"      />
+        <text name="task_Feeding"       text="Füttern"         />
+        <text name="task_Cutting"       text="Cutting"         />
+        <text name="task_Cultivating"   text="Kultivieren"     />
+        <text name="task_Ploughing"     text="Pflügen"         />
+        <text name="task_Unloading"     text="Abladen"         />
+        <text name="task_Transporting"  text="Transportieren"  />
+        <text name="task_StumpCutting"  text="Stump cutting"   />    <!-- needs translations -->
+        <text name="task_WoodCrushing"  text="Wood crushing"   />    <!-- needs translations -->
+        <text name="task_TreePlanting"  text="Tree planting"   />    <!-- needs translations -->
+
+        <text name="config_error"       text="'Glance' ein Problem mit dem Laden der GlanceConfig.XML.
+Bitte kontrolliere die Konsole im Spiel, die LOG.TXT für Details oder lösche die GlanceConfig.XML." />
+
+        <text name="GlanceMore"         text="Glance:Mehr anzeigen"    />
+        <text name="GlanceLess"         text="Glance:Weniger anzeigen" />
+
+        <text name="GlanceMinLevel"     text="Anzeigelevel: %d" />
+    </texts>
+</l10n>
