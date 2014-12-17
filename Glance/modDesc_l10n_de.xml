@@ -1,6 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <l10n>
-    <!-- German -->
+    <description>
+<![CDATA[A notification-and-status utility that can be configured to show only what
+you need to see
+
+
+Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
+    </description>
+
     <texts>
         <text name="hired"              text="(Helfer aktiv)"  />
         <text name="dismissed"          text="(fertig!)"       />

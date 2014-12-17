@@ -1,6 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <l10n>
-    <!-- Russian -->
+    <description>
+<![CDATA[Утилита для отображения уведомлений и статуса может работать в соответствии
+с настройками, чтобы показать только то, что Вы хотите видеть. 
+
+
+Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
+    </description>
+
     <texts>
         <text name="hired"              text="(работник)"    />
         <text name="dismissed"          text="(закончил!)"   />

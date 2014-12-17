@@ -1,6 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <l10n>
-    <!-- Polish -->
+    <description>
+<![CDATA[Użyteczne narzędzie powiadamiania i statusu, które może być skonfigurowane
+tak, aby pokazywać to, co chcesz zobaczyć. 
+
+
+Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
+    </description>
+
     <texts>
         <text name="hired"              text="(Pracownik)"    />
         <text name="dismissed"          text="(gotowe!)"      />
