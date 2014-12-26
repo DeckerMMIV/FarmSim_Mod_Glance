@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <l10n>
+    <!-- Note that 'description' is only here for easier translations. It needs to be manually copied to ModDesc.XML later. -->
     <description>
 <![CDATA[A notification-and-status utility that can be configured to show only what
 you need to see

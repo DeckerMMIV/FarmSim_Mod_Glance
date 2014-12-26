@@ -77,6 +77,7 @@
 --      v2.1.7      - Added configuration option for formatting the animals/placeables line.
 --                    Look for the `<nonVehicles .. />` in config-file, to see more.
 --      v2.1.8      - Warning-notification changed to use show-message instead, as it looks better in FS15.
+--      v2.1.9      - Misc. minor changes.
 --
 
 --[[
@@ -375,7 +376,7 @@ function Glance:getDefaultConfig()
 ,'        <font  size="0.011"  rowSpacing="-0.001"  shadowOffset="0.00128"  shadowColor="black" />'
 ,''
 ,'        <!-- Currently only Y position is supported. Bottom is at 0.0000 (0%) and top is at 1.0000 (100%) -->'
-,'        <placementInDisplay  positionXY="0.001 0.999" />'
+,'        <placementInDisplay  positionXY="0.000 0.999" />'
 ,'    </general>'
 ,''
 ,'    <notifications>'
@@ -405,6 +406,7 @@ function Glance:getDefaultConfig()
 ,'        <notification  enabled="true"  type="seederLow"                 level="'..dnl( 0)..'"   whenBelowThreshold="3"   color="red"    /> <!-- threshold unit is "percentage" -->'
 ,''
 ,'        <!-- Animal husbandry - Productivity, Wool pallet, Eggs (pickup objects) -->'
+,'        <!--                                "husbandry[:<animalTypeName>]:(PickupObjects|Pallet|Productivity)"  -->'
 ,'        <notification  enabled="true"  type="husbandry:PickupObjects"       level="'..dnl(-2)..'"   whenAboveThreshold="99.99"  color="yellow" /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="true"  type="husbandry:Pallet"              level="'..dnl(-1)..'"   whenAboveThreshold="99.99"  color="yellow" /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="true"  type="husbandry:Productivity"        level="'..dnl( 1)..'"   whenAboveThreshold="0"  whenBelowThreshold="100"    color="yellow" /> <!-- threshold unit is "percentage" -->'
@@ -443,6 +445,7 @@ function Glance:getDefaultConfig()
 --]]
 ,''
 ,'        <!-- Placeable - Fill-level -->'
+,'        <!--                                "placeable:(Greenhouse|MischStation)[:<fillTypeName>]"  -->'
 ,'        <notification  enabled="true"  type="placeable:Greenhouse:water"    level="'..dnl(-1)..'"   whenBelowThreshold="10"      color="yellow" /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="true"  type="placeable:Greenhouse:manure"   level="'..dnl(-1)..'"   whenBelowThreshold="10"      color="yellow" /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="false" type="placeable:Greenhouse"          level="'..dnl(-1)..'"   whenBelowThreshold="10"      color="yellow" /> <!-- threshold unit is "percentage" -->'
@@ -456,7 +459,7 @@ function Glance:getDefaultConfig()
 ,'        <notification  enabled="false" type="placeable:MischStation"                  level="'..dnl(-1)..'"   whenBelowThreshold="10"      color="yellow"                /> <!-- threshold unit is "percentage" -->'
 ,''
 ,'        <!-- Additional mods -->'
-,'        <notification  enabled="true"  type="engineOnButNotControlled"  level="'..dnl(-1)..'"   color="yellow"/>'
+,'        <notification  enabled="true"  type="engineOnButNotControlled"  level="'..dnl( 0)..'"   color="yellow"/>'
 --[[
 ,'        <notification  enabled="true"  type="damaged"                   level="'..dnl(-1)..'"   whenAboveThreshold="25" color="yellow"/>  <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="true"  type="aForestModTrees"           level="'..dnl(-3)..'"   whenAboveThreshold="0"  color="yellow"/>  <!-- threshold unit is "count-of-trees-ready" -->'
