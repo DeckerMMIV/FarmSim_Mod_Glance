@@ -634,7 +634,7 @@ function Glance:loadConfig()
             ,level          = Utils.getNoNil(getXMLInt(    xmlFile, tag.."#level"), 0)
             ,aboveThreshold =                getXMLFloat(  xmlFile, tag.."#whenAboveThreshold")
             ,belowThreshold =                getXMLFloat(  xmlFile, tag.."#whenBelowThreshold")
-            ,coolDownMS     =                getXMLInt(    xmlFile, tag.."#coolDownMs")
+          --,coolDownMS     =                getXMLInt(    xmlFile, tag.."#coolDownMs")
             ,text           =                getXMLString( xmlFile, tag.."#text")
         }
         --
@@ -754,28 +754,6 @@ local function isBreakingThresholds(ntfy, value, oldValue)
     end
     
     return isBroken, newValue
-    
-
-    --return  (   ntfy ~= nil and value ~= nil
-    --        and (
-    --                -- Only above
-    --                (ntfy.belowThreshold == nil and ntfy.aboveThreshold ~= nil and value > ntfy.aboveThreshold)
-    --            or
-    --                -- Only below
-    --                (ntfy.belowThreshold ~= nil and ntfy.aboveThreshold == nil and value < ntfy.belowThreshold)
-    --            or
-    --                -- Either outside or inside
-    --                (ntfy.belowThreshold ~= nil and ntfy.aboveThreshold ~= nil
-    --                and (
-    --                    -- Only outside
-    --                        (ntfy.belowThreshold < ntfy.aboveThreshold and (value < ntfy.belowThreshold or ntfy.aboveThreshold < value))
-    --                    or
-    --                    -- Only inside
-    --                        (ntfy.belowThreshold > ntfy.aboveThreshold and (ntfy.aboveThreshold < value and value < ntfy.belowThreshold))
-    --                    )
-    --                )
-    --            )
-    --        )
 end
 
 local function isOutsideThresholds(ntfy, value)
