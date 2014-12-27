@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="21">
     <author>Freelance Modding Crew</author>
-    <version>2.1.9-ForTranslationsOnly</version>
-    <contributors>SchorschiBW, ja_pizgam, Gonimy_Vetrom</contributors>
+    <version>2.1.10</version>
+    <contributors>SchorschiBW, ja_pizgam, Gonimy_Vetrom, JakobT</contributors>
     
     <title>
         <en>Glance</en>
@@ -21,8 +21,8 @@ Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
         </en>
         
         <de> 
-<![CDATA[A notification-and-status utility that can be configured to show only what
-you need to see
+<![CDATA[Ein Mitteilungs- und Status-Tool das so konfiguriert werden kann dass man 
+nur das sieht was man braucht.
 
 
 Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
@@ -37,8 +37,8 @@ Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
         </pl>         
         
         <ru> 
-<![CDATA[Утилита для отображения уведомлений и статуса может работать в соответствии
-с настройками, чтобы показать только то, что Вы хотите видеть. 
+<![CDATA[Утилита для отображения уведомлений/статуса техники и животных. Может работать в соответствии
+с настройками, чтобы показывать только то, что Вы хотите видеть. 
 
 
 Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>

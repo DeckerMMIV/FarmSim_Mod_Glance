@@ -62,9 +62,9 @@ Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
         <text name="task_WoodCrushing"  text="Wood crushing"    />
         <text name="task_TreePlanting"  text="Tree planting"    />
 
-        <text name="config_error"       text="'Glance' had a problem when loading its GlanceConfig.XML file.
+        <text name="config_error"       text="'Glance' had a problem when loading its Glance_Config.XML file.
 Please check in-game console or LOG.TXT for details.
-Or just remove the GlanceConfig.XML file." />
+Or just remove the Glance_Config.XML file." />
 
         <text name="GlanceMore"         text="Glance:More notify"   />
         <text name="GlanceLess"         text="Glance:Less notify"   />

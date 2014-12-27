@@ -78,6 +78,7 @@
 --                    Look for the `<nonVehicles .. />` in config-file, to see more.
 --      v2.1.8      - Warning-notification changed to use show-message instead, as it looks better in FS15.
 --      v2.1.9      - Misc. minor changes.
+--                  - Changed config-file-name to 'Glance_Config.XML'.
 --
 
 --[[
@@ -346,7 +347,7 @@ function Glance:getDefaultConfig()
 ,'<!--'
 ,'  NOTE! If a problem occurs which you can not solve when modifying this file, or when'
 ,'        starting to use a different version of Glance, then please remove or delete this'
-,'        GlanceConfig.XML, to allow a fresh one being created!'
+,'        Glance_Config.XML, to allow a fresh one being created!'
 ,'-->'
 ,'    <general>'
 ,'        <!-- Set the minimum level a notification should have to be displayed.'
@@ -521,7 +522,7 @@ function Glance:loadConfig()
     Glance.notifications = {}
     Glance.columnOrder = {}
 
-    local fileName = g_modsDirectory .. "/" .. "GlanceConfig.XML";
+    local fileName = g_modsDirectory .. "/" .. "Glance_Config.XML";
     local tag = "glanceConfig"
 
     -- Inspired by ZZZ_GPS
@@ -553,7 +554,7 @@ function Glance:loadConfig()
         return;
     end
     if version ~= Glance.cCfgVersion then
-        print("!! The existing GlanceConfig.XML file is of a not supported version '"..tostring(version).."', and will NOT be loaded.")
+        print("!! The existing Glance_Config.XML file is of a not supported version '"..tostring(version).."', and will NOT be loaded.")
         Glance.failedConfigLoad = g_currentMission.time + 10000;
         return;
     end
@@ -577,7 +578,7 @@ function Glance:loadConfig()
         if table.getn(Glance.colors[colorName]) ~= 4 then
             -- Error in color setting!
             Glance.colors[colorName] = nil
-            print("!! GlanceConfig.XML has invalid color setting, for color name: "..tostring(colorName));
+            print("!! Glance_Config.XML has invalid color setting, for color name: "..tostring(colorName));
         end
     end
     --
@@ -587,7 +588,7 @@ function Glance:loadConfig()
             if Glance.colors[colorName] ~= nil then
                 return colorName
             end
-            print("!! GlanceConfig.XML has invalid color-name '"..tostring(colorName).."', in: "..tostring(tag));
+            print("!! Glance_Config.XML has invalid color-name '"..tostring(colorName).."', in: "..tostring(tag));
         end
         return defaultColorName
     end
@@ -975,6 +976,26 @@ function Glance:makePlaceablesLine(dt, notifyList)
 end
 
 -----
+
+function Glance:makeComplexBga(dt, notifyList)
+--[[
+    // complexBGA
+    Bga.complexBGA_data ~= nil
+    Bga.complexBgaDebug ~= nil
+    
+    g_currentMission.onCreateLoadedObjectsToSave[<int>]
+      // default BGA
+        .silageCatcherId ~= nil
+      // complexBGA
+        .bunkerFillLevel <float>    (do /1000 to get m2)
+        .printPower      <float>    (power production)
+    
+--]]
+    
+end
+
+-----
+
 
 --[[
 -- Support for SoilMod v1.x.x
