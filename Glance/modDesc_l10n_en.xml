@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+    <!-- Note that 'description' is only here for easier translations. It needs to be manually copied to ModDesc.XML later. -->
+    <description>
+<![CDATA[A notification-and-status utility that can be configured to show only what
+you need to see
+
+
+Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
+    </description>
+
+    <texts>
+        <text name="hired"              text="(hired)"      />
+        <text name="dismissed"          text="(finished!)"  />
+        <text name="courseplay"         text="(courseplay)" />
+        <text name="followme"           text="(followme)"   />
+        <text name="broken"             text="(broken!)"    />
+
+        <text name="north"              text="N"    />
+        <text name="northeast"          text="NE"   />
+        <text name="east"               text="E"    />
+        <text name="southeast"          text="SE"   />
+        <text name="south"              text="S"    />
+        <text name="southwest"          text="SW"   />
+        <text name="west"               text="W"    />
+        <text name="northwest"          text="NW"   />
+        <text name="center"             text="C"    />
+
+        <text name="closestfield"       text="F%d"  />
+
+        <text name="fuellow"            text="Fuel Low (%s%%)"  />
+        <text name="engineon"           text="Engine is ON!"    />
+        <text name="collision"          text="Blocked"          />
+
+        <text name="speed+Unit"         text="%.1f %s"  />
+        <text name="speedSlow"          text="High RPM" />
+        <text name="speedIdle"          text="Idle"     />
+        <text name="cp_waiting"         text="Waiting"  />
+
+        <text name="unknownFillType"    text="(unknown)"    />
+        <text name="bales"              text="Bales"        />
+
+        <text name="task_Harvesting"    text="Harvesting"       />
+        <text name="task_Defoliator"    text="Defoliation"      />
+        <text name="task_Loading_bales" text="Loading bales"    />
+        <text name="task_Wrapping_bale" text="Wrapping bale"    />
+        <text name="task_Baling"        text="Baling"           />
+        <text name="task_Foraging"      text="Foraging"         />
+        <text name="task_Tedding"       text="Tedding"          />
+        <text name="task_Swathing"      text="Swathing"         />
+        <text name="task_Mowing"        text="Mowing"           />
+        <text name="task_Spraying"      text="Spraying"         />
+        <text name="task_Seeding"       text="Seeding"          />
+        <text name="task_Bedding"       text="Bedding"          />
+        <text name="task_Feeding"       text="Feeding"          />
+        <text name="task_Cutting"       text="Cutting"          />
+        <text name="task_Cultivating"   text="Cultivating"      />
+        <text name="task_Ploughing"     text="Ploughing"        />
+        <text name="task_Unloading"     text="Unloading"        />
+        <text name="task_Transporting"  text="Transporting"     />
+        <text name="task_StumpCutting"  text="Stump cutting"    />
+        <text name="task_WoodCrushing"  text="Wood crushing"    />
+        <text name="task_TreePlanting"  text="Tree planting"    />
+
+        <text name="config_error"       text="'Glance' had a problem when loading its Glance_Config.XML file.
+Please check in-game console or LOG.TXT for details.
+Or just remove the Glance_Config.XML file." />
+
+        <text name="GlanceMore"         text="Glance:More notify"   />
+        <text name="GlanceLess"         text="Glance:Less notify"   />
+
+        <text name="GlanceMinLevel"     text="Minimum notification level is set to: %d" />
+    </texts>
+</l10n>

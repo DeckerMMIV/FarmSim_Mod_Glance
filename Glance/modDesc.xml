@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<modDesc descVersion="21">
+    <author>Freelance Modding Crew</author>
+    <version>2.1.10</version>
+    <contributors>SchorschiBW, ja_pizgam, Gonimy_Vetrom, JakobT</contributors>
+    
+    <title>
+        <en>Glance</en>
+        <de>Glance</de>
+        <pl>Glance</pl>
+        <ru>Glance</ru>
+    </title>
+
+    <description>
+        <en>
+<![CDATA[A notification-and-status utility that can be configured to show only what
+you need to see
+
+
+Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
+        </en>
+        
+        <de> 
+<![CDATA[Ein Mitteilungs- und Status-Tool das so konfiguriert werden kann dass man 
+nur das sieht was man braucht.
+
+
+Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
+        </de>
+        
+        <pl> 
+<![CDATA[Użyteczne narzędzie powiadamiania i statusu, które może być skonfigurowane
+tak, aby pokazywać to, co chcesz zobaczyć. 
+
+
+Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
+        </pl>         
+        
+        <ru> 
+<![CDATA[Утилита для отображения уведомлений/статуса техники и животных. Может работать в соответствии
+с настройками, чтобы показывать только то, что Вы хотите видеть. 
+
+
+Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
+        </ru>
+    </description>
+
+    <iconFilename>store_Glance.dds</iconFilename>
+    <multiplayer supported="true"/>
+
+    <l10n filenamePrefix="modDesc_l10n" /> <!-- Load the corresponding modDesc_l10n_<language>.XML file, or revert to 'en'/'de'. -->
+
+    <extraSourceFiles>
+        <sourceFile filename="Glance.lua" />
+    </extraSourceFiles>
+    
+    <inputBindings>
+        <input name="GlanceMore"    category="ONFOOT VEHICLE" key1="KEY_lalt KEY_m" key2="" button="" device="" mouse="" />
+        <input name="GlanceLess"    category="ONFOOT VEHICLE" key1="KEY_lalt KEY_l" key2="" button="" device="" mouse="" />
+    </inputBindings>
+</modDesc>

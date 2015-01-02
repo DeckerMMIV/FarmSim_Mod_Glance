@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+    <!-- Note that 'description' is only here for easier translations. It needs to be manually copied to ModDesc.XML later. -->
+    <description>
+<![CDATA[Утилита для отображения уведомлений/статуса техники и животных. Может работать в соответствии
+с настройками, чтобы показывать только то, что Вы хотите видеть. 
+
+
+Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
+    </description>
+
+    <texts>
+        <text name="hired"              text="(работник)"    />
+        <text name="dismissed"          text="(закончил!)"   />
+        <text name="courseplay"         text="(courseplay)"  />
+        <text name="followme"           text="(FollowMe)"      />
+        <text name="broken"             text="(сломался!)"   />
+
+        <text name="north"              text="С"  />
+        <text name="northeast"          text="СВ" />
+        <text name="east"               text="В"  />
+        <text name="southeast"          text="ЮВ" />
+        <text name="south"              text="Ю"  />
+        <text name="southwest"          text="ЮЗ" />
+        <text name="west"               text="З"  />
+        <text name="northwest"          text="СЗ" />
+        <text name="center"             text="Ц"  />
+
+        <text name="closestfield"       text="П%d" />
+
+        <text name="fuellow"            text="Мало топлива (%s%%)"  />
+        <text name="engineon"           text="Двигатель запущен!"   />
+        <text name="collision"          text="Застрял"              />
+
+        <text name="speed+Unit"         text="%.1f %s"              />
+        <text name="speedSlow"          text="Высокие обороты"      />
+        <text name="speedIdle"          text="Стоит"                />
+        <text name="cp_waiting"         text="Ожидание"             />
+
+        <text name="unknownFillType"    text="(неизвестно)"         />
+        <text name="bales"              text="Тюки"                 />
+
+        <text name="task_Harvesting"    text="Уборка урожая"        />
+        <text name="task_Defoliator"    text="Удаление ботвы"       />
+        <text name="task_Loading_bales" text="Погрузка тюков"       />
+        <text name="task_Wrapping_bale" text="Обертывание тюков"    />
+        <text name="task_Baling"        text="Тюковка"              />
+        <text name="task_Foraging"      text="Фуражирование"        />
+        <text name="task_Tedding"       text="Ворошение сена"       />
+        <text name="task_Swathing"      text="Валкование"           />
+        <text name="task_Mowing"        text="Сенокос"              />
+        <text name="task_Spraying"      text="Опрыскивание"         />
+        <text name="task_Seeding"       text="Посев"                />
+        <text name="task_Bedding"       text="Подстилка"            />
+        <text name="task_Feeding"       text="Кормление"            />
+        <text name="task_Cutting"       text="Косит/Cutting"        />
+        <text name="task_Cultivating"   text="Культивация"          />
+        <text name="task_Ploughing"     text="Вспашка"              />
+        <text name="task_Unloading"     text="Разгрузка"            />
+        <text name="task_Transporting"  text="Транспортировка"      />
+        <text name="task_StumpCutting"  text="Корчевание пней"      />
+        <text name="task_WoodCrushing"  text="Дробление древесины"  />
+        <text name="task_TreePlanting"  text="Посадка деревьев"     />
+
+        <text name="config_error"       text="'Glance' не может загрузить файл Glance_Config.XML.
+Пожалуйста, проверьте в игре консоль или LOG.TXT для уточнения деталей.
+Или просто удалите файл Glance_Config.XML." />
+
+        <text name="GlanceMore"         text="Glance: Больше уведомлений"  />
+        <text name="GlanceLess"         text="Glance: Меньше уведомлений"  />
+
+        <text name="GlanceMinLevel"     text="Минимальный уровень уведомление установлен на: %d" />
+    </texts>
+</l10n>
