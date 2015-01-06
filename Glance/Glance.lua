@@ -187,7 +187,9 @@ function Glance:loadMap(name)
     --print(("g_server=%s"):format(tostring(g_server)))
     --print(("g_client=%s"):format(tostring(g_client)))
     --print(("g_dedicatedServerInfo=%s"):format(tostring(g_dedicatedServerInfo)))
-        
+
+    Glance.fieldsRects = nil
+
     --
     if g_currentMission:getIsServer() then
       -- Force husbandries to update NOW!
@@ -282,6 +284,11 @@ function Glance:update(dt)
   if Glance.sumTime >= Glance.updateIntervalMS then
     Glance.sumTime = 0;
     Glance.makeUpdateEventFor = {}
+    --
+    if Glance.fieldsRects == nil then
+        Glance.fieldsRects = {}
+        Glance.buildFieldsRects()
+    end
     --
     if g_currentMission:getIsClient() then
 --[[
@@ -416,7 +423,7 @@ function Glance:getDefaultConfig()
 ,''
 ,'        <!-- Fields specific -->'           
 ,'        <notification  enabled="true"  type="balesWithinFields"             level="'..dnl(-1)..'"   whenAboveThreshold="0"  color="yellow" /> <!-- threshold unit is "units" -->'
-,'        <notification  enabled="true"  type="balesOutsideFields"            level="'..dnl(-2)..'"   whenAboveThreshold="0"  color="yellow" /> <!-- threshold unit is "units" -->'
+,'        <notification  enabled="false" type="balesOutsideFields"            level="'..dnl(-2)..'"   whenAboveThreshold="0"  color="yellow" /> <!-- threshold unit is "units" -->'
 ,''
 ,'        <!-- Animal husbandry - Productivity, Wool pallet, Eggs (pickup objects) -->'
 ,'        <!--                                "husbandry[:<animalTypeName>]:(PickupObjects|Pallet|Productivity)"  -->'
@@ -786,7 +793,43 @@ end
 
 -----
 
-Glance.fieldsRects = {} -- TODO - clear this on map delete.
+function Glance.buildFieldsRects()
+
+    local function getFieldRects(field)
+      local rects = {}
+      if field ~= nil and field.fieldDimensions ~= nil then
+        for i = 0, getNumOfChildren(field.fieldDimensions) - 1 do
+          local n1 = getChildAt(field.fieldDimensions, i)
+          local n2 = getChildAt(n1, 0)
+          local n3 = getChildAt(n1, 1)
+    
+          local c1 = { getWorldTranslation(n1) }
+          local c2 = { getWorldTranslation(n2) }
+          local c3 = { getWorldTranslation(n3) }
+    
+          local overlap = 10;
+          local x1 = math.min(c1[1],c2[1],c3[1]) - overlap;
+          local z1 = math.min(c1[3],c2[3],c3[3]) - overlap;
+          local x2 = math.max(c1[1],c2[1],c3[1]) + overlap;
+          local z2 = math.max(c1[3],c2[3],c3[3]) + overlap;
+    
+          table.insert(rects, {x1=x1,z1=z1,x2=x2,z2=z2})
+        end;
+      end;
+      return rects;
+    end
+
+    if  g_currentMission.fieldDefinitionBase ~= nil 
+    and g_currentMission.fieldDefinitionBase.fieldDefs ~= nil 
+    then
+        for fieldNum,fieldDef in ipairs(g_currentMission.fieldDefinitionBase.fieldDefs) do
+            Glance.fieldsRects[fieldNum] = getFieldRects(fieldDef)
+        end
+    end
+end
+
+-----
+
 function Glance:makeFieldsLine(dt, notifyList)
 
     local balesWithinFields  = Glance.notifications["balesWithinFields"]
@@ -795,31 +838,6 @@ function Glance:makeFieldsLine(dt, notifyList)
     if g_currentMission.itemsToSave ~= nil 
     and (isNotifyLevel(balesWithinFields) or isNotifyLevel(balesOutsideFields))
     then
-
-        local function getFieldRects(field)
-          local rects = {}
-          if field ~= nil and field.fieldDimensions ~= nil then
-            for i = 0, getNumOfChildren(field.fieldDimensions) - 1 do
-              local n1 = getChildAt(field.fieldDimensions, i)
-              local n2 = getChildAt(n1, 0)
-              local n3 = getChildAt(n1, 1)
-        
-              local c1 = { getWorldTranslation(n1) }
-              local c2 = { getWorldTranslation(n2) }
-              local c3 = { getWorldTranslation(n3) }
-        
-              local overlap = 10;
-              local x1 = math.min(c1[1],c2[1],c3[1]) - overlap;
-              local z1 = math.min(c1[3],c2[3],c3[3]) - overlap;
-              local x2 = math.max(c1[1],c2[1],c3[1]) + overlap;
-              local z2 = math.max(c1[3],c2[3],c3[3]) + overlap;
-        
-              table.insert(rects, {x1=x1,z1=z1,x2=x2,z2=z2})
-            end;
-          end;
-          return rects;
-        end
-        
         local constNumFields = table.getn(g_currentMission.fieldDefinitionBase.fieldDefs)
         local fieldsBales = {}
         local lastFieldDefIdx = 1; -- Its likely that "the next bale" is within "the same field" that was just found previously.
@@ -833,17 +851,11 @@ function Glance:makeFieldsLine(dt, notifyList)
                 if wx~=wx or wz~=wz then
                     -- Something is very wrong with the coordinates
                 else
-                    -- Find field the bale is within
+                    -- Find field the bale is within    -- TODO - maybe change this to a binary-space-partitioned search somehow?
                     lastFieldDefIdx = lastFieldDefIdx - 1
                     while (maxIter > 0) do
                         lastFieldDefIdx = (lastFieldDefIdx % constNumFields) + 1
                         maxIter = maxIter - 1
-                        
-                        if Glance.fieldsRects[lastFieldDefIdx] == nil then
-                            -- TODO - do this somewhere else... like in a postLoad() function
-                            Glance.fieldsRects[lastFieldDefIdx] = getFieldRects(g_currentMission.fieldDefinitionBase.fieldDefs[lastFieldDefIdx])
-                        end
-
                         for _,rect in pairs(Glance.fieldsRects[lastFieldDefIdx]) do
                             if  rect.x1 <= wx and wx <= rect.x2
                             and rect.z1 <= wz and wz <= rect.z2 then
@@ -864,27 +876,20 @@ function Glance:makeFieldsLine(dt, notifyList)
         end
         
         --
-        local txt   =nil
-        --local prefix=""
-        --local color = nil;
         if isNotifyLevel(balesWithinFields) then
+            local txt = nil
             for fieldNum=1,constNumFields do
                 if isBreakingThresholds(balesWithinFields, fieldsBales[fieldNum]) then
-                    --txt = Utils.getNoNil(txt,"") .. prefix .. ("F%d(x%d)"):format(fieldNum,fieldsBales[fieldNum]);
-                    --prefix=" "
                     txt = Utils.getNoNil(txt,"") .. (g_i18n:getText("fieldNumAndBales")):format(fieldNum,fieldsBales[fieldNum]);
-                    --color = Utils.getNoNil(color, balesWithinFields.color);
                 end
             end
-        end
-        if txt ~= nil then
-            table.insert(notifyList, { Glance.colors[balesWithinFields.color], g_i18n:getText("fieldsWithBales") .. txt });
+            if txt ~= nil then
+                table.insert(notifyList, { Glance.colors[balesWithinFields.color], g_i18n:getText("fieldsWithBales") .. txt });
+            end
         end
         --
         if isNotifyLevel(balesOutsideFields) and isBreakingThresholds(balesOutsideFields, fieldsBales["0"]) then
-            --txt = ("Elsewhere bales(x%d)"):format(fieldsBales["0"]);
-            txt = (g_i18n:getText("balesElsewhere")):format(fieldsBales["0"]);
-            table.insert(notifyList, { Glance.colors[balesOutsideFields.color], txt });
+            table.insert(notifyList, { Glance.colors[balesOutsideFields.color], (g_i18n:getText("balesElsewhere")):format(fieldsBales["0"]) });
         end
     end
 end
@@ -1719,34 +1724,18 @@ function Glance:getCellData_VehicleAtFieldNumber(dt, lineColor, colParms, cells,
 
       -- Find field
       local closestField = nil;
-      for _,field in pairs(g_currentMission.fieldDefinitionBase.fieldDefs) do
-        if field.fieldDimensions ~= nil then
-          for i = 0, getNumOfChildren(field.fieldDimensions) - 1 do
-            local n1 = getChildAt(field.fieldDimensions, i)
-            local n2 = getChildAt(n1, 0)
-            local n3 = getChildAt(n1, 1)
-
-            local c1 = { getWorldTranslation(n1) }
-            local c2 = { getWorldTranslation(n2) }
-            local c3 = { getWorldTranslation(n3) }
-
-            local overlap = 10;
-            local x1 = math.min(c1[1],c2[1],c3[1]) - overlap;
-            local z1 = math.min(c1[3],c2[3],c3[3]) - overlap;
-            local x2 = math.max(c1[1],c2[1],c3[1]) + overlap;
-            local z2 = math.max(c1[3],c2[3],c3[3]) + overlap;
-
-            if  x1 <= wx and wx <= x2
-            and z1 <= wz and wz <= z2 then
-              closestField = field.fieldNumber;
-              break
-            end
-          end;
-        end;
+      for fieldNum,fieldRects in ipairs(Glance.fieldsRects) do
+        for _,rect in ipairs(fieldRects) do
+          if  rect.x1 <= wx and wx <= rect.x2
+          and rect.z1 <= wz and wz <= rect.z2 then
+            closestField = fieldNum;
+            break
+          end
+        end
         if closestField ~= nil then
           return { { Glance.colors[lineColor], string.format(g_i18n:getText("closestfield"), closestField) } }
         end;
-      end;
+      end
   end
 end
 function Glance:getCellData_VehicleName(dt, lineColor, colParms, cells, veh)
