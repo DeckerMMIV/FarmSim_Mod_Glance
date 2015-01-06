@@ -28,6 +28,10 @@ Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
 
         <text name="closestfield"       text="F%d" />
 
+        <text name="fieldsWithBales"    text="Fields with bales:"   />  <!-- needs translation -->
+        <text name="fieldNumAndBales"   text=" F%d(x%d)"            />  <!-- needs translation -->
+        <text name="balesElsewhere"     text="Bales elsewhere(x%d)" />  <!-- needs translation -->
+        
         <text name="fuellow"            text="Tank leer (%s%%)" />
         <text name="engineon"           text="Motor ist AN!"    />
         <text name="collision"          text="Blockiert"        />

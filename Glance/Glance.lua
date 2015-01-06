@@ -292,11 +292,19 @@ function Glance:update(dt)
         end
 --]]
         --
-        self.lineAnimalsPlaceables = {}
-        Glance.makeHusbandriesLine(self, Glance.sumTime, self.lineAnimalsPlaceables);
-        Glance.makePlaceablesLine(self, Glance.sumTime, self.lineAnimalsPlaceables);
-        if not next(self.lineAnimalsPlaceables) then
-            self.lineAnimalsPlaceables = nil
+        self.linesNonVehicles = {};
+        
+        local lineNonVehicles = {}
+        Glance.makeHusbandriesLine(self, Glance.sumTime, lineNonVehicles);
+        Glance.makePlaceablesLine(self, Glance.sumTime, lineNonVehicles);
+        if next(lineNonVehicles) then
+            table.insert(self.linesNonVehicles, lineNonVehicles)
+        end
+
+        local lineNonVehicles = {}
+        Glance.makeFieldsLine(self, Glance.sumTime, lineNonVehicles);
+        if next(lineNonVehicles) then
+            table.insert(self.linesNonVehicles, lineNonVehicles)
         end
         --
         Glance.makeVehiclesLines(self, Glance.sumTime);
@@ -334,7 +342,7 @@ function Glance:update(dt)
     end
 end;
 
-Glance.cCfgVersion = 6
+Glance.cCfgVersion = 7
 
 function Glance:getDefaultConfig()
     local function dnl(offset) -- default notification level
@@ -405,6 +413,10 @@ function Glance:getDefaultConfig()
 ,'        <notification  enabled="true"  type="trailerFull"               level="'..dnl(-1)..'"   whenAboveThreshold="99.99"              /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="true"  type="sprayerLow"                level="'..dnl( 0)..'"   whenBelowThreshold="3"   color="red"    /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="true"  type="seederLow"                 level="'..dnl( 0)..'"   whenBelowThreshold="3"   color="red"    /> <!-- threshold unit is "percentage" -->'
+,''
+,'        <!-- Fields specific -->'           
+,'        <notification  enabled="true"  type="balesWithinFields"             level="'..dnl(-1)..'"   whenAboveThreshold="0"  color="yellow" /> <!-- threshold unit is "units" -->'
+,'        <notification  enabled="true"  type="balesOutsideFields"            level="'..dnl(-2)..'"   whenAboveThreshold="0"  color="yellow" /> <!-- threshold unit is "units" -->'
 ,''
 ,'        <!-- Animal husbandry - Productivity, Wool pallet, Eggs (pickup objects) -->'
 ,'        <!--                                "husbandry[:<animalTypeName>]:(PickupObjects|Pallet|Productivity)"  -->'
@@ -770,6 +782,111 @@ end
 
 local function isAboveThreshold(ntfy, value)
     return (ntfy ~= nil and value ~= nil and ntfy.aboveThreshold ~= nil and value > ntfy.aboveThreshold)
+end
+
+-----
+
+Glance.fieldsRects = {} -- TODO - clear this on map delete.
+function Glance:makeFieldsLine(dt, notifyList)
+
+    local balesWithinFields  = Glance.notifications["balesWithinFields"]
+    local balesOutsideFields = Glance.notifications["balesOutsideFields"]
+
+    if g_currentMission.itemsToSave ~= nil 
+    and (isNotifyLevel(balesWithinFields) or isNotifyLevel(balesOutsideFields))
+    then
+
+        local function getFieldRects(field)
+          local rects = {}
+          if field ~= nil and field.fieldDimensions ~= nil then
+            for i = 0, getNumOfChildren(field.fieldDimensions) - 1 do
+              local n1 = getChildAt(field.fieldDimensions, i)
+              local n2 = getChildAt(n1, 0)
+              local n3 = getChildAt(n1, 1)
+        
+              local c1 = { getWorldTranslation(n1) }
+              local c2 = { getWorldTranslation(n2) }
+              local c3 = { getWorldTranslation(n3) }
+        
+              local overlap = 10;
+              local x1 = math.min(c1[1],c2[1],c3[1]) - overlap;
+              local z1 = math.min(c1[3],c2[3],c3[3]) - overlap;
+              local x2 = math.max(c1[1],c2[1],c3[1]) + overlap;
+              local z2 = math.max(c1[3],c2[3],c3[3]) + overlap;
+        
+              table.insert(rects, {x1=x1,z1=z1,x2=x2,z2=z2})
+            end;
+          end;
+          return rects;
+        end
+        
+        local constNumFields = table.getn(g_currentMission.fieldDefinitionBase.fieldDefs)
+        local fieldsBales = {}
+        local lastFieldDefIdx = 1; -- Its likely that "the next bale" is within "the same field" that was just found previously.
+
+        -- Find all bales...
+        for _,item in pairs(g_currentMission.itemsToSave) do
+            if item.className == "Bale" then -- TO DO - there must be a faster way than string-compare.
+                local maxIter = constNumFields
+                -- Get position of bale in the world
+                local wx,_,wz = getWorldTranslation(item.item.nodeId);
+                if wx~=wx or wz~=wz then
+                    -- Something is very wrong with the coordinates
+                else
+                    -- Find field the bale is within
+                    lastFieldDefIdx = lastFieldDefIdx - 1
+                    while (maxIter > 0) do
+                        lastFieldDefIdx = (lastFieldDefIdx % constNumFields) + 1
+                        maxIter = maxIter - 1
+                        
+                        if Glance.fieldsRects[lastFieldDefIdx] == nil then
+                            -- TODO - do this somewhere else... like in a postLoad() function
+                            Glance.fieldsRects[lastFieldDefIdx] = getFieldRects(g_currentMission.fieldDefinitionBase.fieldDefs[lastFieldDefIdx])
+                        end
+
+                        for _,rect in pairs(Glance.fieldsRects[lastFieldDefIdx]) do
+                            if  rect.x1 <= wx and wx <= rect.x2
+                            and rect.z1 <= wz and wz <= rect.z2 then
+                                -- Found field, increase its number of bales
+                                fieldsBales[lastFieldDefIdx] = 1 + Utils.getNoNil(fieldsBales[lastFieldDefIdx],0)
+                                maxIter = -1 -- Magic number!
+                                break
+                            end
+                        end
+                    end
+                end
+                -- If not the magic number
+                if maxIter ~= -1 then
+                    -- Bale not within a known field
+                    fieldsBales["0"] = 1 + Utils.getNoNil(fieldsBales["0"],0)
+                end
+            end
+        end
+        
+        --
+        local txt   =nil
+        --local prefix=""
+        --local color = nil;
+        if isNotifyLevel(balesWithinFields) then
+            for fieldNum=1,constNumFields do
+                if isBreakingThresholds(balesWithinFields, fieldsBales[fieldNum]) then
+                    --txt = Utils.getNoNil(txt,"") .. prefix .. ("F%d(x%d)"):format(fieldNum,fieldsBales[fieldNum]);
+                    --prefix=" "
+                    txt = Utils.getNoNil(txt,"") .. (g_i18n:getText("fieldNumAndBales")):format(fieldNum,fieldsBales[fieldNum]);
+                    --color = Utils.getNoNil(color, balesWithinFields.color);
+                end
+            end
+        end
+        if txt ~= nil then
+            table.insert(notifyList, { Glance.colors[balesWithinFields.color], g_i18n:getText("fieldsWithBales") .. txt });
+        end
+        --
+        if isNotifyLevel(balesOutsideFields) and isBreakingThresholds(balesOutsideFields, fieldsBales["0"]) then
+            --txt = ("Elsewhere bales(x%d)"):format(fieldsBales["0"]);
+            txt = (g_i18n:getText("balesElsewhere")):format(fieldsBales["0"]);
+            table.insert(notifyList, { Glance.colors[balesOutsideFields.color], txt });
+        end
+    end
 end
 
 -----
@@ -2238,25 +2355,27 @@ function Glance:draw()
     end
 --]]
 
-    if self.lineAnimalsPlaceables then
-        local delimWidth = getTextWidth(Glance.cFontSize, Glance.nonVehiclesSeparator);
-        xPos = 0.0;
-        for c=1,table.getn(self.lineAnimalsPlaceables) do
-            if c > 1 then
-                setTextAlignment(RenderText.ALIGN_CENTER);
-                Glance.renderTextShaded(xPos + (delimWidth / 2),yPos,Glance.cFontSize,Glance.nonVehiclesSeparator,Glance.cFontShadowOffs, Glance.colors[Glance.lineColorDefault], Glance.colors[Glance.cFontShadowColor]);
-                xPos = xPos + delimWidth;
-            end
-
-            local elem = self.lineAnimalsPlaceables[c];
-            if elem then
-                setTextAlignment(RenderText.ALIGN_LEFT);
-                Glance.renderTextShaded(xPos,yPos,Glance.cFontSize,elem[2],Glance.cFontShadowOffs,elem[1], Glance.colors[Glance.cFontShadowColor]);
-                xPos = xPos + getTextWidth(Glance.cFontSize, elem[2])
-            end
-        end;
-        yPos = yPos - Glance.cLineSpacing;
-    end;
+    if self.linesNonVehicles then
+        for _,lineNonVehicles in ipairs(self.linesNonVehicles) do
+            local delimWidth = getTextWidth(Glance.cFontSize, Glance.nonVehiclesSeparator);
+            xPos = 0.0;
+            for c=1,table.getn(lineNonVehicles) do
+                if c > 1 then
+                    setTextAlignment(RenderText.ALIGN_CENTER);
+                    Glance.renderTextShaded(xPos + (delimWidth / 2),yPos,Glance.cFontSize,Glance.nonVehiclesSeparator,Glance.cFontShadowOffs, Glance.colors[Glance.lineColorDefault], Glance.colors[Glance.cFontShadowColor]);
+                    xPos = xPos + delimWidth;
+                end
+    
+                local elem = lineNonVehicles[c];
+                if elem then
+                    setTextAlignment(RenderText.ALIGN_LEFT);
+                    Glance.renderTextShaded(xPos,yPos,Glance.cFontSize,elem[2],Glance.cFontShadowOffs,elem[1], Glance.colors[Glance.cFontShadowColor]);
+                    xPos = xPos + getTextWidth(Glance.cFontSize, elem[2])
+                end
+            end;
+            yPos = yPos - Glance.cLineSpacing;
+        end
+    end
 
     if self.linesVehicles then
         for i=2,table.getn(self.linesVehicles) do -- First element of linesVehicles contain column-widths and other stuff.
