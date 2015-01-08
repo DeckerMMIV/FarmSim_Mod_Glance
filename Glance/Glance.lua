@@ -141,7 +141,7 @@ local function log(...)
         for idx = 1,select("#", ...) do
             txt = txt .. tostring(select(idx, ...))
         end
-        print(string.format("%7ums ", (g_currentMission ~= nil and g_currentMission.time or 0)) .. txt);
+        print(string.format("%7ums [Glance] ", (g_currentMission ~= nil and g_currentMission.time or 0)) .. txt);
     end
 end;
 
@@ -183,11 +183,10 @@ function Glance:loadMap(name)
       g_inGameMenu.update = Utils.appendedFunction(g_inGameMenu.update, Glance_InGameMenu_Update)
     end
     Glance.initialized = 1
-    
-    --print(("g_server=%s"):format(tostring(g_server)))
-    --print(("g_client=%s"):format(tostring(g_client)))
-    --print(("g_dedicatedServerInfo=%s"):format(tostring(g_dedicatedServerInfo)))
 
+    log("g_dedicatedServerInfo=",g_dedicatedServerInfo,", g_server=",g_server,", g_client=",g_client,", g_currentMission:getIsServer()=",g_currentMission:getIsServer(),", g_currentMission:getIsClient()=",g_currentMission:getIsClient())
+
+    --
     Glance.fieldsRects = nil
 
     --
@@ -204,9 +203,9 @@ function Glance:loadMap(name)
     --
     if g_currentMission:getIsClient() then
         self.cWorldCorners3x3 = {
-        { g_i18n:getText("northwest") ,g_i18n:getText("north")    ,g_i18n:getText("northeast") }
-        ,{ g_i18n:getText("west")      ,g_i18n:getText("center")   ,g_i18n:getText("east")      }
-        ,{ g_i18n:getText("southwest") ,g_i18n:getText("south")    ,g_i18n:getText("southeast") }
+            { g_i18n:getText("northwest") ,g_i18n:getText("north")  ,g_i18n:getText("northeast") },
+            { g_i18n:getText("west")      ,g_i18n:getText("center") ,g_i18n:getText("east")      },
+            { g_i18n:getText("southwest") ,g_i18n:getText("south")  ,g_i18n:getText("southeast") }
         };
         -- If some fruit-name could not be found, try using the map-mod's own g_i18n:getText() function
         if g_currentMission.missionInfo and g_currentMission.missionInfo.map and g_currentMission.missionInfo.map.customEnvironment then
@@ -220,7 +219,7 @@ function Glance:loadMap(name)
     --
     self:loadConfig()
     --
-    Glance.discoverLocationOfSchweineDaten()    
+    Glance.discoverLocationOfSchweineDaten()
 end;
 
 function Glance:deleteMap()
@@ -286,6 +285,8 @@ function Glance:update(dt)
     Glance.makeUpdateEventFor = {}
     --
     if Glance.fieldsRects == nil then
+        log("g_dedicatedServerInfo=",g_dedicatedServerInfo,", g_server=",g_server,", g_client=",g_client,", g_currentMission:getIsServer()=",g_currentMission:getIsServer(),", g_currentMission:getIsClient()=",g_currentMission:getIsClient())
+    
         Glance.fieldsRects = {}
         Glance.buildFieldsRects()
     end
@@ -300,7 +301,7 @@ function Glance:update(dt)
 --]]
         --
         self.linesNonVehicles = {};
-        
+
         local lineNonVehicles = {}
         Glance.makeHusbandriesLine(self, Glance.sumTime, lineNonVehicles);
         Glance.makePlaceablesLine(self, Glance.sumTime, lineNonVehicles);
@@ -316,10 +317,14 @@ function Glance:update(dt)
         --
         Glance.makeVehiclesLines(self, Glance.sumTime);
     else
-        -- TODO - Gather notifications that are only available server-side, and when its a dedicated-server.
+        -- Gather notifications that are only available server-side, and when its a dedicated-server.
+        local lineNonVehicles = {}
+        Glance.makeFieldsLine(self, Glance.sumTime, lineNonVehicles);
     end
     --
-    if g_currentMission:getIsServer() and next(Glance.makeUpdateEventFor) then
+    if next(Glance.makeUpdateEventFor)
+    and (g_dedicatedServerInfo ~= nil or g_server ~= nil)
+    then
         -- Only server sends to clients
         GlanceEvent.sendEvent();
     end
@@ -355,7 +360,7 @@ function Glance:getDefaultConfig()
     local function dnl(offset) -- default notification level
         return Utils.clamp(4 + Utils.getNoNil(offset, 0), 0, 99)
     end
-    
+
     local rawLines = {
  '<?xml version="1.0" encoding="utf-8" standalone="no" ?>'
 ,'<glanceConfig version="'..tostring(Glance.cCfgVersion)..'">'
@@ -421,7 +426,7 @@ function Glance:getDefaultConfig()
 ,'        <notification  enabled="true"  type="sprayerLow"                level="'..dnl( 0)..'"   whenBelowThreshold="3"   color="red"    /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="true"  type="seederLow"                 level="'..dnl( 0)..'"   whenBelowThreshold="3"   color="red"    /> <!-- threshold unit is "percentage" -->'
 ,''
-,'        <!-- Fields specific -->'           
+,'        <!-- Fields specific -->'
 ,'        <notification  enabled="true"  type="balesWithinFields"             level="'..dnl(-1)..'"   whenAboveThreshold="0"  color="yellow" /> <!-- threshold unit is "units" -->'
 ,'        <notification  enabled="false" type="balesOutsideFields"            level="'..dnl(-2)..'"   whenAboveThreshold="0"  color="yellow" /> <!-- threshold unit is "units" -->'
 ,''
@@ -697,16 +702,26 @@ end
 -----
 
 function Glance:setProperty(obj, propKey, propValue, noEventSend)
+  if obj == nil or obj == Glance then
+    obj = Glance;
+    netId = 0;
+  else
+    netId = networkGetObjectId(obj);
+  end
+
   if obj.modGlance == nil then
     obj.modGlance = {}
   end
   if obj.modGlance[propKey] ~= propValue and noEventSend ~= true then
-    self.makeUpdateEventFor[networkGetObjectId(obj)] = obj;
+    self.makeUpdateEventFor[netId] = obj;
   end
   obj.modGlance[propKey] = propValue;
 end
 
 function Glance:getProperty(obj, propKey)
+  if obj == nil then
+    obj = Glance
+  end
   if obj.modGlance ~= nil then
     return obj.modGlance[propKey];
   end
@@ -733,12 +748,12 @@ end
 
 local function isNotifyLevel(ntfy)
     return (ntfy ~= nil and ntfy.enabled == true and ntfy.level >= Glance.minNotifyLevel)
-end    
+end
 
 local function isBreakingThresholds(ntfy, value, oldValue)
     local isBroken = false
     local newValue = oldValue
-    
+
     if (ntfy ~= nil and value ~= nil) then
         if (ntfy.belowThreshold == nil and ntfy.aboveThreshold ~= nil) then
             -- Only test above
@@ -772,7 +787,7 @@ local function isBreakingThresholds(ntfy, value, oldValue)
             end
         end
     end
-    
+
     return isBroken, newValue
 end
 
@@ -802,25 +817,25 @@ function Glance.buildFieldsRects()
           local n1 = getChildAt(field.fieldDimensions, i)
           local n2 = getChildAt(n1, 0)
           local n3 = getChildAt(n1, 1)
-    
+
           local c1 = { getWorldTranslation(n1) }
           local c2 = { getWorldTranslation(n2) }
           local c3 = { getWorldTranslation(n3) }
-    
+
           local overlap = 10;
           local x1 = math.min(c1[1],c2[1],c3[1]) - overlap;
           local z1 = math.min(c1[3],c2[3],c3[3]) - overlap;
           local x2 = math.max(c1[1],c2[1],c3[1]) + overlap;
           local z2 = math.max(c1[3],c2[3],c3[3]) + overlap;
-    
+
           table.insert(rects, {x1=x1,z1=z1,x2=x2,z2=z2})
         end;
       end;
       return rects;
     end
 
-    if  g_currentMission.fieldDefinitionBase ~= nil 
-    and g_currentMission.fieldDefinitionBase.fieldDefs ~= nil 
+    if  g_currentMission.fieldDefinitionBase ~= nil
+    and g_currentMission.fieldDefinitionBase.fieldDefs ~= nil
     then
         for fieldNum,fieldDef in ipairs(g_currentMission.fieldDefinitionBase.fieldDefs) do
             Glance.fieldsRects[fieldNum] = getFieldRects(fieldDef)
@@ -831,17 +846,37 @@ end
 -----
 
 function Glance:makeFieldsLine(dt, notifyList)
+    local fieldsBales = {}
+    local constNumFields = 0
+
+    if  g_currentMission.fieldDefinitionBase ~= nil
+    and g_currentMission.fieldDefinitionBase.fieldDefs ~= nil
+    then
+        constNumFields = table.getn(g_currentMission.fieldDefinitionBase.fieldDefs)
+    end
 
     local balesWithinFields  = Glance.notifications["balesWithinFields"]
     local balesOutsideFields = Glance.notifications["balesOutsideFields"]
 
-    if g_currentMission.itemsToSave ~= nil 
-    and (isNotifyLevel(balesWithinFields) or isNotifyLevel(balesOutsideFields))
+    --
+    if g_currentMission.itemsToSave ~= nil
+    and (g_dedicatedServerInfo ~= nil or g_server ~= nil)
     then
-        local constNumFields = table.getn(g_currentMission.fieldDefinitionBase.fieldDefs)
-        local fieldsBales = {}
-        local lastFieldDefIdx = 1; -- Its likely that "the next bale" is within "the same field" that was just found previously.
+        local numUsers = table.getn(g_currentMission.users)
+        -- If listen-server and only 1 player (i.e. singleplayer)
+        if  g_dedicatedServerInfo == nil
+        and numUsers <= 1
+        then
+            if  false == isNotifyLevel(balesWithinFields)
+            and false == isNotifyLevel(balesOutsideFields)
+            then
+                -- The singleplayer does currently not want these notifications.
+                return
+            end
+        end
 
+        -- Server.
+        local lastFieldDefIdx = 1; -- Its likely that "the next bale" is within "the same field" that was just found previously.
         -- Find all bales...
         for _,item in pairs(g_currentMission.itemsToSave) do
             if item.className == "Bale" then -- TO DO - there must be a faster way than string-compare.
@@ -870,12 +905,44 @@ function Glance:makeFieldsLine(dt, notifyList)
                 -- If not the magic number
                 if maxIter ~= -1 then
                     -- Bale not within a known field
-                    fieldsBales["0"] = 1 + Utils.getNoNil(fieldsBales["0"],0)
+                    fieldsBales[0] = 1 + Utils.getNoNil(fieldsBales[0],0)
                 end
             end
         end
-        
-        --
+
+        -- Build string so it can be send to clients.
+        if g_dedicatedServerInfo ~= nil or numUsers > 1 then
+            local value = nil
+            local delim = ""
+            for fieldNum=0,constNumFields do
+                if fieldsBales[fieldNum] ~= nil and fieldsBales[fieldNum] > 0 then
+                    value = Utils.getNoNil(value,"") .. delim .. ("%d:%d"):format(fieldNum,fieldsBales[fieldNum])
+                    delim = ","
+                end
+            end
+
+            log("setProperty 'fieldsBales': ",value)
+            Glance.setProperty(nil, "fieldsBales", value)
+        end
+    else
+        -- Client(s).
+        local value = Glance.getProperty(nil, "fieldsBales")
+        log("getProperty 'fieldsBales': ",value)
+        if value ~= nil then
+            -- Parse the string received from server.
+            value = Utils.splitString(",", value)
+            for _,fieldBales in pairs(value) do
+                local fieldNum,balesCount = Utils.splitString(":", fieldBales)
+                fieldNum,balesCount = tonumber(fieldNum),tonumber(balesCount)
+                if fieldNum ~= nil and balesCount ~= nil then
+                    fieldsBales[fieldNum] = balesCount
+                end
+            end
+        end
+    end
+
+    --
+    if g_currentMission:getIsClient() then
         if isNotifyLevel(balesWithinFields) then
             local txt = nil
             for fieldNum=1,constNumFields do
@@ -887,9 +954,9 @@ function Glance:makeFieldsLine(dt, notifyList)
                 table.insert(notifyList, { Glance.colors[balesWithinFields.color], g_i18n:getText("fieldsWithBales") .. txt });
             end
         end
-        --
-        if isNotifyLevel(balesOutsideFields) and isBreakingThresholds(balesOutsideFields, fieldsBales["0"]) then
-            table.insert(notifyList, { Glance.colors[balesOutsideFields.color], (g_i18n:getText("balesElsewhere")):format(fieldsBales["0"]) });
+
+        if isNotifyLevel(balesOutsideFields) and isBreakingThresholds(balesOutsideFields, fieldsBales[0]) then
+            table.insert(notifyList, { Glance.colors[balesOutsideFields.color], (g_i18n:getText("balesElsewhere")):format(fieldsBales[0]) });
         end
     end
 end
@@ -961,7 +1028,7 @@ function Glance:makePlaceablesLine(dt, notifyList)
                     local fillLevels = {}
                     fillLevels[Fillable.FILLTYPE_WATER]  = 100 * plc.waterTankFillLevel / plc.waterTankCapacity;
                     fillLevels[Fillable.FILLTYPE_MANURE] = 100 * plc.manureFillLevel    / plc.manureCapacity;
-                    
+
                     if isNotifyEnabled(ntfyGreenhouse[Fillable.FILLTYPE_UNKNOWN]) then
                         if isNotifyLevel(ntfyGreenhouse[Fillable.FILLTYPE_UNKNOWN]) then
                             local minPct = math.min(fillLevels[Fillable.FILLTYPE_WATER], fillLevels[Fillable.FILLTYPE_MANURE])
@@ -997,7 +1064,7 @@ function Glance:makePlaceablesLine(dt, notifyList)
                 --
                 funcTestPlaceable = function(plc)
                     -- Make sure the variables we expect, are actually there.
-                    if not (    plc.SetLamp ~= nil and plc.MixLvl ~= nil and plc.LvLIndicator ~= nil and hasNumberValue(plc.LvLIndicator.capacity,0) 
+                    if not (    plc.SetLamp ~= nil and plc.MixLvl ~= nil and plc.LvLIndicator ~= nil and hasNumberValue(plc.LvLIndicator.capacity,0)
                             and plc.MixTypLvl ~= nil and plc.MixTypName ~= nil and plc.TipTriggers ~= nil )
                     then
                         return
@@ -1014,7 +1081,7 @@ function Glance:makePlaceablesLine(dt, notifyList)
                             minPct = math.min(minPct,pct)
                         end
                     end
-                    
+
                     if isNotifyEnabled(ntfyMischStation[Fillable.FILLTYPE_UNKNOWN]) then
                         if isNotifyLevel(ntfyMischStation[Fillable.FILLTYPE_UNKNOWN]) and isOutsideThresholds(ntfyMischStation[Fillable.FILLTYPE_UNKNOWN], minPct) then
                             updateNotification(placeableType, 1, Fillable.FILLTYPE_UNKNOWN, minPct, nil, ntfyMischStation[Fillable.FILLTYPE_UNKNOWN].color)
@@ -1033,7 +1100,7 @@ function Glance:makePlaceablesLine(dt, notifyList)
                             updateNotification(placeableType, itemCount)
                         end
                     end
-                    
+
                 end
             else
                 -- TODO - Add other useful placeables???
@@ -1047,7 +1114,7 @@ function Glance:makePlaceablesLine(dt, notifyList)
             end
         end
 
-       
+
         --
         for typ,elem in pairs(foundNotifications) do
             if g_i18n:hasText("TypeDesc_"..typ) then
@@ -1104,16 +1171,16 @@ function Glance:makeComplexBga(dt, notifyList)
     // complexBGA
     Bga.complexBGA_data ~= nil
     Bga.complexBgaDebug ~= nil
-    
+
     g_currentMission.onCreateLoadedObjectsToSave[<int>]
       // default BGA
         .silageCatcherId ~= nil
       // complexBGA
         .bunkerFillLevel <float>    (do /1000 to get m2)
         .printPower      <float>    (power production)
-    
+
 --]]
-    
+
 end
 
 -----
@@ -1283,7 +1350,7 @@ end
 
 function Glance:makeHusbandriesLine(dt, notifyList)
     if g_currentMission.husbandries ~= nil then
-    
+
         --
         local function getNotification(animalType,subElement)
             for _,key in pairs({"husbandry:"..animalType..":"..subElement, "husbandry:"..subElement}) do
@@ -1293,7 +1360,7 @@ function Glance:makeHusbandriesLine(dt, notifyList)
             end
             return nil
         end
-        
+
         --
         local function getFillName(ntfy, i18nName, fillType)
             if ntfy.text ~= nil then
@@ -1334,30 +1401,30 @@ function Glance:makeHusbandriesLine(dt, notifyList)
                 infos[propertyName].value = newValue
             end
         end
-        
+
         local function getInfoValue(propertyName)
             if infos[propertyName] == nil then
                 return nil
             end
             return infos[propertyName].value
         end
-        
+
         -- Support for SchweineZucht.LUA
         local customFillTypes = {}
         local grainFruitsType = nil
         local earthFruitsType = nil
         local siloFruitsType  = nil
-        if Glance.mod_SchweineZucht ~= nil then 
+        if Glance.mod_SchweineZucht ~= nil then
             -- Because SchweineZucht have no accessible tables to determine what fill-type/-name is what,
             -- it has to be hardcoded here, and I assume that its FutterIntName table won't be altered.
             grainFruitsType = Fillable.NUM_FILLTYPES + 1
             earthFruitsType = Fillable.NUM_FILLTYPES + 2
             siloFruitsType  = Fillable.NUM_FILLTYPES + 3
-            customFillTypes[grainFruitsType] = "grain_fruits" 
-            customFillTypes[earthFruitsType] = "earth_fruits" 
-            customFillTypes[siloFruitsType ] = "Silo_fruits" 
+            customFillTypes[grainFruitsType] = "grain_fruits"
+            customFillTypes[earthFruitsType] = "earth_fruits"
+            customFillTypes[siloFruitsType ] = "Silo_fruits"
         end
-        
+
         --
         for animalType,mainHusbandry in pairs(g_currentMission.husbandries) do
             local husbandries = { mainHusbandry } -- Due to support for multiple husbandries, because of SchweineZucht.LUA
@@ -1384,7 +1451,7 @@ function Glance:makeHusbandriesLine(dt, notifyList)
                     ntfyStorage[fillType] = ntfy
                 end
             end
-            
+
             -- Support for SchweineZucht.LUA
             if Glance.mod_SchweineZucht ~= nil then
                 if Glance.mod_SchweineZucht.g_SchweineDaten ~= nil and Glance.mod_SchweineZucht.g_SchweineDaten[animalType] ~= nil then
@@ -1394,7 +1461,7 @@ function Glance:makeHusbandriesLine(dt, notifyList)
 
             -- Due to support for one animalType with multiple husbandries, because of SchweineZucht.LUA
             for _,husbandry in pairs(husbandries) do
-            
+
                 -- Productivity
                 if isNotifyLevel(ntfyProductivity) then
                     local productivity = Utils.getNoNil(husbandry.productivity, husbandry.Produktivi)   -- Support for SchweineZucht.LUA
@@ -1408,9 +1475,9 @@ function Glance:makeHusbandriesLine(dt, notifyList)
                         end
                     end
                 end;
-                
+
                 -- Pallet (Wool)
-                if husbandry.currentPallet ~= nil and husbandry.currentPallet.getFillLevel ~= nil 
+                if husbandry.currentPallet ~= nil and husbandry.currentPallet.getFillLevel ~= nil
                 and husbandry.currentPallet.getCapacity ~= nil and hasNumberValue(husbandry.currentPallet:getCapacity(),0)
                 and isNotifyLevel(ntfyPallet)
                 then
@@ -1422,10 +1489,10 @@ function Glance:makeHusbandriesLine(dt, notifyList)
                         updateInfoValue(fillName, 1, pct, "%");
                     end
                 end
-                
+
                 -- PickupObjects (Eggs)
-                if husbandry.pickupObjectsToActivate ~= nil and husbandry.numActivePickupObjects ~= nil 
-                and isNotifyLevel(ntfyPickupObjects) 
+                if husbandry.pickupObjectsToActivate ~= nil and husbandry.numActivePickupObjects ~= nil
+                and isNotifyLevel(ntfyPickupObjects)
                 then
                     local capacity = table.getn(husbandry.pickupObjectsToActivate) + husbandry.numActivePickupObjects;
                     local pct = math.floor((husbandry.numActivePickupObjects * 100) / capacity);
@@ -1436,15 +1503,15 @@ function Glance:makeHusbandriesLine(dt, notifyList)
                         updateInfoValue(fillName, 1, pct, "%");
                     end;
                 end;
-                
+
                 -- Fill-Levels
                 for fillType,ntfy in pairs(ntfyStorage) do
-                    if isNotifyLevel(ntfy) then 
+                    if isNotifyLevel(ntfy) then
                         if fillType == Fillable.FILLTYPE_MANURE then
                             if husbandry.manureHeap ~= nil then
                                 local fillLevel = Utils.getNoNil(husbandry.manureHeap.fillLevel, husbandry.manureHeap.FillLvl)  -- Support for SchweineZucht.LUA
-                                if  hasNumberValue(fillLevel) 
-                                and hasNumberValue(husbandry.manureHeap.capacity,0) 
+                                if  hasNumberValue(fillLevel)
+                                and hasNumberValue(husbandry.manureHeap.capacity,0)
                                 then
                                     local pct = math.floor(100 * fillLevel / husbandry.manureHeap.capacity)
                                     local fillName = getFillName(ntfy, nil, fillType)
@@ -1457,9 +1524,9 @@ function Glance:makeHusbandriesLine(dt, notifyList)
                             end
                         elseif fillType == Fillable.FILLTYPE_LIQUIDMANURE then
                             local liquidManure = Utils.getNoNil(husbandry.liquidManureTrigger, husbandry.liquidManureSiloTrigger)  -- Support for SchweineZucht.LUA
-                            if liquidManure ~= nil 
-                            and hasNumberValue(liquidManure.fillLevel) 
-                            and hasNumberValue(liquidManure.capacity,0) 
+                            if liquidManure ~= nil
+                            and hasNumberValue(liquidManure.fillLevel)
+                            and hasNumberValue(liquidManure.capacity,0)
                             then
                                 local pct = math.floor(100 * liquidManure.fillLevel / liquidManure.capacity)
                                 local fillName = getFillName(ntfy, nil, fillType)
@@ -2354,7 +2421,7 @@ function Glance:draw()
                     Glance.renderTextShaded(xPos + (delimWidth / 2),yPos,Glance.cFontSize,Glance.nonVehiclesSeparator,Glance.cFontShadowOffs, Glance.colors[Glance.lineColorDefault], Glance.colors[Glance.cFontShadowColor]);
                     xPos = xPos + delimWidth;
                 end
-    
+
                 local elem = lineNonVehicles[c];
                 if elem then
                     setTextAlignment(RenderText.ALIGN_LEFT);
@@ -2422,7 +2489,7 @@ function GlanceEvent:writeStream(streamId, connection)
     --log(tostring(numElems))
     streamWriteUInt8(streamId, numElems);
     --
-    for _,obj in pairs(Glance.makeUpdateEventFor) do
+    for netId,obj in pairs(Glance.makeUpdateEventFor) do
         -- Safety for how many elements are written to the stream
         numElems = numElems - 1
         if numElems < 0 then
@@ -2434,8 +2501,8 @@ function GlanceEvent:writeStream(streamId, connection)
             props = props .. tostring(k).."="..tostring(v) ..";";
         end
         --
-        --log(tostring(networkGetObjectId(obj)).." "..tostring(props))
-        streamWriteInt32(streamId, networkGetObjectId(obj))
+        log("Event-Write: ",netId," ",props)
+        streamWriteInt32(streamId, netId)
         streamWriteString(streamId, props)
     end
 end;
@@ -2446,9 +2513,14 @@ function GlanceEvent:readStream(streamId, connection)
     --log(tostring(numElems))
     --
     for i=1,numElems do
-        local obj = networkGetObject(streamReadInt32(streamId))
-        local props =                streamReadString(streamId)
-        --log(tostring(obj).." "..tostring(props))
+        local netId = streamReadInt32(streamId)
+        local props = streamReadString(streamId)
+        log("Event-Read: ",netId," ",props)
+        --
+        local obj = Glance
+        if netId ~= 0 then
+            obj = networkGetObject(netId)
+        end
         --
         if obj ~= nil then
             obj.modGlance = {}
