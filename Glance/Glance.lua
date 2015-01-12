@@ -422,8 +422,8 @@ function Glance:getDefaultConfig()
 ,'        <notification  enabled="true"  type="forageWagonFull"           level="'..dnl( 0)..'"   whenBelow=""  whenAbove="99"  color="yellow" /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="true"  type="baleLoaderFull"            level="'..dnl( 1)..'"   whenBelow=""  whenAbove="99"  color="yellow" /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="true"  type="trailerFull"               level="'..dnl(-1)..'"   whenBelow=""  whenAbove=""             > <!-- threshold unit is "percentage" -->'
-,'              <threshold level="'..dnl( 2)..'" whenBelow="" whenAbove="99.99" color="yellow" />'
-,'              <threshold level="'..dnl( 0)..'" whenBelow="" whenAbove="80"    color="yellow" />'
+,'              <threshold level="'..dnl( 0)..'" whenBelow="" whenAbove="99.99" color="orange" />'
+,'              <threshold level="'..dnl(-1)..'" whenBelow="" whenAbove="80"    color="yellow" />'
 ,'        </notification>'
 ,'        <notification  enabled="true"  type="sprayerLow"                level="'..dnl( 0)..'"   whenBelow=""  whenAbove=""  color="gray" > <!-- threshold unit is "percentage" -->'
 ,'              <!-- threshold level="'..dnl(-1)..'" whenBelow="5" whenAbove="0"   color="yellow" /-->'
@@ -662,12 +662,12 @@ function Glance:loadConfig()
         local notifyType = getXMLString(xmlFile, tag.."#type")
         Glance.notifications[notifyType] = {
              enabled        = Utils.getNoNil(getXMLBool(   xmlFile, tag.."#enabled"), false)
-            ,color          =                getColorName( xmlFile, tag.."#color", nil)
             ,notifyType     =                getXMLString( xmlFile, tag.."#type")
             ,level          = Utils.getNoNil(getXMLInt(    xmlFile, tag.."#level"), 0)
-            ,aboveThreshold =                getXMLFloat(  xmlFile, tag.."#whenAbove")
-            ,belowThreshold =                getXMLFloat(  xmlFile, tag.."#whenBelow")
+            ,aboveThreshold = Utils.getNoNil(getXMLFloat(  xmlFile, tag.."#whenAbove"), getXMLFloat(xmlFile, tag.."#whenAboveThreshold")) -- Still support old-config attributes.
+            ,belowThreshold = Utils.getNoNil(getXMLFloat(  xmlFile, tag.."#whenBelow"), getXMLFloat(xmlFile, tag.."#whenBelowThreshold")) -- Still support old-config attributes.
             ,text           =                getXMLString( xmlFile, tag.."#text")
+            ,color          =                getColorName( xmlFile, tag.."#color", nil)
         }
         --
         Glance.notifications[notifyType].thresholds = {}
@@ -756,6 +756,16 @@ function Glance:getProperty(obj, propKey)
 end
 
 -----
+
+local function getNotificationColor(colorName, alternativeColorName)
+    if colorName ~= nil and Glance.colors[colorName] ~= nil then
+        return Glance.colors[colorName]
+    end
+    if alternativeColorName ~= nil and Glance.colors[alternativeColorName] ~= nil then
+        return Glance.colors[alternativeColorName]
+    end
+    return Glance.colors[Glance.lineColorDefault]
+end
 
 local function hasNumberValue(obj, greaterThan)
     if obj ~= nil and type(obj)==type(9) then
@@ -917,12 +927,12 @@ function Glance:makeFieldsLine(dt, notifyList)
                 end
             end
             if txt ~= nil then
-                table.insert(notifyList, { Glance.colors[balesWithinFields.color], g_i18n:getText("fieldsWithBales") .. txt });
+                table.insert(notifyList, { getNotificationColor(balesWithinFields.color), g_i18n:getText("fieldsWithBales") .. txt });
             end
         end
         --
-        if isNotifyLevel(balesOutsideFields) and isBreakingThresholds(balesOutsideFields, fieldsBales["0"]) then
-            table.insert(notifyList, { Glance.colors[balesOutsideFields.color], (g_i18n:getText("balesElsewhere")):format(fieldsBales["0"]) });
+        if isBreakingThresholds(balesOutsideFields, fieldsBales["0"]) then
+            table.insert(notifyList, { getNotificationColor(balesOutsideFields.color), (g_i18n:getText("balesElsewhere")):format(fieldsBales["0"]) });
         end
     end
 end
@@ -949,7 +959,7 @@ function Glance:makePlaceablesLine(dt, notifyList)
         end
         --
         local foundNotifications = {}
-        local function updateNotification(placeableType, addItemCount, fillType, newLow, newHigh, newColor)
+        local function updateNotification(placeableType, addItemCount, fillType, newLow, newHigh, newColorName)
             if foundNotifications[placeableType] == nil then
                 foundNotifications[placeableType] = {}
                 foundNotifications[placeableType].fillLevels = {}
@@ -962,14 +972,14 @@ function Glance:makePlaceablesLine(dt, notifyList)
                 local pct = foundNotifications[placeableType].fillLevels[fillType]
                 if newLow ~= nil and (pct == nil or pct > newLow) then
                     foundNotifications[placeableType].fillLevels[fillType] = newLow
-                    if newColor ~= nil then
-                        foundNotifications[placeableType].color = newColor
+                    if newColorName ~= nil then
+                        foundNotifications[placeableType].color = newColorName
                     end
                 end
                 if newHigh ~= nil and (pct == nil or pct < newHigh) then
                     foundNotifications[placeableType].fillLevels[fillType] = newHigh
-                    if newColor ~= nil then
-                        foundNotifications[placeableType].color = newColor
+                    if newColorName ~= nil then
+                        foundNotifications[placeableType].color = newColorName
                     end
                 end
             end
@@ -1108,7 +1118,7 @@ function Glance:makePlaceablesLine(dt, notifyList)
                     end
                 end
             end
-            table.insert(notifyList, { Glance.colors[elem.color], txt });
+            table.insert(notifyList, { getNotificationColor(elem.color), txt });
         end
     end
 
@@ -1126,7 +1136,7 @@ function Glance:makePlaceablesLine(dt, notifyList)
             if countOfTreesReady > ntfyForestModTrees.aboveThreshold then
                 local typ = "Trees to fell";
                 local txt = string.format("%s:%.0f", typ, countOfTreesReady)
-                table.insert(notifyList, { Glance.colors[ntfyForestModTrees.color], txt});
+                table.insert(notifyList, { getNotificationColor(ntfyForestModTrees.color), txt});
             end
         end
     end
@@ -1378,6 +1388,20 @@ function Glance:makeHusbandriesLine(dt, notifyList)
             return infos[propertyName].value
         end
         
+        local colorAndLevel = nil
+        local function updateColor(threshold)
+            if threshold ~= nil then
+                if colorAndLevel == nil then
+                    colorAndLevel = {}
+                    colorAndLevel.level = Utils.getNoNil(threshold.level, 0)
+                    colorAndLevel.color = Utils.getNoNil(threshold.color, Glance.lineColorDefault)
+                elseif threshold.level ~= nil and threshold.level > colorAndLevel.level then
+                    colorAndLevel.level = threshold.level
+                    colorAndLevel.color = Utils.getNoNil(threshold.color, colorAndLevel.color)
+                end
+            end
+        end
+        
         -- Support for SchweineZucht.LUA
         local customFillTypes = {}
         local grainFruitsType = nil
@@ -1398,7 +1422,9 @@ function Glance:makeHusbandriesLine(dt, notifyList)
         for animalType,mainHusbandry in pairs(g_currentMission.husbandries) do
             local husbandries = { mainHusbandry } -- Due to support for multiple husbandries, because of SchweineZucht.LUA
             infos = {}
-            local color = Glance.lineColorDefault;
+            colorAndLevel = nil
+            --local color = Glance.lineColorDefault;
+            updateColor( { level=0, color=Glance.lineColorDefault } )
             --
             local ntfyProductivity  = getNotification(animalType, "Productivity")
             local ntfyPallet        = getNotification(animalType, "Pallet")
@@ -1439,7 +1465,8 @@ function Glance:makeHusbandriesLine(dt, notifyList)
                         local fillName = getFillName(ntfyProductivity, "Productivity", nil)
                         local res = isBreakingThresholds(ntfyProductivity, pct, getInfoValue(fillName))
                         if res then
-                            color = Utils.getNoNil(res.threshold.color, color)
+                            --color = Utils.getNoNil(res.threshold.color, color)
+                            updateColor(res.threshold)
                             updateInfoValue(fillName, 1, res.value, "%")
                         end
                     end
@@ -1454,7 +1481,8 @@ function Glance:makeHusbandriesLine(dt, notifyList)
                     local fillName = getFillName(ntfyPallet, nil, husbandry.palletFillType)
                     local res = isBreakingThresholds(ntfyPallet, pct, getInfoValue(fillName))
                     if res then
-                        color = Utils.getNoNil(res.threshold.color, color)
+                        --color = Utils.getNoNil(res.threshold.color, color)
+                        updateColor(res.threshold)
                         updateInfoValue(fillName, 1, res.value, "%")
                     end
                 end
@@ -1468,7 +1496,8 @@ function Glance:makeHusbandriesLine(dt, notifyList)
                     local fillName = getFillName(ntfyPickupObjects, nil, husbandry.pickupObjectsFillType)
                     local res = isBreakingThresholds(ntfyPickupObjects, pct, getInfoValue(fillName))
                     if res then
-                        color = Utils.getNoNil(res.threshold.color, color)
+                        --color = Utils.getNoNil(res.threshold.color, color)
+                        updateColor(res.threshold)
                         updateInfoValue(fillName, 1, res.value, "%")
                     end
                 end;
@@ -1486,7 +1515,8 @@ function Glance:makeHusbandriesLine(dt, notifyList)
                                     local fillName = getFillName(ntfy, nil, fillType)
                                     local res = isBreakingThresholds(ntfy, pct, getInfoValue(fillName))
                                     if res then
-                                        color = Utils.getNoNil(res.threshold.color, color)
+                                        --color = Utils.getNoNil(res.threshold.color, color)
+                                        updateColor(res.threshold)
                                         updateInfoValue(fillName, 1, res.value, "%");
                                     end
                                 end
@@ -1501,7 +1531,8 @@ function Glance:makeHusbandriesLine(dt, notifyList)
                                 local fillName = getFillName(ntfy, nil, fillType)
                                 local res = isBreakingThresholds(ntfy, pct, getInfoValue(fillName))
                                 if res then
-                                    color = Utils.getNoNil(res.threshold.color, color)
+                                    --color = Utils.getNoNil(res.threshold.color, color)
+                                    updateColor(res.threshold)
                                     updateInfoValue(fillName, 1, res.value, "%");
                                 end
                             end
@@ -1526,7 +1557,8 @@ function Glance:makeHusbandriesLine(dt, notifyList)
                                 local fillName = getFillName(ntfy, customFillTypes[fillType], fillType)
                                 local res = isBreakingThresholds(ntfy, lvl, getInfoValue(fillName))
                                 if res then
-                                    color = Utils.getNoNil(res.threshold.color, color)
+                                    --color = Utils.getNoNil(res.threshold.color, color)
+                                    updateColor(res.threshold)
                                     updateInfoValue(fillName, 1, res.value, "");
                                 end
                             end
@@ -1535,7 +1567,8 @@ function Glance:makeHusbandriesLine(dt, notifyList)
                             local fillName = getFillName(ntfy, nil, fillType)
                             local res = isBreakingThresholds(ntfy, lvl, getInfoValue(fillName))
                             if res then
-                                color = Utils.getNoNil(res.threshold.color, color)
+                                --color = Utils.getNoNil(res.threshold.color, color)
+                                updateColor(res.threshold)
                                 updateInfoValue(fillName, 1, res.value, "");
                             end
                         end
@@ -1564,11 +1597,10 @@ function Glance:makeHusbandriesLine(dt, notifyList)
                 local txt = animalType;
                 local prefix=":"
                 for nfoName,nfo in pairs(infos) do
-                    --txt = txt .. prefix .. nfoName .. "@" .. nfo.value .. nfo.valueSuffix;
                     txt = txt .. (Glance.nonVehiclesFillLevelFormat):format(prefix, nfoName, ("%d%s"):format(nfo.value, nfo.valueSuffix))
                     prefix=","
                 end
-                table.insert(notifyList, { Glance.colors[color], txt});
+                table.insert(notifyList, { getNotificationColor(colorAndLevel.color), txt});
             end;
         end;
     end;
@@ -1591,7 +1623,7 @@ function Glance:makeVehiclesLines()
             ,minWidth   = getTextWidth(Glance.cFontSize, col.minWidthText)
             ,maxLetters = col.maxTextLen
             ,alignment  = Glance.alignTypes[col.align] or RenderText.ALIGN_LEFT
-            ,color      = Glance.colors[col.color] or {1,1,1,1}
+            ,color      = getNotificationColor(col.color)   --Glance.colors[col.color] or {1,1,1,1}
         };
         table.insert(columns, column)
     end
@@ -1649,7 +1681,7 @@ function Glance:makeVehiclesLines()
       for e=1,table.getn(self.linesVehicles[i][c]) do
         --
         if self.linesVehicles[1][c].maxLetters ~= nil and self.linesVehicles[i][c][e][2]:len() > self.linesVehicles[1][c].maxLetters then
-            self.linesVehicles[i][c][e][2] = self.linesVehicles[i][c][e][2]:sub(1, self.linesVehicles[1][c].maxLetters) .. "…"; -- 0x2026  -- "…"
+            self.linesVehicles[i][c][e][2] = self.linesVehicles[i][c][e][2]:sub(1, self.linesVehicles[1][c].maxLetters) .. ".."; --   "…"; -- 0x2026  -- "…"
         end
         --
         local txtWidth = getTextWidth(Glance.cFontSize, self.linesVehicles[i][c][e][2]);
@@ -1678,7 +1710,8 @@ end
 -----
 function Glance:getCellData_VehicleGroupsSwitcherNumber(dt, lineColor, colParms, cells, veh)
     if veh.modVeGS ~= nil and veh.modVeGS.group ~= 0 then
-        return { { Glance.colors[colParms.color or lineColor], tostring(veh.modVeGS.group % 10) } };
+        --return { { Glance.colors[colParms.color or lineColor], tostring(veh.modVeGS.group % 10) } };
+        return { { getNotificationColor(colParms.color, lineColor), tostring(veh.modVeGS.group % 10) } };
     end
 end
 function Glance:getCellData_VehicleController(dt, lineColor, colParms, cells, veh)
@@ -1696,7 +1729,8 @@ function Glance:getCellData_VehicleMovementSpeed(dt, lineColor, colParms, cells,
     return cells["MovementSpeed"]
 end
 function Glance:getCellData_ColumnDelim(dt, lineColor, colParms, cells, veh)
-    return { { Glance.colors[colParms.color or lineColor], Utils.getNoNil(colParms.text, Glance.cColumnDelimChar) } }
+    --return { { Glance.colors[colParms.color or lineColor], Utils.getNoNil(colParms.text, Glance.cColumnDelimChar) } }
+    return { { getNotificationColor(colParms.color, lineColor), Utils.getNoNil(colParms.text, Glance.cColumnDelimChar) } }
 end
 function Glance:getCellData_VehicleAtWorldPositionXZ(dt, lineColor, colParms, cells, veh)
   if veh.components and veh.components[1] and veh.components[1].node then
@@ -1717,7 +1751,8 @@ function Glance:getCellData_VehicleAtWorldPositionXZ(dt, lineColor, colParms, ce
       local pdaMap = Utils.getNoNil(g_currentMission.ingameMap, g_currentMission.missionPDA)
       wx = wx + pdaMap.worldCenterOffsetX;
       wz = wz + pdaMap.worldCenterOffsetZ;
-      return { { Glance.colors[lineColor], string.format("%dx%d", wx,wz) } }
+      --return { { Glance.colors[lineColor], string.format("%dx%d", wx,wz) } }
+      return { { getNotificationColor(lineColor), string.format("%dx%d", wx,wz) } }
   end
 end
 function Glance:getCellData_VehicleAtWorldCorner(dt, lineColor, colParms, cells, veh)
@@ -1741,7 +1776,8 @@ function Glance:getCellData_VehicleAtWorldCorner(dt, lineColor, colParms, cells,
       -- Determine world corner - 3x3 grid
       wx = 1 + Utils.clamp(math.floor(wx / (pdaMap.worldSizeX / 3 + 1)), 0, 2); -- We '+1' if at any point the worldSizeX would be zero.
       wz = 1 + Utils.clamp(math.floor(wz / (pdaMap.worldSizeZ / 3 + 1)), 0, 2); -- We '+1' if at any point the worldSizeX would be zero.
-      return { { Glance.colors[lineColor], self.cWorldCorners3x3[wz][wx] } }
+      --return { { Glance.colors[lineColor], self.cWorldCorners3x3[wz][wx] } }
+      return { { getNotificationColor(lineColor), self.cWorldCorners3x3[wz][wx] } }
   end
 end
 function Glance:getCellData_VehicleAtFieldNumber(dt, lineColor, colParms, cells, veh)
@@ -1769,14 +1805,16 @@ function Glance:getCellData_VehicleAtFieldNumber(dt, lineColor, colParms, cells,
           end
         end
         if closestField ~= nil then
-          return { { Glance.colors[lineColor], string.format(g_i18n:getText("closestfield"), closestField) } }
+          --return { { Glance.colors[lineColor], string.format(g_i18n:getText("closestfield"), closestField) } }
+          return { { getNotificationColor(lineColor), string.format(g_i18n:getText("closestfield"), closestField) } }
         end;
       end
   end
 end
 function Glance:getCellData_VehicleName(dt, lineColor, colParms, cells, veh)
     if veh.getVehicleName ~= nil then
-        return { { Glance.colors[lineColor], veh:getVehicleName() } }
+        --return { { Glance.colors[lineColor], veh:getVehicleName() } }
+        return { { getNotificationColor(lineColor), veh:getVehicleName() } }
     end
 end
 function Glance:getCellData_FuelLow(dt, lineColor, colParms, cells, veh)
@@ -1881,7 +1919,7 @@ function Glance:static_controllerAndMovement(dt, _, veh, implements, cells, noti
             if ntfy ~= nil and ntfy.enabled == true then
                 notifyLevel = math.max(notifyLevel, ntfy.level)
                 notifyLineColor = Glance.lineColorVehicleControlledByMe
-                table.insert(cells["VehicleController"], { Glance.colors[Glance.lineColorVehicleControlledByMe], veh.controllerName } );
+                table.insert(cells["VehicleController"], { getNotificationColor(Glance.lineColorVehicleControlledByMe), veh.controllerName } );
             end
             vehIsControlled = true
         else
@@ -1890,7 +1928,7 @@ function Glance:static_controllerAndMovement(dt, _, veh, implements, cells, noti
             if ntfy ~= nil and ntfy.enabled == true then
                 notifyLevel = math.max(notifyLevel, ntfy.level)
                 notifyLineColor = Glance.lineColorVehicleControlledByPlayer
-                table.insert(cells["VehicleController"], { Glance.colors[Glance.lineColorVehicleControlledByPlayer], veh.controllerName } );
+                table.insert(cells["VehicleController"], { getNotificationColor(Glance.lineColorVehicleControlledByPlayer), veh.controllerName } );
             end
             vehIsControlled = true
         end
@@ -1903,7 +1941,7 @@ function Glance:static_controllerAndMovement(dt, _, veh, implements, cells, noti
         if ntfy ~= nil and ntfy.enabled == true then
             notifyLevel = math.max(notifyLevel, ntfy.level)
             notifyLineColor = Glance.lineColorVehicleControlledByComputer
-            table.insert(cells["VehicleController"], { Glance.colors[Glance.lineColorVehicleControlledByComputer], g_i18n:getText("hired") } );
+            table.insert(cells["VehicleController"], { getNotificationColor(Glance.lineColorVehicleControlledByComputer), g_i18n:getText("hired") } );
         end
         vehIsControlled = true
         vehIsControlledByComputer = true
@@ -1916,7 +1954,7 @@ function Glance:static_controllerAndMovement(dt, _, veh, implements, cells, noti
             else
                 notifyLevel = math.max(notifyLevel, ntfy.level)
                 notifyLineColor = ntfy.color or notifyLineColor;
-                cells["HiredFinished"] = { { Glance.colors[notifyLineColor], g_i18n:getText("dismissed") } }
+                cells["HiredFinished"] = { { getNotificationColor(notifyLineColor), g_i18n:getText("dismissed") } }
             end
         end
     end
@@ -1926,7 +1964,7 @@ function Glance:static_controllerAndMovement(dt, _, veh, implements, cells, noti
         if ntfy ~= nil and ntfy.enabled == true then
             notifyLevel = math.max(notifyLevel, ntfy.level)
             notifyLineColor = Glance.lineColorVehicleControlledByComputer
-            table.insert(cells["VehicleController"], { Glance.colors[Glance.lineColorVehicleControlledByComputer], g_i18n:getText("courseplay") } );
+            table.insert(cells["VehicleController"], { getNotificationColor(Glance.lineColorVehicleControlledByComputer), g_i18n:getText("courseplay") } );
         end
         vehIsControlled = true
         vehIsControlledByComputer = true
@@ -1937,7 +1975,7 @@ function Glance:static_controllerAndMovement(dt, _, veh, implements, cells, noti
         if ntfy ~= nil and ntfy.enabled == true then
             notifyLevel = math.max(notifyLevel, ntfy.level)
             notifyLineColor = Glance.lineColorVehicleControlledByComputer
-            table.insert(cells["VehicleController"], { Glance.colors[Glance.lineColorVehicleControlledByComputer], g_i18n:getText("followme") } );
+            table.insert(cells["VehicleController"], { getNotificationColor(Glance.lineColorVehicleControlledByComputer), g_i18n:getText("followme") } );
         end
         vehIsControlled = true
         vehIsControlledByComputer = true
@@ -1976,12 +2014,12 @@ function Glance:static_controllerAndMovement(dt, _, veh, implements, cells, noti
         notifyLevel = math.max(notifyLevel, res.threshold.level)
 
         if waiting then
-            cells["MovementSpeed"] = { { Glance.colors[Utils.getNoNil(res.color, notifyLineColor)], g_i18n:getText("cp_waiting") } };
+            cells["MovementSpeed"] = { { getNotificationColor(res.color, notifyLineColor), g_i18n:getText("cp_waiting") } };
         else
-            cells["MovementSpeed"] = { { Glance.colors[Utils.getNoNil(res.color, notifyLineColor)], g_i18n:getText("speedIdle") } };
+            cells["MovementSpeed"] = { { getNotificationColor(res.color, notifyLineColor), g_i18n:getText("speedIdle") } };
         end
     else
-        cells["MovementSpeed"] = { { Glance.colors[notifyLineColor], string.format(g_i18n:getText("speed+Unit"), g_i18n:getSpeed(speedKmh), g_i18n.globalI18N:getSpeedMeasuringUnit()) } }
+        cells["MovementSpeed"] = { { getNotificationColor(notifyLineColor), string.format(g_i18n:getText("speed+Unit"), g_i18n:getSpeed(speedKmh), g_i18n.globalI18N:getSpeedMeasuringUnit()) } }
     end
 
     ---
@@ -2023,7 +2061,7 @@ function Glance:static_controllerAndMovement(dt, _, veh, implements, cells, noti
         end
         if hasCollision ~= nil and ntfyCollision.enabled == true then
             notifyLevel = math.max(notifyLevel, ntfyCollision.level)
-            cells["Collision"] = { { Glance.colors[Utils.getNoNil(ntfyCollision.color, notifyLineColor)], g_i18n:getText("collision") } };
+            cells["Collision"] = { { getNotificationColor(ntfyCollision.color, notifyLineColor), g_i18n:getText("collision") } };
         end
     end
 
@@ -2099,7 +2137,7 @@ function Glance:static_activeTask(dt, staticParms, veh, implements, cells, notif
   if txt == nil and impStates.isTrailerOn then txt = withDelim(txt) .. g_i18n:getText("task_Transporting" ); end;
 
   if txt ~= nil then
-    cells["ActiveTask"] = { { Glance.colors[notify_lineColor], txt } }
+    cells["ActiveTask"] = { { getNotificationColor(notify_lineColor), txt } }
   end
   --
   return -1; -- notifyLevel
@@ -2225,7 +2263,7 @@ function Glance:static_fillTypeLevelPct(dt, staticParms, veh, implements, cells,
   local freeCapacity = self.fillTypesCapacityLevelColor["n/a"]
   self.fillTypesCapacityLevelColor["n/a"] = nil
   for fillTpe,v in pairs(self.fillTypesCapacityLevelColor) do
-    local fillClr = Glance.colors[v.color]
+    local fillClr = getNotificationColor(v.color)
     local fillLvl = v.level
     local fillCap = v.capacity
     --
@@ -2303,9 +2341,9 @@ function Glance:getNotificationsForSteerable(dt, cells, veh)
                 notify_level = math.max(notifyParms.level, notify_level)
                 cellName, notifyText = unpack(res)
                 if cells[cellName] ~= nil then
-                    table.insert(cells[cellName], { Glance.colors[notifyParms.color], notifyText } )
+                    table.insert(cells[cellName], { getNotificationColor(notifyParms.color), notifyText } )
                 else
-                    cells[cellName] = { { Glance.colors[notifyParms.color], notifyText } }
+                    cells[cellName] = { { getNotificationColor(notifyParms.color), notifyText } }
                 end
             end
         end
