@@ -417,21 +417,20 @@ function Glance:getDefaultConfig()
 ,'        <notification  enabled="true"  type="grainTankFull"             level="'..dnl( 2)..'"   whenBelow=""  whenAbove=""  > <!-- threshold unit is "percentage" -->'
 ,'              <threshold level="'..dnl( 2)..'" whenBelow="" whenAbove="99" color="red"    blinkIcon="true" />'
 ,'              <threshold level="'..dnl( 0)..'" whenBelow="" whenAbove="80" color="yellow" blinkIcon="true" />'
-,'              <threshold level="'..dnl(-1)..'" whenBelow="" whenAbove="50"                                 />'
+,'              <!--threshold level="'..dnl(-1)..'" whenBelow="" whenAbove="50"                                 /-->'
 ,'        </notification>'
 ,'        <notification  enabled="true"  type="forageWagonFull"           level="'..dnl( 0)..'"   whenBelow=""  whenAbove="99"  color="yellow" /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="true"  type="baleLoaderFull"            level="'..dnl( 1)..'"   whenBelow=""  whenAbove="99"  color="yellow" /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="true"  type="trailerFull"               level="'..dnl(-1)..'"   whenBelow=""  whenAbove=""             > <!-- threshold unit is "percentage" -->'
-,'              <threshold level="'..dnl( 2)..'" whenBelow="" whenAbove="99.99" color="red"    />'
+,'              <threshold level="'..dnl( 2)..'" whenBelow="" whenAbove="99.99" color="yellow" />'
 ,'              <threshold level="'..dnl( 0)..'" whenBelow="" whenAbove="80"    color="yellow" />'
-,'              <threshold level="'..dnl(-1)..'" whenBelow="" whenAbove="50"    color="blue"   />'
 ,'        </notification>'
 ,'        <notification  enabled="true"  type="sprayerLow"                level="'..dnl( 0)..'"   whenBelow=""  whenAbove=""  color="gray" > <!-- threshold unit is "percentage" -->'
-,'              <threshold level="'..dnl(-1)..'" whenBelow="5" whenAbove="0"   color="yellow" />'
-,'              <threshold level="'..dnl( 0)..'" whenBelow="2" whenAbove="-1"  color="red"   />'
+,'              <!-- threshold level="'..dnl(-1)..'" whenBelow="5" whenAbove="0"   color="yellow" /-->'
+,'              <threshold level="'..dnl( 0)..'" whenBelow="2" whenAbove="-1"  color="red" />'
 ,'        </notification>'
 ,'        <notification  enabled="true"  type="seederLow"                 level="'..dnl( 0)..'"   whenBelow=""  whenAbove=""  color="gray" > <!-- threshold unit is "percentage" -->'
-,'              <threshold level="'..dnl(-1)..'" whenBelow="5" whenAbove="0"   color="yellow" />'
+,'              <!--threshold level="'..dnl(-1)..'" whenBelow="5" whenAbove="0"   color="yellow" /-->'
 ,'              <threshold level="'..dnl( 0)..'" whenBelow="2" whenAbove="-1"  color="red"   />'
 ,'        </notification>'
 ,''
@@ -790,13 +789,13 @@ local function isBreakingThresholds(ntfy, value, oldValue)
                 if (thld.belowThreshold == nil and thld.aboveThreshold ~= nil) then
                     -- Only test above
                     if (value > thld.aboveThreshold) then
-                        newValue = math.max(value, Utils.getNoNil(newValue, value))
+                        newValue = math.max(value, Utils.getNoNil(oldValue, value))
                         return { value=newValue, threshold=thld }
                     end
                 elseif (thld.belowThreshold ~= nil and thld.aboveThreshold == nil) then
                     -- Only test below
                     if (value < thld.belowThreshold) then
-                        newValue = math.min(value, Utils.getNoNil(newValue, value))
+                        newValue = math.min(value, Utils.getNoNil(oldValue, value))
                         return { value=newValue, threshold=thld }
                     end
                 elseif (thld.belowThreshold ~= nil and thld.aboveThreshold ~= nil) then
@@ -804,16 +803,16 @@ local function isBreakingThresholds(ntfy, value, oldValue)
                     if (thld.belowThreshold < thld.aboveThreshold) then
                         -- Only test outside
                         if (value < thld.belowThreshold) then
-                            newValue = math.min(value, Utils.getNoNil(newValue, value))
+                            newValue = math.min(value, Utils.getNoNil(oldValue, value))
                             return { value=newValue, threshold=thld }
                         elseif (thld.aboveThreshold < value) then
-                            newValue = math.max(value, Utils.getNoNil(newValue, value))
+                            newValue = math.max(value, Utils.getNoNil(oldValue, value))
                             return { value=newValue, threshold=thld }
                         end
                     elseif (thld.belowThreshold > thld.aboveThreshold) then
                         -- Only test inside
                         if (thld.aboveThreshold < value and value < thld.belowThreshold) then
-                            newValue = math.max(value, Utils.getNoNil(newValue, value)) -- TODO. Calculate closest distance to either above or below, and use that as new value.
+                            newValue = math.max(value, Utils.getNoNil(oldValue, value)) -- TODO. Calculate closest distance to either above or below, and use that as new value.
                             return { value=newValue, threshold=thld }
                         end
                     end
@@ -963,13 +962,16 @@ function Glance:makePlaceablesLine(dt, notifyList)
                 local pct = foundNotifications[placeableType].fillLevels[fillType]
                 if newLow ~= nil and (pct == nil or pct > newLow) then
                     foundNotifications[placeableType].fillLevels[fillType] = newLow
+                    if newColor ~= nil then
+                        foundNotifications[placeableType].color = newColor
+                    end
                 end
                 if newHigh ~= nil and (pct == nil or pct < newHigh) then
                     foundNotifications[placeableType].fillLevels[fillType] = newHigh
+                    if newColor ~= nil then
+                        foundNotifications[placeableType].color = newColor
+                    end
                 end
-            end
-            if newColor ~= nil then
-                foundNotifications[placeableType].color = newColor
             end
         end
 
@@ -1430,7 +1432,7 @@ function Glance:makeHusbandriesLine(dt, notifyList)
             for _,husbandry in pairs(husbandries) do
             
                 -- Productivity
-                if isNotifyLevel(ntfyProductivity) then
+                --if isNotifyLevel(ntfyProductivity) then
                     local productivity = Utils.getNoNil(husbandry.productivity, husbandry.Produktivi)   -- Support for SchweineZucht.LUA
                     if productivity ~= nil then
                         local pct = math.floor(productivity * 100);
@@ -1441,12 +1443,12 @@ function Glance:makeHusbandriesLine(dt, notifyList)
                             updateInfoValue(fillName, 1, res.value, "%")
                         end
                     end
-                end;
+                --end;
                 
                 -- Pallet (Wool)
                 if husbandry.currentPallet ~= nil and husbandry.currentPallet.getFillLevel ~= nil 
                 and husbandry.currentPallet.getCapacity ~= nil and hasNumberValue(husbandry.currentPallet:getCapacity(),0)
-                and isNotifyLevel(ntfyPallet)
+                --and isNotifyLevel(ntfyPallet)
                 then
                     local pct = math.floor((husbandry.currentPallet:getFillLevel() * 100) / husbandry.currentPallet:getCapacity());
                     local fillName = getFillName(ntfyPallet, nil, husbandry.palletFillType)
@@ -1459,7 +1461,7 @@ function Glance:makeHusbandriesLine(dt, notifyList)
                 
                 -- PickupObjects (Eggs)
                 if husbandry.pickupObjectsToActivate ~= nil and husbandry.numActivePickupObjects ~= nil 
-                and isNotifyLevel(ntfyPickupObjects) 
+                --and isNotifyLevel(ntfyPickupObjects) 
                 then
                     local capacity = table.getn(husbandry.pickupObjectsToActivate) + husbandry.numActivePickupObjects;
                     local pct = math.floor((husbandry.numActivePickupObjects * 100) / capacity);
@@ -1473,7 +1475,7 @@ function Glance:makeHusbandriesLine(dt, notifyList)
                 
                 -- Fill-Levels
                 for fillType,ntfy in pairs(ntfyStorage) do
-                    if isNotifyLevel(ntfy) then 
+                    --if isNotifyLevel(ntfy) then 
                         if fillType == Fillable.FILLTYPE_MANURE then
                             if husbandry.manureHeap ~= nil then
                                 local fillLevel = Utils.getNoNil(husbandry.manureHeap.fillLevel, husbandry.manureHeap.FillLvl)  -- Support for SchweineZucht.LUA
@@ -1537,7 +1539,7 @@ function Glance:makeHusbandriesLine(dt, notifyList)
                                 updateInfoValue(fillName, 1, res.value, "");
                             end
                         end
-                    end
+                    --end
                 end
                 --
             end
