@@ -28,9 +28,9 @@ Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
 
         <text name="closestfield"       text="П%d" />
 
-        <text name="fieldsWithBales"    text="Fields with bales:"   />  <!-- needs translation -->
-        <text name="fieldNumAndBales"   text=" F%d(x%d)"            />  <!-- needs translation -->
-        <text name="balesElsewhere"     text="Bales elsewhere(x%d)" />  <!-- needs translation -->
+        <text name="fieldsWithBales"    text="Поля с тюками:"   />
+        <text name="fieldNumAndBales"   text=" П%d(x%d)"            />
+        <text name="balesElsewhere"     text="Тюков не на полях (x%d)" />
         
         <text name="fuellow"            text="Мало топлива (%s%%)"  />
         <text name="engineon"           text="Двигатель запущен!"   />
