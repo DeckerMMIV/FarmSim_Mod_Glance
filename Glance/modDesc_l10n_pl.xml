@@ -33,7 +33,7 @@ Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
         <text name="balesElsewhere"     text="Bele gdzie indziej(x%d)" />
         
         <text name="fuellow"            text="Koniec paliwa (%s%%)" />
-        <text name="engineon"           text="Silnik wlaczony!" />
+        <text name="engineon"           text="Silnik włączony!" />
         <text name="collision"          text="Zablokowany" />
 
         <text name="speed+Unit"         text="%.1f %s" />
@@ -53,7 +53,7 @@ Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
         <text name="task_Tedding"       text="Przetrząsanie" />
         <text name="task_Swathing"      text="Zgrabianie" />
         <text name="task_Mowing"        text="Sianokosy" />
-        <text name="task_Spraying"      text="Użyśnianie" />
+        <text name="task_Spraying"      text="Użyźnianie" />
         <text name="task_Seeding"       text="Siew" />
         <text name="task_Bedding"       text="Ścielenie" />
         <text name="task_Feeding"       text="Karmienie" />
@@ -67,7 +67,7 @@ Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
         <text name="task_TreePlanting"  text="Sadzonki drzew" />
 
         <text name="config_error"       text="'Glance' ma problem z załadowaniem pliku 'Glance_Config.XML'.
-Proszę sprawdzić w kolnsoli w grze lub w 'LOG.TXT' szczegóły lub po prosru usunać 'Glance_Config.XML'." />
+Proszę sprawdzić w kolnsoli w grze lub w 'LOG.TXT' szczegóły lub po prostu usunąć 'Glance_Config.XML'." />
 
         <text name="GlanceMore"         text="Glance: Wiecej info." />
         <text name="GlanceLess"         text="Glance: Mniej info." />
