@@ -99,12 +99,14 @@ addModEventListener(Glance);
 Glance.initialized      = -1
 Glance.minNotifyLevel   = 4;
 Glance.maxNotifyLevel   = 99;
+Glance.ignoreHelpboxVisibility = false;
 
 Glance.lineColorDefault                        = "gray"
 Glance.lineColorVehicleControlledByMe          = "green"
 Glance.lineColorVehicleControlledByPlayer      = "white"
 Glance.lineColorVehicleControlledByComputer    = "blue"
 
+Glance.cStartLineX      = 0.0
 Glance.cStartLineY      = 0.999
 Glance.cFontSize        = 0.011;
 Glance.cFontShadowOffs  = Glance.cFontSize * 0.08;
@@ -367,7 +369,7 @@ function Glance:getDefaultConfig()
 ,'    <general>'
 ,'        <!-- Set the minimum level a notification should have to be displayed.'
 ,'             Set faster or slower update interval in milliseconds, though no less than 500 (half a second) or higher than 60000 (a full minute). -->'
-,'        <notification  minimumLevel="'..dnl()..'"  updateIntervalMs="2000" />'
+,'        <notification  minimumLevel="'..dnl()..'"  updateIntervalMs="2000"  ignoreHelpboxVisibility="false" />'
 ,''
 ,'        <!-- Custom color names and their color RGBA-value in percentages, where 0.00 = 0x00 (0%) and 1.00 = 0xFF (100%) -->'
 ,'        <colors>'
@@ -391,7 +393,7 @@ function Glance:getDefaultConfig()
 ,'             Next row position is calculated from \'size + rowSpacing\', which then gives the rowHeight. -->'
 ,'        <font  size="0.011"  rowSpacing="-0.001"  shadowOffset="0.00128"  shadowColor="black" />'
 ,''
-,'        <!-- Currently only Y position is supported. Bottom is at 0.0000 (0%) and top is at 1.0000 (100%) -->'
+,'        <!-- Left/Bottom is at 0.0000 (0%) and right/top is at 1.0000 (100%) -->'
 ,'        <placementInDisplay  positionXY="0.000 0.999" />'
 ,'    </general>'
 ,''
@@ -635,6 +637,7 @@ function Glance:loadConfig()
     --
     local tag = "glanceConfig.general.placementInDisplay"
     local posX,posY = Utils.getVectorFromString(getXMLString(xmlFile, tag.."#positionXY"))
+    Glance.cStartLineX      = Utils.getNoNil(tonumber(posX), Glance.cStartLineX)
     Glance.cStartLineY      = Utils.getNoNil(tonumber(posY), Glance.cStartLineY)
     --Glance.cRowDirection    = Utils.getNoNil(Glance.cRowDirections[getXMLString(xmlFile, tag.."#rowDirection")], Glance.cRowDirection)
     --Glance.cColDirection    = Utils.getNoNil(Glance.cColDirections[getXMLString(xmlFile, tag.."#columnDirection")], Glance.cColDirection)
@@ -644,6 +647,7 @@ function Glance:loadConfig()
         Glance.minNotifyLevel = Utils.getNoNil(getXMLInt(xmlFile, tag.."#minimumLevel"), 2)
     end
     Glance.updateIntervalMS = Utils.clamp(Utils.getNoNil(getXMLInt(xmlFile, tag.."#updateIntervalMs"), Glance.updateIntervalMS), 500, 60000)
+    Glance.ignoreHelpboxVisibility = Utils.getNoNil(getXMLBool(xmlFile, tag.."#ignoreHelpboxVisibility"), Glance.ignoreHelpboxVisibility)
     --
     local tag = "glanceConfig.general.lineColors"
     Glance.lineColorDefault                     = getColorName(xmlFile, tag..".default#color", Glance.lineColorDefault)
@@ -1820,6 +1824,9 @@ end
 function Glance:getCellData_FuelLow(dt, lineColor, colParms, cells, veh)
     return cells["FuelLow"]
 end
+function Glance:getCellData_FuelLevel(dt, lineColor, colParms, cells, veh)
+    return { { getNotificationColor(lineColor), ("Fuel:%.0f"):format(veh.fuelFillLevel) } }
+end
 function Glance:getCellData_Collision(dt, lineColor, colParms, cells, veh)
     return cells["Collision"]
 end
@@ -2378,14 +2385,14 @@ function Glance:draw()
     if Glance.forceHide or Glance.hide then
         return;
     end;
-    if g_currentMission.showHelpText or g_currentMission.ingameMap.isFullSize then
+    if (not Glance.ignoreHelpboxVisibility and g_currentMission.showHelpText) or g_currentMission.ingameMap.isFullSize then
         return
     end
     --
     self.helpButtonsTimeout = g_currentMission.time + 7500;
 
     --
-    local xPos = 0.0;
+    local xPos = Glance.cStartLineX;
     local yPos = Glance.cStartLineY - Glance.cLineSpacing;
     local timeSec = math.floor(g_currentMission.time / 1000);
 
@@ -2401,7 +2408,7 @@ function Glance:draw()
 --[[
     if self.drawSoilCondition then
         local delimWidth = getTextWidth(Glance.cFontSize, Glance.cColumnDelimChar) * 1.50;
-        xPos = 0.0;
+        xPos = Glance.cStartLineX;
         for c=1,table.getn(self.drawSoilCondition) do
             if c > 1 then
                 setTextAlignment(RenderText.ALIGN_CENTER);
@@ -2423,7 +2430,7 @@ function Glance:draw()
     if self.linesNonVehicles then
         for _,lineNonVehicles in ipairs(self.linesNonVehicles) do
             local delimWidth = getTextWidth(Glance.cFontSize, Glance.nonVehiclesSeparator);
-            xPos = 0.0;
+            xPos = Glance.cStartLineX;
             for c=1,table.getn(lineNonVehicles) do
                 if c > 1 then
                     setTextAlignment(RenderText.ALIGN_CENTER);
@@ -2447,7 +2454,7 @@ function Glance:draw()
             for c=1,table.getn(self.linesVehicles[1]) do
                 local numSubElems = table.getn(self.linesVehicles[i][c]);
                 if numSubElems > 0 then
-                    xPos = self.linesVehicles[1][c].pos;
+                    xPos = Glance.cStartLineX + self.linesVehicles[1][c].pos;
                     setTextAlignment(self.linesVehicles[1][c].alignment);
                     --
                     local e = 1 + (timeSec % numSubElems);
