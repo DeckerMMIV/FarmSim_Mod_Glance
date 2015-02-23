@@ -416,22 +416,22 @@ function Glance:getDefaultConfig()
 ,'        <notification  enabled="true"  type="vehicleFuelLow"            level="'..dnl(-1)..'"   whenBelow="5"     whenAbove=""       color="red" /> <!-- threshold unit is "percentage" -->'
 ,''
 ,'        <!-- Vehicle fill-level -->'
-,'        <notification  enabled="true"  type="grainTankFull"             level="'..dnl( 2)..'"   whenBelow=""  whenAbove=""  > <!-- threshold unit is "percentage" -->'
+,'        <notification  enabled="true"  type="grainTankFull"             level="'..dnl( 2)..'"     > <!-- threshold unit is "percentage" -->'
 ,'              <threshold level="'..dnl( 2)..'" whenBelow="" whenAbove="99" color="red"    blinkIcon="true" />'
 ,'              <threshold level="'..dnl( 0)..'" whenBelow="" whenAbove="80" color="yellow" blinkIcon="true" />'
 ,'              <!--threshold level="'..dnl(-1)..'" whenBelow="" whenAbove="50"                                 /-->'
 ,'        </notification>'
 ,'        <notification  enabled="true"  type="forageWagonFull"           level="'..dnl( 0)..'"   whenBelow=""  whenAbove="99"  color="yellow" /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="true"  type="baleLoaderFull"            level="'..dnl( 1)..'"   whenBelow=""  whenAbove="99"  color="yellow" /> <!-- threshold unit is "percentage" -->'
-,'        <notification  enabled="true"  type="trailerFull"               level="'..dnl(-1)..'"   whenBelow=""  whenAbove=""             > <!-- threshold unit is "percentage" -->'
+,'        <notification  enabled="true"  type="trailerFull"               level="'..dnl(-1)..'"   color="gray" > <!-- threshold unit is "percentage" -->'
 ,'              <threshold level="'..dnl( 0)..'" whenBelow="" whenAbove="99.99" color="orange" />'
 ,'              <threshold level="'..dnl(-1)..'" whenBelow="" whenAbove="80"    color="yellow" />'
 ,'        </notification>'
-,'        <notification  enabled="true"  type="sprayerLow"                level="'..dnl( 0)..'"   whenBelow=""  whenAbove=""  color="gray" > <!-- threshold unit is "percentage" -->'
+,'        <notification  enabled="true"  type="sprayerLow"                level="'..dnl( 0)..'"   color="gray" > <!-- threshold unit is "percentage" -->'
 ,'              <!-- threshold level="'..dnl(-1)..'" whenBelow="5" whenAbove="0"   color="yellow" /-->'
 ,'              <threshold level="'..dnl( 0)..'" whenBelow="2" whenAbove="-1"  color="red" />'
 ,'        </notification>'
-,'        <notification  enabled="true"  type="seederLow"                 level="'..dnl( 0)..'"   whenBelow=""  whenAbove=""  color="gray" > <!-- threshold unit is "percentage" -->'
+,'        <notification  enabled="true"  type="seederLow"                 level="'..dnl( 0)..'"   color="gray" > <!-- threshold unit is "percentage" -->'
 ,'              <!--threshold level="'..dnl(-1)..'" whenBelow="5" whenAbove="0"   color="yellow" /-->'
 ,'              <threshold level="'..dnl( 0)..'" whenBelow="2" whenAbove="-1"  color="red"   />'
 ,'        </notification>'
@@ -443,8 +443,16 @@ function Glance:getDefaultConfig()
 ,'        <!-- Animal husbandry - Productivity, Wool pallet, Eggs (pickup objects) -->'
 ,'        <!--                                "husbandry[:<animalTypeName>]:(PickupObjects|Pallet|Productivity)"  -->'
 ,'        <notification  enabled="true"  type="husbandry:PickupObjects"       level="'..dnl(-2)..'"   whenBelow=""     whenAbove="99.99"  color="yellow" /> <!-- threshold unit is "percentage" -->'
-,'        <notification  enabled="true"  type="husbandry:Pallet"              level="'..dnl(-1)..'"   whenBelow=""     whenAbove="99.99"  color="yellow" /> <!-- threshold unit is "percentage" -->'
-,'        <notification  enabled="true"  type="husbandry:Productivity"        level="'..dnl( 1)..'"   whenBelow="100"  whenAbove="0"      color="yellow" /> <!-- threshold unit is "percentage" -->'
+,'        <notification  enabled="true"  type="husbandry:Pallet"              level="'..dnl(-2)..'"  > <!-- threshold unit is "percentage" -->'
+,'              <threshold  level="'..dnl( 1)..'"  whenBelow=""     whenAbove="99.99" color="red"       />'
+,'              <threshold  level="'..dnl( 0)..'"  whenBelow=""     whenAbove="95"    color="yellow"    />'
+,'              <!-- threshold  level="'..dnl(-2)..'"  whenBelow="95"   whenAbove=""                        /-->'
+,'        </notification>'
+,'        <notification  enabled="true"  type="husbandry:Productivity"        level="'..dnl(-2)..'"     > <!-- threshold unit is "percentage" -->'
+,'              <threshold  level="'..dnl(-2)..'"  whenBelow="95" whenAbove=""      color="yellow"  />'
+,'              <threshold  level="'..dnl(-1)..'"  whenBelow="75" whenAbove=""      color="orange"  />'
+,'              <threshold  level="'..dnl( 0)..'"  whenBelow="50" whenAbove=""      color="red"     />'
+,'        </notification>'
 ,'        <notification  enabled="true"  type="husbandry:sheep:Productivity"  level="'..dnl( 0)..'"   whenBelow="90"   whenAbove="0"      color="yellow" /> <!-- threshold unit is "percentage" -->'
 ,''
 ,'        <!-- Animal husbandry - Fill-level -->'
@@ -457,7 +465,11 @@ function Glance:getDefaultConfig()
 ,'        <EXAMPLEnotification  enabled="false" type="husbandry:cow:silage"          level="'..dnl( 0)..'"   whenBelow="1000"   color="yellow"  text="Silage"  /> <!-- threshold unit is "units" -->'
 ,'        <EXAMPLEnotification  enabled="false" type="husbandry:cow:grass_windrow"   level="'..dnl( 0)..'"   whenBelow="1000"   color="yellow"  text="Grass"   /> <!-- threshold unit is "units" -->'
 --]]
-,'        <notification  enabled="true"  type="husbandry:cow:wheat_windrow"   level="'..dnl( 0)..'"   whenBelow="1000"  whenAbove=""       color="yellow"  text="Straw"   /> <!-- threshold unit is "units" -->'
+,'        <notification  enabled="true"  type="husbandry:cow:wheat_windrow"   level="'..dnl(-2)..'"   text="Straw"   > <!-- threshold unit is "units" -->'
+,'              <!-- threshold  level="'..dnl(-2)..'"  whenBelow=""     whenAbove="4999"                    /-->'
+,'              <threshold  level="'..dnl(-1)..'"  whenBelow="5000" whenAbove=""      color="yellow"    />'
+,'              <threshold  level="'..dnl( 0)..'"  whenBelow="1000" whenAbove=""      color="red"       />'
+,'        </notification>'
 ,'        <notification  enabled="true"  type="husbandry:cow:manure"          level="'..dnl(-2)..'"   whenBelow=""      whenAbove="99"     color="yellow"                 /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="true"  type="husbandry:cow:liquidManure"    level="'..dnl(-2)..'"   whenBelow=""      whenAbove="99"     color="yellow"                 /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="false" type="husbandry:cow:milk"            level="'..dnl(-1)..'"   whenBelow=""      whenAbove="20000"  color="yellow"                 /> <!-- threshold unit is "units" -->'
@@ -521,6 +533,7 @@ function Glance:getDefaultConfig()
 ,'        <column  enabled="true"  contains="VehicleAtFieldNumber"                                 align="left"    minWidthText=""                  />'
 ,'        <column  enabled="true"  contains="ColumnDelim"                  color="gray"            align="center"  minWidthText=""                  text="'..Glance.cColumnDelimChar..'" />'
 ,'        <column  enabled="true"  contains="VehicleName;FuelLow"                                  align="left"    minWidthText=""  maxTextLen="20" />'
+,'        <column  enabled="false" contains="FuelLevel;FuelLevelPct"                               align="left"    minWidthText=""                  />'
 ,'        <column  enabled="true"  contains="ColumnDelim"                  color="gray"            align="center"  minWidthText=""                  text="'..Glance.cColumnDelimChar..'" />'
 ,'        <column  enabled="true"  contains="FillLevel"                                            align="right"   minWidthText=""                  />'
 ,'        <column  enabled="true"  contains="ColumnDelim"                                          align="right"   minWidthText="I"                 text="" />'
@@ -1826,6 +1839,9 @@ function Glance:getCellData_FuelLow(dt, lineColor, colParms, cells, veh)
 end
 function Glance:getCellData_FuelLevel(dt, lineColor, colParms, cells, veh)
     return { { getNotificationColor(lineColor), ("Fuel:%.0f"):format(veh.fuelFillLevel) } }
+end
+function Glance:getCellData_FuelLevelPct(dt, lineColor, colParms, cells, veh)
+    return { { getNotificationColor(lineColor), ("Fuel:%.0f%%"):format((100 * veh.fuelFillLevel) / veh.fuelCapacity) } }
 end
 function Glance:getCellData_Collision(dt, lineColor, colParms, cells, veh)
     return cells["Collision"]
