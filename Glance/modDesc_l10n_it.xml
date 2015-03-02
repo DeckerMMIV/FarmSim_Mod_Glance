@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+    <!-- Note that 'description' is only here for easier translations. It needs to be manually copied to ModDesc.XML later. -->
+    <description>
+<![CDATA[Un servizio di notifica e stato che può essere configurato per mostrare
+solo quello che hai bisogno di vedere 
+
+
+Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
+    </description>
+
+    <texts>
+        <text name="hired"              text="(operaio)"      />
+        <text name="dismissed"          text="(Finito!)"  />
+        <text name="courseplay"         text="(courseplay)" />
+        <text name="followme"           text="(followme)"   />
+        <text name="broken"             text="(Rotto!)"    />
+
+        <text name="north"              text="N"    />
+        <text name="northeast"          text="NE"   />
+        <text name="east"               text="E"    />
+        <text name="southeast"          text="SE"   />
+        <text name="south"              text="S"    />
+        <text name="southwest"          text="SW"   />
+        <text name="west"               text="W"    />
+        <text name="northwest"          text="NW"   />
+        <text name="center"             text="C"    />
+
+        <text name="closestfield"       text="F%d"  />
+
+        <text name="fieldsWithBales"    text="Campi con balle:"   />
+        <text name="fieldNumAndBales"   text=" F%d(x%d)"            />
+        <text name="balesElsewhere"     text="Balle altrove(x%d)" />
+
+        <text name="fuellow"            text="Riserva Carb (%s%%)"  />
+        <text name="engineon"           text="Motore acceso!"    />
+        <text name="collision"          text="Bloccato"          />
+
+        <text name="speed+Unit"         text="%.1f %s"  />
+        <text name="speedSlow"          text="ALti RPM" />
+        <text name="speedIdle"          text="Inattivo"     />
+        <text name="cp_waiting"         text="In attesa"  />
+
+        <text name="unknownFillType"    text="(sconosciuto)"    />
+        <text name="bales"              text="Balle"        />
+
+        <text name="task_Harvesting"    text="Mietitura"       />
+        <text name="task_Defoliator"    text="Defogliatura"      />
+        <text name="task_Loading_bales" text="Carica Balle"    />
+        <text name="task_Wrapping_bale" text="Riveste Balle"    />
+        <text name="task_Baling"        text="Imballatura"           />
+        <text name="task_Foraging"      text="Foraggiatura"         />
+        <text name="task_Tedding"       text="Volta Fieno"          />
+        <text name="task_Swathing"      text="Ranghinatura"         />
+        <text name="task_Mowing"        text="Falciatura"           />
+        <text name="task_Spraying"      text="Fertilizzatura"         />
+        <text name="task_Seeding"       text="Semina"          />
+        <text name="task_Bedding"       text="Assestamento"          />
+        <text name="task_Feeding"       text="Alimentazione"          />
+        <text name="task_Cutting"       text="Taglio"          />
+        <text name="task_Cultivating"   text="Coltivatura"      />
+        <text name="task_Ploughing"     text="Aratura"        />
+        <text name="task_Unloading"     text="Scarico"        />
+        <text name="task_Transporting"  text="Trasporto"     />
+        <text name="task_StumpCutting"  text="Taglio tronchi"    />
+        <text name="task_WoodCrushing"  text="Cippatura"    />
+        <text name="task_TreePlanting"  text="Pianta Alberi"    />
+
+        <text name="config_error"       text="'Glance'  ha un problema quando cerca di caricare il file Glance_Config.XML.
+Perfavore controlla la console o il file LOG.TXT
+o semplicemente rimuovi il file Glance_Config.XML." />
+
+        <text name="GlanceMore"         text="Glance:Più Info"   />
+        <text name="GlanceLess"         text="Glance:Meno Info"   />
+
+        <text name="GlanceMinLevel"     text="Il livello di notifica minima è settato al: %d" />
+    </texts>
+</l10n>

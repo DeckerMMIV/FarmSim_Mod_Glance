@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="21">
     <author>Freelance Modding Crew</author>
-    <version>2.3.5</version>
-    <contributors>SchorschiBW, ja_pizgam, Gonimy_Vetrom, JakobT, pokers</contributors>
+    <version>2.3.6</version>
+    <contributors>SchorschiBW, ja_pizgam, Gonimy_Vetrom, JakobT, pokers, gighen</contributors>
     
     <title>
         <en>Glance</en>
@@ -10,6 +10,7 @@
         <pl>Glance</pl>
         <ru>Glance</ru>
         <hu>Glance</hu>
+        <it>Glance</it>
     </title>
 
     <description>
@@ -52,6 +53,14 @@ mit szeretnél látni.
 
 Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
         </hu>
+        
+        <it>
+<![CDATA[Un servizio di notifica e stato che può essere configurato per mostrare
+solo quello che hai bisogno di vedere 
+
+
+Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
+        </it>
     </description>
 
     <iconFilename>store_Glance.dds</iconFilename>
