@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+    <!-- Note that 'description' is only here for easier translations. It needs to be manually copied to ModDesc.XML later. -->
+    <description>
+<![CDATA[Egy állapot- és tevékenység kijelző mód, amiben te magad választhatod meg
+mit szeretnél látni.
+
+
+Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
+    </description>
+
+    <texts>
+        <text name="hired"              text="(bérelt munkás)"/>
+        <text name="dismissed"          text="(befejezve!)"/>
+        <text name="courseplay"         text="(courseplay)"/>
+        <text name="followme"           text="(followme)"/>
+        <text name="broken"             text="(meghibásodott!)"/>
+
+        <text name="north"              text="É"/>
+        <text name="northeast"          text="ÉK"/>
+        <text name="east"               text="K"/>
+        <text name="southeast"          text="DK"/>
+        <text name="south"              text="D"/>
+        <text name="southwest"          text="DNY"/>
+        <text name="west"               text="NY"/>
+        <text name="northwest"          text="ÉNY"/>
+        <text name="center"             text="C"/>
+
+        <text name="closestfield"       text="F%d"/>
+
+        <text name="fieldsWithBales"    text="Fields with bales:"   />  <!-- needs translation -->
+        <text name="fieldNumAndBales"   text=" F%d(x%d)"            />  <!-- needs translation -->
+        <text name="balesElsewhere"     text="Bales elsewhere(x%d)" />  <!-- needs translation -->
+        
+        <text name="fuellow"            text="Alacsony üzemanyagszint (%s%%)"/>
+        <text name="engineon"           text="Járó motor!"/>
+        <text name="collision"          text="Útakadály"/>
+
+        <text name="speed+Unit"         text="%.1f %s"/>
+        <text name="speedSlow"          text="High RPM"/>
+        <text name="speedIdle"          text="Alapjárat"/>
+        <text name="cp_waiting"         text="Várakozás"/>
+
+        <text name="unknownFillType"    text="(ismeretlen)"/>
+        <text name="bales"              text="Bála"/>
+        <text name="MischStation"       text="Takarmánykeverő üzem"/>   <!-- extra? -->
+        <text name="kalk"               text="Mész"/>                   <!-- extra? -->
+
+        <text name="task_Harvesting"    text="Betakarítás"/>
+        <text name="task_Defoliator"    text="Fejezés"/>
+        <text name="task_Loading_bales" text="Bálagyűjtés"/>
+        <text name="task_Wrapping_bale" text="Bálacsomagolás"/>
+        <text name="task_Baling"        text="Bálázás"/>
+        <text name="task_Foraging"      text="Gyűjtés"/>
+        <text name="task_Tedding"       text="Szénaforgatás"/>
+        <text name="task_Swathing"      text="Rendsodrás"/>
+        <text name="task_Mowing"        text="Kaszálás"/>
+        <text name="task_Spraying"      text="Szórás"/>
+        <text name="task_Seeding"       text="Vetés"/>
+        <text name="task_Bedding"       text="Almozás"/>
+        <text name="task_Feeding"       text="Etetés"/>
+        <text name="task_Cutting"       text="Vágás"/>
+        <text name="task_Cultivating"   text="Kultiválás"/>
+        <text name="task_Ploughing"     text="Szántás"/>
+        <text name="task_Unloading"     text="Ürítés"/>
+        <text name="task_Transporting"  text="Szállítás"/>
+        <text name="task_StumpCutting"  text="Tönkvágás"/>
+        <text name="task_WoodCrushing"  text="Faaprítás"/>
+        <text name="task_TreePlanting"  text="Faültetés"/>
+
+        <text name="config_error"       text="'Glance' nem tudja betölteni a Glance_Config.XML fájlt.
+További információért ellenőrizd a játékban a Glance konzolt vagy a LOG.TXT-t.
+Vagy egyszerűen csak töröld a Glance_Config.XML fájlt." />
+
+        <text name="GlanceMore"         text="Glance: Több adat"/>
+        <text name="GlanceLess"         text="Glance: Kevesebb adat"/>
+
+        <text name="GlanceMinLevel"     text="Beállított minimum adatszint: %d"/>
+    </texts>
+</l10n>

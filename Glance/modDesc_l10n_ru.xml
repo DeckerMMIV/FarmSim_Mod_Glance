@@ -28,6 +28,10 @@ Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
 
         <text name="closestfield"       text="П%d" />
 
+        <text name="fieldsWithBales"    text="Поля с тюками:"   />
+        <text name="fieldNumAndBales"   text=" П%d(x%d)"            />
+        <text name="balesElsewhere"     text="Тюков не на полях (x%d)" />
+        
         <text name="fuellow"            text="Мало топлива (%s%%)"  />
         <text name="engineon"           text="Двигатель запущен!"   />
         <text name="collision"          text="Застрял"              />

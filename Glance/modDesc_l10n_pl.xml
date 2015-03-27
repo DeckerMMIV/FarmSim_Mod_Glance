@@ -10,64 +10,68 @@ Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
     </description>
 
     <texts>
-        <text name="hired"              text="(Pracownik)"    />
-        <text name="dismissed"          text="(gotowe!)"      />
-        <text name="courseplay"         text="(courseplay)"   />
-        <text name="followme"           text="(followme)"     />
-        <text name="broken"             text="(uszkodzony!)"  />
+        <text name="hired"              text="(Pracownik)" />
+        <text name="dismissed"          text="(gotowe!)" />
+        <text name="courseplay"         text="(courseplay)" />
+        <text name="followme"           text="(followme)" />
+        <text name="broken"             text="(uszkodzony!)" />
 
-        <text name="north"              text="Pn"      />
+        <text name="north"              text="Pn" />
         <text name="northeast"          text="Pn-Wsch" />
-        <text name="east"               text="Wsch"    />
+        <text name="east"               text="Wsch" />
         <text name="southeast"          text="Pd-Wsch" />
-        <text name="south"              text="Pd"      />
+        <text name="south"              text="Pd" />
         <text name="southwest"          text="Pd-Zach" />
-        <text name="west"               text="Zach"    />
+        <text name="west"               text="Zach" />
         <text name="northwest"          text="Pn-Zach" />
-        <text name="center"             text="Srodek"  />
+        <text name="center"             text="Środek" />
 
         <text name="closestfield"       text="(Pole %d)" />
 
-        <text name="fuellow"            text="Resztka paliwa (%s%%)"  />
-        <text name="engineon"           text="Silnik wlaczony!"       />
-        <text name="collision"          text="Zablokowany"            />
+        <text name="fieldsWithBales"    text="Pola z belami:" />
+        <text name="fieldNumAndBales"   text="Pole %d(x%d)" />
+        <text name="balesElsewhere"     text="Bele gdzie indziej(x%d)" />
+        
+        <text name="fuellow"            text="Koniec paliwa (%s%%)" />
+        <text name="engineon"           text="Silnik włączony!" />
+        <text name="collision"          text="Zablokowany" />
 
-        <text name="speed+Unit"         text="%.1f %s"         />
-        <text name="speedSlow"          text="Wysokie obroty"  />
-        <text name="speedIdle"          text="Bezczynny"       />
-        <text name="cp_waiting"         text="Oczekiwanie"     />
+        <text name="speed+Unit"         text="%.1f %s" />
+        <text name="speedSlow"          text="Wysokie obroty" />
+        <text name="speedIdle"          text="Bezczynny" />
+        <text name="cp_waiting"         text="Oczekiwanie" />
 
-        <text name="unknownFillType"    text="(nieznane)"  />
-        <text name="bales"              text="Bele"        />
+        <text name="unknownFillType"    text="(nieznane)" />
+        <text name="bales"              text="Bele" />
 
-        <text name="task_Harvesting"    text="Zniwa"            />
-        <text name="task_Defoliator"    text="Scinka lisci"     />
-        <text name="task_Loading_bales" text="Ladowanie bel"    />
-        <text name="task_Wrapping_bale" text="Owijanie bel"     />
-        <text name="task_Baling"        text="Prasowanie"       />
-        <text name="task_Foraging"      text="Karmienie pasza"  />
-        <text name="task_Tedding"       text="Przetrzasanie"    />
-        <text name="task_Swathing"      text="Zgarnianie"       />
-        <text name="task_Mowing"        text="Sianokosy"        />
-        <text name="task_Spraying"      text="Oprysk"           />
-        <text name="task_Seeding"       text="Siew"             />
-        <text name="task_Bedding"       text="Scielenie"        />
-        <text name="task_Feeding"       text="Karmienie"        />
-        <text name="task_Cutting"       text="Ciecie"           />
-        <text name="task_Cultivating"   text="Uprawa"           />
-        <text name="task_Ploughing"     text="Orka"             />
-        <text name="task_Unloading"     text="Rozladunek"       />
-        <text name="task_Transporting"  text="Transport"        />
-        <text name="task_StumpCutting"  text="Stump cutting"    />   <!-- needs translations -->
-        <text name="task_WoodCrushing"  text="Wood crushing"    />   <!-- needs translations -->
-        <text name="task_TreePlanting"  text="Tree planting"    />   <!-- needs translations -->
+        <text name="task_Harvesting"    text="Żniwa" />
+        <text name="task_Defoliator"    text="Kopanie buraków" />
+        <text name="task_Loading_bales" text="Ładowanie bel" />
+        <text name="task_Wrapping_bale" text="Owijanie bel" />
+        <text name="task_Baling"        text="Prasowanie" />
+        <text name="task_Foraging"      text="Zbieranie pokosu" />
+        <text name="task_Tedding"       text="Przetrząsanie" />
+        <text name="task_Swathing"      text="Zgrabianie" />
+        <text name="task_Mowing"        text="Sianokosy" />
+        <text name="task_Spraying"      text="Użyźnianie" />
+        <text name="task_Seeding"       text="Siew" />
+        <text name="task_Bedding"       text="Ścielenie" />
+        <text name="task_Feeding"       text="Karmienie" />
+        <text name="task_Cutting"       text="Cięcie" />
+        <text name="task_Cultivating"   text="Uprawa" />
+        <text name="task_Ploughing"     text="Orka" />
+        <text name="task_Unloading"     text="Rozładunek" />
+        <text name="task_Transporting"  text="Transport" />
+        <text name="task_StumpCutting"  text="Niszczenie pni" />
+        <text name="task_WoodCrushing"  text="Rąbanie drewna" />
+        <text name="task_TreePlanting"  text="Sadzonki drzew" />
 
-        <text name="config_error"       text="'Glance' ma problem z zaladowaniem pliku 'Glance_Config.XML'.
-Prosze sprawdzic w kolnsoli w grze lub w 'LOG.TXT' szczególy lub po prosru usunac 'Glance_Config.XML'." />
+        <text name="config_error"       text="'Glance' ma problem z załadowaniem pliku 'Glance_Config.XML'.
+Proszę sprawdzić w kolnsoli w grze lub w 'LOG.TXT' szczegóły lub po prostu usunąć 'Glance_Config.XML'." />
 
-        <text name="GlanceMore"         text="Glance:Wiecej info." />
-        <text name="GlanceLess"         text="Glance:Mniej info."  />
+        <text name="GlanceMore"         text="Glance: Wiecej info." />
+        <text name="GlanceLess"         text="Glance: Mniej info." />
 
-        <text name="GlanceMinLevel"     text="Minimalny poziom powiadomien ustawiono na: %d" />
+        <text name="GlanceMinLevel"     text="Poziom powiadomień: %d" />
     </texts>
 </l10n>

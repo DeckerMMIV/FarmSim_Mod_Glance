@@ -1,48 +1,61 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="21">
     <author>Freelance Modding Crew</author>
-    <version>2.1.10</version>
-    <contributors>SchorschiBW, ja_pizgam, Gonimy_Vetrom, JakobT</contributors>
+    <version>2.3.7</version>
+    <contributors>SchorschiBW, ja_pizgam, Gonimy_Vetrom, JakobT, pokers, gighen, SicFR57</contributors>
     
     <title>
         <en>Glance</en>
         <de>Glance</de>
         <pl>Glance</pl>
         <ru>Glance</ru>
+        <hu>Glance</hu>
+        <it>Glance</it>
+        <fr>Glance</fr>
     </title>
 
     <description>
         <en>
-<![CDATA[A notification-and-status utility that can be configured to show only what
-you need to see
-
+<![CDATA[A notification-and-status utility that can be configured to show only what you need to see
 
 Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
         </en>
         
         <de> 
-<![CDATA[Ein Mitteilungs- und Status-Tool das so konfiguriert werden kann dass man 
-nur das sieht was man braucht.
-
+<![CDATA[Ein Mitteilungs- und Status-Tool das so konfiguriert werden kann dass man  nur das sieht was man braucht.
 
 Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
         </de>
         
         <pl> 
-<![CDATA[Użyteczne narzędzie powiadamiania i statusu, które może być skonfigurowane
-tak, aby pokazywać to, co chcesz zobaczyć. 
-
+<![CDATA[Użyteczne narzędzie powiadamiania i statusu, które może być skonfigurowane tak, aby pokazywać to, co chcesz zobaczyć. 
 
 Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
         </pl>         
         
         <ru> 
-<![CDATA[Утилита для отображения уведомлений/статуса техники и животных. Может работать в соответствии
-с настройками, чтобы показывать только то, что Вы хотите видеть. 
-
+<![CDATA[Утилита для отображения уведомлений/статуса техники и животных. Может работать в соответствии с настройками, чтобы показывать только то, что Вы хотите видеть. 
 
 Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
         </ru>
+        
+        <hu>
+<![CDATA[Egy állapot- és tevékenység kijelző mód, amiben te magad választhatod meg mit szeretnél látni.
+
+Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
+        </hu>
+        
+        <it>
+<![CDATA[Un servizio di notifica e stato che può essere configurato per mostrare solo quello che hai bisogno di vedere 
+
+Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
+        </it>
+        
+        <fr>
+<![CDATA[Un utilitaire de notification et statut qui peut être configuré pour afficher ce que vous voulez.
+
+Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
+        </fr>
     </description>
 
     <iconFilename>store_Glance.dds</iconFilename>
