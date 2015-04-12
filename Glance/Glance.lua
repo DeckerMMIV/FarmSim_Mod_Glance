@@ -223,6 +223,12 @@ function Glance:loadMap(name)
     self:loadConfig()
     --
     Glance.discoverLocationOfSchweineDaten()    
+    
+    --
+    local fillableMaxFilltypes = 2^Fillable.sendNumBits
+    
+    -- Support for Saegewerk
+    Glance.FILLTYPE_BOARDWOOD = fillableMaxFilltypes + 1
 end;
 
 function Glance:deleteMap()
@@ -506,6 +512,17 @@ function Glance:getDefaultConfig()
 ,'        <notification  enabled="false" type="placeable:MischStation:silage"           level="'..dnl(-1)..'"   whenBelow="1"   whenAbove=""  color="yellow"  text="Silage" /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="true"  type="placeable:MischStation:forage"           level="'..dnl( 0)..'"   whenBelow="10"  whenAbove=""  color="yellow"  text="TMR"    /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="false" type="placeable:MischStation"                  level="'..dnl(-1)..'"   whenBelow="10"  whenAbove=""  color="yellow"                /> <!-- threshold unit is "percentage" -->'
+
+
+,'        <notification  enabled="false" type="placeable:Saegewerk:woodChips"                  level="'..dnl(-1)..'" > <!-- threshold unit is "percentage" -->'
+,'              <threshold  level="'..dnl( 1)..'"  whenBelow=""     whenAbove="99.99" color="red"       />'
+,'              <threshold  level="'..dnl( 0)..'"  whenBelow=""     whenAbove="95"    color="yellow"    />'
+,'        </notification>'
+,'        <notification  enabled="false" type="placeable:Saegewerk:boardWood"                  level="'..dnl(-1)..'" > <!-- threshold unit is "percentage" -->'
+,'              <threshold  level="'..dnl( 1)..'"  whenBelow=""     whenAbove="99.99" color="red"       />'
+,'              <threshold  level="'..dnl( 0)..'"  whenBelow=""     whenAbove="95"    color="yellow"    />'
+,'        </notification>'
+
 ,''
 ,'        <!-- Additional mods -->'
 ,'        <notification  enabled="true"  type="engineOnButNotControlled"  level="'..dnl( 0)..'"   color="yellow"/>'
@@ -1098,7 +1115,58 @@ function Glance:makePlaceablesLine(dt, notifyList)
                             updateNotification(placeableType, itemCount)
                         end
                     end
+                end
+            elseif string.find(plcXmlFilename, "saegewerk") ~= nil then
+                local placeableType = "Saegewerk"
+                local ntfySaegewerk = {}
+                for fillType,fillDesc in pairs(Fillable.fillTypeIndexToDesc) do
+                    local fillName = (fillType ~= Fillable.FILLTYPE_UNKNOWN and fillDesc.name or nil)
+                    local ntfy = getNotification(placeableType, fillName)
+                    if ntfy ~= nil then
+                        ntfySaegewerk[fillType] = ntfy
+                    end
+                end
+                local ntfy = getNotification(placeableType, "boardWood")
+                if ntfy ~= nil then
+                    ntfySaegewerk[Glance.FILLTYPE_BOARDWOOD] = ntfy
+                end
+                --
+                funcTestPlaceable = function(plc)
+                    -- Make sure the variables we expect, are actually there.
+                    if not ( plc.FabrikScriptDirtyFlag ~= nil and plc.Produkte ~= nil )
+                    then
+                        return
+                    end
+                    --
+                    local fillLevels = {}
                     
+                    if plc.Produkte.boardwood ~= nil then
+                        fillLevels[Glance.FILLTYPE_BOARDWOOD] = 100 * plc.Produkte.boardwood.fillLevel / plc.Produkte.boardwood.capacity
+                    end
+                    if plc.Produkte.woodChips ~= nil then
+                        fillLevels[Fillable.FILLTYPE_WOODCHIPS] = 100 * plc.Produkte.woodChips.fillLevel / plc.Produkte.woodChips.capacity
+                    end
+                    
+                    --if isNotifyEnabled(ntfySaegewerk[Fillable.FILLTYPE_UNKNOWN]) then
+                    --    local res = isBreakingThresholds(ntfySaegewerk[Fillable.FILLTYPE_UNKNOWN], minPct)
+                    --    if res then
+                    --        updateNotification(placeableType, 1, Fillable.FILLTYPE_UNKNOWN, res.value, nil, res.threshold.color)
+                    --    end
+                    --else
+                        local itemCount = nil
+                        for fillType,ntfy in pairs(ntfySaegewerk) do
+                            if fillType ~= Fillable.FILLTYPE_UNKNOWN then
+                                local res = isBreakingThresholds(ntfy, fillLevels[fillType])
+                                if res then
+                                    updateNotification(placeableType, nil, fillType, res.value, nil, res.threshold.color)
+                                    itemCount = 1
+                                end
+                            end
+                        end
+                        if itemCount ~= nil then
+                            updateNotification(placeableType, itemCount)
+                        end
+                    --end
                 end
             else
                 -- TODO - Add other useful placeables???
@@ -1114,6 +1182,16 @@ function Glance:makePlaceablesLine(dt, notifyList)
 
        
         --
+        local function getFillType_NameI18N(fillType)
+            if fillType <= Fillable.NUM_FILLTYPES then
+                return Fillable.fillTypeIndexToDesc[fillType].nameI18N
+            end
+            if fillType == Glance.FILLTYPE_BOARDWOOD then
+                return "BoardWood" -- TODO g_i18n:getText()
+            end
+            return "unknown"
+        end
+        
         for typ,elem in pairs(foundNotifications) do
             if g_i18n:hasText("TypeDesc_"..typ) then
                 typ = g_i18n:getText("TypeDesc_"..typ)
@@ -1130,7 +1208,7 @@ function Glance:makePlaceablesLine(dt, notifyList)
                 local prefix=":"
                 for fillType,fillPct in pairs(elem.fillLevels) do
                     if fillType ~= Fillable.FILLTYPE_UNKNOWN then
-                        txt = txt .. (Glance.nonVehiclesFillLevelFormat):format(prefix, Fillable.fillTypeIndexToDesc[fillType].nameI18N, ("%.0f%%"):format(fillPct))
+                        txt = txt .. (Glance.nonVehiclesFillLevelFormat):format(prefix, getFillType_NameI18N(fillType), ("%.0f%%"):format(fillPct))
                         prefix=","
                     end
                 end
