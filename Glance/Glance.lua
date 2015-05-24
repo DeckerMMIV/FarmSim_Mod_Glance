@@ -85,6 +85,10 @@
 spaceraver:
     http://fs-uk.com/forum/index.php?topic=154077.msg1049475#msg1049475
     "plugins" support
+    
+Dzi4d3k:
+    http://fs-uk.com/forum/index.php?topic=171211.msg1154025#msg1154025
+    Player stats
 --]]
 
 Glance = {}
@@ -211,13 +215,7 @@ function Glance:loadMap(name)
         ,{ g_i18n:getText("southwest") ,g_i18n:getText("south")    ,g_i18n:getText("southeast") }
         };
         -- If some fruit-name could not be found, try using the map-mod's own g_i18n:getText() function
-        if g_currentMission.missionInfo and g_currentMission.missionInfo.map and g_currentMission.missionInfo.map.customEnvironment then
-            local env0 = getfenv(0)
-            local mapMod = env0[g_currentMission.missionInfo.map.customEnvironment]
-            if mapMod ~= nil and mapMod.g_i18n ~= nil then
-                self.mapGI18N = mapMod.g_i18n;
-            end
-        end;
+        self.i18n = (g_currentMission.missionInfo.customEnvironment ~= nil) and _G[g_currentMission.missionInfo.customEnvironment].g_i18n or g_i18n;
     end
     --
     self:loadConfig()
@@ -226,14 +224,21 @@ function Glance:loadMap(name)
     
     --
     local fillableMaxFilltypes = 2^Fillable.sendNumBits
+    local function nextFilltype()
+        fillableMaxFilltypes = fillableMaxFilltypes + 1
+        return fillableMaxFilltypes
+    end
     
     -- Support for Saegewerk
-    Glance.FILLTYPE_BOARDWOOD = fillableMaxFilltypes + 1
+    Glance.FILLTYPE_BOARDWOOD   = nextFilltype() --fillableMaxFilltypes + 1
+    Glance.FILLTYPE_LOGS        = nextFilltype() --fillableMaxFilltypes + 2
+    ---- Support for Lettuce_Greenhouse
+    Glance.FILLTYPE_LETTUCE     = nextFilltype() --fillableMaxFilltypes + 3
 end;
 
 function Glance:deleteMap()
   --Glance.soilModLayers = nil;
-  self.mapGI18N = nil;
+  self.i18n = nil;
   Glance.initialized = 0;
 end;
 
@@ -316,7 +321,7 @@ function Glance:update(dt)
             table.insert(self.linesNonVehicles, lineNonVehicles)
         end
 
-        local lineNonVehicles = {}
+        lineNonVehicles = {}
         Glance.makeFieldsLine(self, Glance.sumTime, lineNonVehicles);
         if next(lineNonVehicles) then
             table.insert(self.linesNonVehicles, lineNonVehicles)
@@ -513,14 +518,46 @@ function Glance:getDefaultConfig()
 ,'        <notification  enabled="true"  type="placeable:MischStation:forage"           level="'..dnl( 0)..'"   whenBelow="10"  whenAbove=""  color="yellow"  text="TMR"    /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="false" type="placeable:MischStation"                  level="'..dnl(-1)..'"   whenBelow="10"  whenAbove=""  color="yellow"                /> <!-- threshold unit is "percentage" -->'
 
-
-,'        <notification  enabled="false" type="placeable:Saegewerk:woodChips"                  level="'..dnl(-1)..'" > <!-- threshold unit is "percentage" -->'
-,'              <threshold  level="'..dnl( 1)..'"  whenBelow=""     whenAbove="99.99" color="red"       />'
-,'              <threshold  level="'..dnl( 0)..'"  whenBelow=""     whenAbove="95"    color="yellow"    />'
+,'        <notification  enabled="true" type="placeable:Saegewerk:woodChips"   level="'..dnl(-1)..'" > <!-- threshold unit is "percentage" -->'
+,'              <threshold  level="'..dnl( 1)..'"  whenAbove="99.99" color="red"       />'
+,'              <threshold  level="'..dnl( 0)..'"  whenAbove="95"    color="yellow"    />'
 ,'        </notification>'
-,'        <notification  enabled="false" type="placeable:Saegewerk:boardWood"                  level="'..dnl(-1)..'" > <!-- threshold unit is "percentage" -->'
-,'              <threshold  level="'..dnl( 1)..'"  whenBelow=""     whenAbove="99.99" color="red"       />'
-,'              <threshold  level="'..dnl( 0)..'"  whenBelow=""     whenAbove="95"    color="yellow"    />'
+,'        <notification  enabled="true" type="placeable:Saegewerk:boardWood"   level="'..dnl(-1)..'" > <!-- threshold unit is "percentage" -->'
+,'              <threshold  level="'..dnl( 1)..'"  whenAbove="99.99" color="red"       />'
+,'              <threshold  level="'..dnl( 0)..'"  whenAbove="95"    color="yellow"    />'
+,'        </notification>'
+,'        <notification  enabled="false" type="placeable:Saegewerk:fuel"        level="'..dnl(-1)..'" > <!-- threshold unit is "percentage" -->'
+,'              <threshold  level="'..dnl( 1)..'"  whenBelow="1"     color="red"       />'
+,'              <threshold  level="'..dnl( 0)..'"  whenBelow="3"     color="yellow"    />'
+,'        </notification>'
+,'        <notification  enabled="false" type="placeable:Saegewerk:logs"        level="'..dnl(-1)..'" > <!-- threshold unit is "percentage" -->'
+,'              <threshold  level="'..dnl( 1)..'"  whenBelow="1"     color="red"       />'
+,'              <threshold  level="'..dnl( 0)..'"  whenBelow="5"     color="yellow"    />'
+,'        </notification>'
+
+,'        <notification  enabled="true" type="placeable:LettuceGreenhouse:lettuce"     level="'..dnl(-1)..'" > <!-- threshold unit is "percentage" -->'
+,'              <threshold  level="'..dnl( 1)..'"  whenAbove="99.99" color="red"    />'
+,'              <threshold  level="'..dnl( 0)..'"  whenAbove="95"    color="yellow" />'
+,'        </notification>'
+,'        <notification  enabled="true" type="placeable:LettuceGreenhouse:chaff"       level="'..dnl(-1)..'" > <!-- threshold unit is "percentage" -->'
+,'              <threshold  level="'..dnl( 1)..'"  whenAbove="99.99" color="red"    />'
+,'              <threshold  level="'..dnl( 0)..'"  whenAbove="95"    color="yellow" />'
+,'        </notification>'
+,'        <notification  enabled="false" type="placeable:LettuceGreenhouse:fuel"        level="'..dnl(-1)..'" > <!-- threshold unit is "percentage" -->'
+,'              <threshold  level="'..dnl( 1)..'"  whenBelow="1"     color="red"       />'
+,'              <threshold  level="'..dnl( 0)..'"  whenBelow="3"     color="yellow"    />'
+,'        </notification>'
+,'        <notification  enabled="false" type="placeable:LettuceGreenhouse:water"       level="'..dnl(-1)..'" > <!-- threshold unit is "percentage" -->'
+,'              <threshold  level="'..dnl( 1)..'"  whenBelow="1"     color="red"       />'
+,'              <threshold  level="'..dnl( 0)..'"  whenBelow="3"     color="yellow"    />'
+,'        </notification>'
+,'        <notification  enabled="false" type="placeable:LettuceGreenhouse:seeds"       level="'..dnl(-1)..'" > <!-- threshold unit is "percentage" -->'
+,'              <threshold  level="'..dnl( 1)..'"  whenBelow="1"     color="red"       />'
+,'              <threshold  level="'..dnl( 0)..'"  whenBelow="3"     color="yellow"    />'
+,'        </notification>'
+,'        <notification  enabled="false" type="placeable:LettuceGreenhouse:fertilizer"  level="'..dnl(-1)..'" > <!-- threshold unit is "percentage" -->'
+,'              <threshold  level="'..dnl( 1)..'"  whenBelow="1"     color="red"       />'
+,'              <threshold  level="'..dnl( 0)..'"  whenBelow="3"     color="yellow"    />'
 ,'        </notification>'
 
 ,''
@@ -1023,7 +1060,74 @@ function Glance:makePlaceablesLine(dt, notifyList)
             local funcTestPlaceable = nil;
 
             -- plcXmlFilename contains placeable-name in lowercase
-            if string.find(plcXmlFilename, "greenhouse") ~= nil then
+            if string.find(plcXmlFilename, "lettuce_greenhouse") ~= nil then
+                local placeableType = "LettuceGreenhouse"
+                local ntfyLettuceGreenhouse = {}
+                for fillType,fillDesc in pairs(Fillable.fillTypeIndexToDesc) do
+                    local fillName = (fillType ~= Fillable.FILLTYPE_UNKNOWN and fillDesc.name or nil)
+                    local ntfy = getNotification(placeableType, fillName)
+                    if ntfy ~= nil then
+                        ntfyLettuceGreenhouse[fillType] = ntfy
+                    end
+                end
+                --
+                local lettuceGreenhouseSpecialFillTypes = {
+                    [Glance.FILLTYPE_LETTUCE]="lettuce",
+                }
+                for fillType,fillName in pairs(lettuceGreenhouseSpecialFillTypes) do
+                    local ntfy = getNotification(placeableType, fillName)
+                    if ntfy ~= nil then
+                        ntfyLettuceGreenhouse[fillType] = ntfy
+                    end
+                end
+                --
+                funcTestPlaceable = function(plc)
+                    -- Make sure the variables we expect, are actually there.
+                    if not ( plc.FabrikScriptDirtyFlag ~= nil and plc.Produkte ~= nil )
+                    then
+                        return
+                    end
+                    --
+                    local fillLevels = {}
+                    
+                    if plc.Produkte ~= nil then
+                        if plc.Produkte.lettuceboxes ~= nil then
+                            fillLevels[Glance.FILLTYPE_LETTUCE] = 100 * plc.Produkte.lettuceboxes.fillLevel / plc.Produkte.lettuceboxes.capacity
+                        end
+                        if plc.Produkte.lettuce_waste ~= nil then
+                            fillLevels[Fillable.FILLTYPE_CHAFF] = 100 * plc.Produkte.lettuce_waste.fillLevel / plc.Produkte.lettuce_waste.capacity
+                        end
+                    end
+                    if plc.Rohstoffe ~= nil then
+                        if plc.Rohstoffe.Dungemittel ~= nil then
+                            fillLevels[Fillable.FILLTYPE_FERTILIZER] = 100 * plc.Rohstoffe.Dungemittel.fillLevel / plc.Rohstoffe.Dungemittel.capacity
+                        end
+                        if plc.Rohstoffe.Diesel ~= nil then
+                            fillLevels[Fillable.FILLTYPE_FUEL] = 100 * plc.Rohstoffe.Diesel.fillLevel / plc.Rohstoffe.Diesel.capacity
+                        end
+                        if plc.Rohstoffe.Saatgut ~= nil then
+                            fillLevels[Fillable.FILLTYPE_SEEDS] = 100 * plc.Rohstoffe.Saatgut.fillLevel / plc.Rohstoffe.Saatgut.capacity
+                        end
+                        if plc.Rohstoffe.Wasser ~= nil then
+                            fillLevels[Fillable.FILLTYPE_WATER] = 100 * plc.Rohstoffe.Wasser.fillLevel / plc.Rohstoffe.Wasser.capacity
+                        end
+                    end
+                    
+                    local itemCount = nil
+                    for fillType,ntfy in pairs(ntfyLettuceGreenhouse) do
+                        if fillType ~= Fillable.FILLTYPE_UNKNOWN then
+                            local res = isBreakingThresholds(ntfy, fillLevels[fillType])
+                            if res then
+                                updateNotification(placeableType, nil, fillType, res.value, nil, res.threshold.color)
+                                itemCount = 1
+                            end
+                        end
+                    end
+                    if itemCount ~= nil then
+                        updateNotification(placeableType, itemCount)
+                    end
+                end
+            elseif string.find(plcXmlFilename, "greenhouse") ~= nil then
                 local placeableType = "Greenhouse"
                 local ntfyGreenhouse = {}
                 ntfyGreenhouse[Fillable.FILLTYPE_WATER]   = getNotification(placeableType, "water")
@@ -1126,9 +1230,16 @@ function Glance:makePlaceablesLine(dt, notifyList)
                         ntfySaegewerk[fillType] = ntfy
                     end
                 end
-                local ntfy = getNotification(placeableType, "boardWood")
-                if ntfy ~= nil then
-                    ntfySaegewerk[Glance.FILLTYPE_BOARDWOOD] = ntfy
+                --
+                local saegewerkSpecialFillTypes = {
+                    [Glance.FILLTYPE_BOARDWOOD]="boardWood",
+                    [Glance.FILLTYPE_LOGS]="logs",
+                }
+                for fillType,fillName in pairs(saegewerkSpecialFillTypes) do
+                    local ntfy = getNotification(placeableType, fillName)
+                    if ntfy ~= nil then
+                        ntfySaegewerk[fillType] = ntfy
+                    end
                 end
                 --
                 funcTestPlaceable = function(plc)
@@ -1140,33 +1251,36 @@ function Glance:makePlaceablesLine(dt, notifyList)
                     --
                     local fillLevels = {}
                     
-                    if plc.Produkte.boardwood ~= nil then
-                        fillLevels[Glance.FILLTYPE_BOARDWOOD] = 100 * plc.Produkte.boardwood.fillLevel / plc.Produkte.boardwood.capacity
+                    if plc.Produkte ~= nil then
+                        if plc.Produkte.boardwood ~= nil then
+                            fillLevels[Glance.FILLTYPE_BOARDWOOD] = 100 * plc.Produkte.boardwood.fillLevel / plc.Produkte.boardwood.capacity
+                        end
+                        if plc.Produkte.woodChips ~= nil then
+                            fillLevels[Fillable.FILLTYPE_WOODCHIPS] = 100 * plc.Produkte.woodChips.fillLevel / plc.Produkte.woodChips.capacity
+                        end
                     end
-                    if plc.Produkte.woodChips ~= nil then
-                        fillLevels[Fillable.FILLTYPE_WOODCHIPS] = 100 * plc.Produkte.woodChips.fillLevel / plc.Produkte.woodChips.capacity
+                    if plc.Rohstoffe ~= nil then
+                        if plc.Rohstoffe.Brennstoffe ~= nil then
+                            fillLevels[Fillable.FILLTYPE_FUEL] = 100 * plc.Rohstoffe.Brennstoffe.fillLevel / plc.Rohstoffe.Brennstoffe.capacity
+                        end
+                        if plc.Rohstoffe.Holz ~= nil then
+                            fillLevels[Glance.FILLTYPE_LOGS] = 100 * plc.Rohstoffe.Holz.fillLevel / plc.Rohstoffe.Holz.capacity
+                        end
                     end
                     
-                    --if isNotifyEnabled(ntfySaegewerk[Fillable.FILLTYPE_UNKNOWN]) then
-                    --    local res = isBreakingThresholds(ntfySaegewerk[Fillable.FILLTYPE_UNKNOWN], minPct)
-                    --    if res then
-                    --        updateNotification(placeableType, 1, Fillable.FILLTYPE_UNKNOWN, res.value, nil, res.threshold.color)
-                    --    end
-                    --else
-                        local itemCount = nil
-                        for fillType,ntfy in pairs(ntfySaegewerk) do
-                            if fillType ~= Fillable.FILLTYPE_UNKNOWN then
-                                local res = isBreakingThresholds(ntfy, fillLevels[fillType])
-                                if res then
-                                    updateNotification(placeableType, nil, fillType, res.value, nil, res.threshold.color)
-                                    itemCount = 1
-                                end
+                    local itemCount = nil
+                    for fillType,ntfy in pairs(ntfySaegewerk) do
+                        if fillType ~= Fillable.FILLTYPE_UNKNOWN then
+                            local res = isBreakingThresholds(ntfy, fillLevels[fillType])
+                            if res then
+                                updateNotification(placeableType, nil, fillType, res.value, nil, res.threshold.color)
+                                itemCount = 1
                             end
                         end
-                        if itemCount ~= nil then
-                            updateNotification(placeableType, itemCount)
-                        end
-                    --end
+                    end
+                    if itemCount ~= nil then
+                        updateNotification(placeableType, itemCount)
+                    end
                 end
             else
                 -- TODO - Add other useful placeables???
@@ -1179,7 +1293,6 @@ function Glance:makePlaceablesLine(dt, notifyList)
                 end
             end
         end
-
        
         --
         local function getFillType_NameI18N(fillType)
@@ -1188,6 +1301,12 @@ function Glance:makePlaceablesLine(dt, notifyList)
             end
             if fillType == Glance.FILLTYPE_BOARDWOOD then
                 return "BoardWood" -- TODO g_i18n:getText()
+            end
+            if fillType == Glance.FILLTYPE_LOGS then
+                return "Logs" -- TODO g_i18n:getText()
+            end
+            if fillType == Glance.FILLTYPE_LETTUCE then
+                return "Lettuce" -- TODO g_i18n:getText()
             end
             return "unknown"
         end
@@ -1256,169 +1375,6 @@ function Glance:makeComplexBga(dt, notifyList)
 --]]
     
 end
-
------
-
-
---[[
--- Support for SoilMod v1.x.x
-function Glance:makeSoilCondition(dt, notifyList)
-    if fmcSoilMod ~= nil then
-        if Glance.soilModLayers == nil then
-            -- Copied from PdaPlugin_SoilCondition.LUA and modified for Glance
-            Glance.soilModLayers = {
-                {
-                    layerId = g_currentMission.fmcFoliageSoil_pH,
-                    func = function(self, x, z, widthX, widthZ, heightX, heightZ)
-                        local sumPixels1,numPixels1 = getDensityParallelogram(self.layerId, x, z, widthX, widthZ, heightX, heightZ, 0, 3)
-
-                        local txt = nil
-                        if numPixels1>0 then
-                            local phValue = 0;
-                            local phDenomination = ""; --g_i18n:getText("NoCalculation")
-                            if (fmcSoilMod and fmcSoilMod.density_to_pH and fmcSoilMod.pH_to_Denomination) then
-                                phValue         = fmcSoilMod.density_to_pH(sumPixels1, numPixels1, 3)
-                                phDenomination  = fmcSoilMod.pH_to_Denomination(phValue)
-                                if g_i18n:hasText(phDenomination) then
-                                    phDenomination = g_i18n:getText(phDenomination)
-                                end
-                            end
-                            txt = (g_i18n:getText("SoilpH_value_denomination")):format(phValue, phDenomination)
-                        end
-                        return txt
-                    end,
-                },
-                {
-                    layerId = g_currentMission.fmcFoliageFertilizerOrganic,
-                    func = function(self, x, z, widthX, widthZ, heightX, heightZ)
-                        local sumPixels1,numPixels1 = getDensityParallelogram(self.layerId, x, z, widthX, widthZ, heightX, heightZ, 0, 2)
-
-                        local txt = nil
-                        if sumPixels1>0 then
-                            txt = (g_i18n:getText("FertilizerOrganic_Level")):format(sumPixels1/numPixels1)
-                        end
-                        return txt
-                    end,
-                },
-                {
-                    layerId = g_currentMission.fmcFoliageFertilizerSynthetic,
-                    func = function(self, x, z, widthX, widthZ, heightX, heightZ)
-                        local sumPixels1,numPixels1 = getDensityParallelogram(self.layerId, x, z, widthX, widthZ, heightX, heightZ, 0, 1)
-                        local sumPixels2,numPixels2 = getDensityParallelogram(self.layerId, x, z, widthX, widthZ, heightX, heightZ, 1, 1)
-
-                        local txt = nil
-                        if sumPixels1>0 and sumPixels2>0 then
-                            txt = (g_i18n:getText("FertilizerSynthetic_Type_pct")):format("C", 100 * (sumPixels1/numPixels1+sumPixels2/numPixels2)/2)
-                        elseif sumPixels1>0 then
-                            txt = (g_i18n:getText("FertilizerSynthetic_Type_pct")):format("A", 100 * sumPixels1/numPixels1)
-                        elseif sumPixels2>0 then
-                            txt = (g_i18n:getText("FertilizerSynthetic_Type_pct")):format("B", 100 * sumPixels2/numPixels2)
-                        end
-                        return txt
-                    end,
-                },
-                {
-                    layerId = g_currentMission.fmcFoliageHerbicide,
-                    func = function(self, x, z, widthX, widthZ, heightX, heightZ)
-                        local sumPixels1,numPixels1 = getDensityParallelogram(self.layerId, x, z, widthX, widthZ, heightX, heightZ, 0, 1)
-                        local sumPixels2,numPixels2 = getDensityParallelogram(self.layerId, x, z, widthX, widthZ, heightX, heightZ, 1, 1)
-
-                        local txt = nil
-                        if sumPixels1>0 and sumPixels2>0 then
-                            txt = (g_i18n:getText("Herbicide_Type_pct")):format("C", 100 * (sumPixels1/numPixels1+sumPixels2/numPixels2)/2)
-                        elseif sumPixels1>0 then
-                            txt = (g_i18n:getText("Herbicide_Type_pct")):format("A", 100 * sumPixels1/numPixels1)
-                        elseif sumPixels2>0 then
-                            txt = (g_i18n:getText("Herbicide_Type_pct")):format("B", 100 * sumPixels2/numPixels2)
-                        end
-                        return txt
-                    end,
-                },
-                {
-                    layerId = g_currentMission.fmcFoliageWeed,
-                    func = function(self, x, z, widthX, widthZ, heightX, heightZ)
-                        local sumPixels1,numPixels1 = getDensityParallelogram(self.layerId, x, z, widthX, widthZ, heightX, heightZ, 0, 2)
-                        --local sumPixels2,numPixels2 = getDensityParallelogram(self.layerId, x, z, widthX, widthZ, heightX, heightZ, 2, 1)
-
-                        local txt = nil
-                        if sumPixels1>0 and numPixels1>0 then
-                            local weedPct = (sumPixels1/(3*numPixels1))
-                            --local alivePct = sumPixels2/numPixels2
-                            if weedPct >= 1 then
-                                txt = (g_i18n:getText("WeedInfestation_pct")):format(weedPct*100)
-                            end
-                        end
-                        return txt
-                    end,
-                },
-                --{
-                --    layerId = -1,
-                --    func = function(self, x, z, widthX, widthZ, heightX, heightZ)
-                --        return ""; -- Blank line
-                --    end,
-                --},
-                --{
-                --    layerId = -1,
-                --    func = function(self, x, z, widthX, widthZ, heightX, heightZ)
-                --        -- Fruits..
-                --        local foundFruits = nil
-                --        for fruitIndex,fruit in pairs(g_currentMission.fruits) do
-                --            if fruit.id ~= nil and fruit.id ~= 0 then
-                --                setDensityCompareParams(fruit.id, "between", 1, 7)  -- growing #1-#4, harvest #5-#7
-                --                local _,numPixels1 = getDensityParallelogram(fruit.id, x, z, widthX, widthZ, heightX, heightZ, 0, g_currentMission.numFruitStateChannels)
-                --                setDensityCompareParams(fruit.id, "greater", 9) -- defoliaged #10-..
-                --                local _,numPixels2 = getDensityParallelogram(fruit.id, x, z, widthX, widthZ, heightX, heightZ, 0, g_currentMission.numFruitStateChannels)
-                --                setDensityCompareParams(fruit.id, "greater", 0)
-                --                --
-                --                if numPixels1 > 0 or numPixels2 > 0 then
-                --                    local fillTypeIndex = FruitUtil.fruitTypeToFillType[fruitIndex]
-                --                    local fillTypeName = Fillable.fillTypeIndexToDesc[fillTypeIndex].nameI18N
-                --                    if fillTypeName == nil then
-                --                        fillTypeName = Fillable.fillTypeIndexToDesc[fillTypeIndex].name
-                --                        if g_i18n:hasText(fillTypeName) then
-                --                            fillTypeName = g_i18n:getText(fillTypeName)
-                --                        end
-                --                    end
-                --                    foundFruits = ((foundFruits == nil) and "" or foundFruits..", ") .. fillTypeName
-                --                end
-                --            end
-                --        end
-                --        return (g_i18n:getText("CropsInArea")):format(foundFruits or "-")
-                --    end,
-                --},
-            }
-        end
-
-        -- Copied from PdaPlugin_SoilCondition.LUA
-        local x,y,z
-        if g_currentMission.controlPlayer and g_currentMission.player ~= nil then
-            x,y,z = getWorldTranslation(g_currentMission.player.rootNode)
-        elseif g_currentMission.controlledVehicle ~= nil then
-            x,y,z = getWorldTranslation(g_currentMission.controlledVehicle.rootNode)
-        end
-
-        if x ~= nil and x==x and z==z then
-            local color = "orange"; -- Glance.colors["orange"];
-            local squareSize = 10
-
-            local widthX, widthZ, heightX, heightZ = squareSize-0.5,0, 0,squareSize-0.5
-            x, z = x - (squareSize/2), z - (squareSize/2)
-            for _,layer in ipairs(Glance.soilModLayers) do
-                if layer.layerId ~= nil and layer.layerId ~= 0 and layer.func ~= nil then
-                    local txt = layer:func(x, z, widthX, widthZ, heightX, heightZ)
-                    if txt ~= nil then
-                        table.insert(notifyList, { Glance.colors[color], txt });
-                    end
-                end
-            end
-
-            --if next(notifyList) then
-            --    table.insert(notifyList, 1, { Glance.colors[color], g_i18n:getText("SoilCondition") })
-            --end
-        end
-    end
-end
---]]
 
 -----
 
@@ -2375,13 +2331,10 @@ function Glance:static_fillTypeLevelPct(dt, staticParms, veh, implements, cells,
         fillNme = string.sub(fillNme,1,fillNme:len() - 8)
     end
     for _,pfx in pairs({"","filltype_"}) do
-        if g_i18n:hasText(pfx..fillNme) then
-          fillNme = g_i18n:getText(pfx..fillNme);
-          break
-        elseif self.mapGI18N ~= nil and self.mapGI18N:hasText(pfx..fillNme) then
-          fillNme = self.mapGI18N:getText(pfx..fillNme);
-          break
-        end;
+        if self.i18n:hasText(pfx..fillNme) then
+            fillNme = self.i18n:getText(pfx..fillNme);
+            break
+        end
     end
     --
     table.insert(cells["FillLevel"], { fillClr, string.format("%d", fillLvl)        } );
