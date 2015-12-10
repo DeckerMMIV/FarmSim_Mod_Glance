@@ -597,7 +597,7 @@ function Glance:getDefaultConfig()
 ,'        <column  enabled="true"  contains="ColumnDelim"                                          align="left"    minWidthText="I"                 text="" />'
 ,'        <column  enabled="true"  contains="FillTypeName"                                         align="left"    minWidthText=""  maxTextLen="12" />'
 ,'        <column  enabled="true"  contains="ColumnDelim"                  color="gray"            align="center"  minWidthText=""                  text="'..Glance.cColumnDelimChar..'" />'
-,'        <column  enabled="true"  contains="ActiveTask;EngineOn"                                  align="left"    minWidthText=""                  />'
+,'        <column  enabled="true"  contains="ActiveTask;EngineOn;BalerNumFoilsNets"                align="left"    minWidthText=""                  />'
 ,'    </vehiclesColumnOrder>'
 ,'</glanceConfig>'
     }
@@ -1889,7 +1889,16 @@ end
 function Glance:getCellData_ActiveTask(dt, lineColor, colParms, cells, veh)
     return cells["ActiveTask"]
 end
-
+--
+function Glance:getCellData_BalerNumFoilsNets(dt, lineColor, colParms, cells, veh)
+    return cells["balerNumFoilsNets"]
+end
+function Glance:getCellData_BalerNumFoils(dt, lineColor, colParms, cells, veh)
+    return cells["balerNumFoils"]
+end
+function Glance:getCellData_BalerNumNets(dt, lineColor, colParms, cells, veh)
+    return cells["balerNumNets"]
+end
 -----
 
 function Glance:notify_vehicleBroken(dt, notifyParms, veh)
@@ -2345,10 +2354,50 @@ function Glance:static_fillTypeLevelPct(dt, staticParms, veh, implements, cells,
   return notifyLevel
 end
 
+-- https://github.com/DeckerMMIV/FarmSim_Mod_Glance/issues/8
+function Glance:static_balerNetWraps(dt, staticParms, veh, implements, cells, notify_lineColor)
+    local notifyLevel = 0
+    
+    cells["balerNumFoils"] = nil
+    cells["balerNumNets"] = nil
+    cells["balerNumFoilsNets"] = nil
+    
+    --
+    for _,obj in pairs(implements) do
+        if  obj.wrapperFoilHolders ~= nil 
+        and obj.baseFoilUsePerBale ~= nil 
+        and obj.baleSizeIndex ~= nil
+        and obj.baleSizes ~= nil
+        and obj.numNetWraps ~= nil
+        and obj.netRoleTop ~= nil
+        then
+          -- Krone Ultima
+          local foilLength = obj.wrapperFoilHolders[1].remainingFoilLength * 2;
+          local foilPerBale = obj.baseFoilUsePerBale * obj.baleSizes[obj.baleSizeIndex].size;
+          local numBalesFoil = (foilPerBale>0) and tostring(math.ceil(foilLength / foilPerBale)) or "-";
+    
+          local netPerBale = obj.numNetWraps * math.pi * obj.baleSizes[obj.baleSizeIndex].size;
+          local numBalesNet = (netPerBale>0) and tostring(math.ceil(obj.netRoleTop.length / netPerBale)) or "-";
+          
+          -- TODO: g_i18n'ify
+          -- TODO: Notification level/coloring.
+          cells["balerNumFoils"]     = { {getNotificationColor("default"), "Foils:"    .. numBalesFoil } }
+          cells["balerNumNets"]      = { {getNotificationColor("default"), "NetWraps:" .. numBalesNet  } }
+          cells["balerNumFoilsNets"] = { {getNotificationColor("default"), "Foils:" .. numBalesFoil .." / NetWraps:" .. numBalesNet } }   
+    
+          --
+          break
+        end
+    end
+    
+    return notifyLevel
+end
+
 
 Glance.staticCells = {}
 Glance.staticCells["activeTask"]         = { enabled=true }
 Glance.staticCells["fillTypeLevelPct"]   = { enabled=true }
+Glance.staticCells["balerNetWraps"]      = { enabled=true }
 
 function Glance:getNotificationsForSteerable(dt, cells, veh)
     -- Get attached-implements, and their attached-implements etc., up to 5 max.
