@@ -234,6 +234,13 @@ function Glance:loadMap(name)
     Glance.FILLTYPE_LOGS        = nextFilltype() --fillableMaxFilltypes + 2
     ---- Support for Lettuce_Greenhouse
     Glance.FILLTYPE_LETTUCE     = nextFilltype() --fillableMaxFilltypes + 3
+    
+    --
+    if g_i18n.globalI18N.getSpeedMeasuringUnit ~= nil then
+        Glance.c_SpeedUnit = g_i18n.globalI18N:getSpeedMeasuringUnit()  -- FS15
+    else
+        Glance.c_SpeedUnit = g_i18n:getText("speedometer")  -- FS2013
+    end
 end;
 
 function Glance:deleteMap()
@@ -282,15 +289,19 @@ function Glance:update(dt)
           self:loadConfig()
           --
           if Glance.failedConfigLoad ~= nil then
-            g_currentMission.inGameMessage:showMessage("Glance", g_i18n:getText("config_error"), 5000);
+            if g_currentMission.inGameMessage ~= nil then
+                g_currentMission.inGameMessage:showMessage("Glance", g_i18n:getText("config_error"), 5000);
+                Glance.failedConfigLoad = nil;
+            end
           end
       end
     end
-    --if Glance.failedConfigLoad ~= nil and Glance.failedConfigLoad > g_currentMission.time then
-    --    local secsRemain = math.floor((Glance.failedConfigLoad - g_currentMission.time) / 1000)
-    --    g_currentMission:addWarning(string.format(g_i18n:getText("config_error"), secsRemain), "bb", "cc");
-    --    --g_currentMission.inGameMessage:showMessage("Glance", g_i18n:getText("config_error"), 5000);
-    --end;
+--FS2013>   
+    if Glance.failedConfigLoad ~= nil and Glance.failedConfigLoad > g_currentMission.time then
+        local secsRemain = math.floor((Glance.failedConfigLoad - g_currentMission.time) / 1000)
+        g_currentMission:addWarning(string.format(g_i18n:getText("config_error"), secsRemain), "bb", "cc");
+    end;
+--<FS2013    
   end
   --
   Glance.sumTime = Glance.sumTime + dt;
@@ -2070,7 +2081,7 @@ function Glance:static_controllerAndMovement(dt, _, veh, implements, cells, noti
             cells["MovementSpeed"] = { { getNotificationColor(res.color, notifyLineColor), g_i18n:getText("speedIdle") } };
         end
     else
-        cells["MovementSpeed"] = { { getNotificationColor(notifyLineColor), string.format(g_i18n:getText("speed+Unit"), g_i18n:getSpeed(speedKmh), g_i18n.globalI18N:getSpeedMeasuringUnit()) } }
+        cells["MovementSpeed"] = { { getNotificationColor(notifyLineColor), string.format(g_i18n:getText("speed+Unit"), g_i18n:getSpeed(speedKmh), Glance.c_SpeedUnit) } }
     end
 
     ---
@@ -2127,24 +2138,24 @@ function Glance:static_activeTask(dt, staticParms, veh, implements, cells, notif
   local impStates = {}
   for _,imp in pairs(implements) do
     for _,spec in pairs(imp.specializations) do
-        if      Sprayer            == spec then impStates.isSprayerOn       = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn());
-        elseif  ManureSpreader     == spec then impStates.isSprayerOn       = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn());
-        elseif  ManureBarrel       == spec then impStates.isSprayerOn       = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn());
-        elseif  SowingMachine      == spec then impStates.isSeederOn        = (imp.movingDirection > 0 and imp.sowingMachineHasGroundContact and (not imp.needsActivation or (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn())));
+        if      Sprayer            == spec then impStates.isSprayerOn       = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+        elseif  ManureSpreader     == spec then impStates.isSprayerOn       = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+        elseif  ManureBarrel       == spec then impStates.isSprayerOn       = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+        elseif  SowingMachine      == spec then impStates.isSeederOn        = (imp.movingDirection > 0 and imp.sowingMachineHasGroundContact and (not imp.needsActivation or (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn));
         elseif  TreePlanter        == spec then impStates.isTreePlanterOn   = (imp.movingDirection > 0                                       and (not imp.needsActivation or (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn())));
         elseif  Cultivator         == spec then impStates.isCultivatorOn    = (imp.cultivatorHasGroundContact and (not imp.onlyActiveWhenLowered or imp:isLowered(false)) );
         elseif  Plough             == spec then impStates.isPloughOn        = imp.ploughHasGroundContact;
-        elseif  Combine            == spec then impStates.isHarvesterOn     = ((imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) and imp:getIsThreshingAllowed(false));
-        elseif  ForageWagon        == spec then impStates.isForageWagonOn   = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn());
-        elseif  Baler              == spec then impStates.isBalerOn         = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn());
-        elseif  Mower              == spec then impStates.isMowerOn         = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn());
-        elseif  Tedder             == spec then impStates.isTedderOn        = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn());
-        elseif  Windrower          == spec then impStates.isWindrowerOn     = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn());
-        elseif  FruitPreparer      == spec then impStates.isFruitPreparerOn = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn());
+        elseif  Combine            == spec then impStates.isHarvesterOn     = ((imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isThreshing) and imp:getIsThreshingAllowed(false);
+        elseif  ForageWagon        == spec then impStates.isForageWagonOn   = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+        elseif  Baler              == spec then impStates.isBalerOn         = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+        elseif  Mower              == spec then impStates.isMowerOn         = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+        elseif  Tedder             == spec then impStates.isTedderOn        = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+        elseif  Windrower          == spec then impStates.isWindrowerOn     = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+        elseif  FruitPreparer      == spec then impStates.isFruitPreparerOn = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
         elseif  BaleLoader         == spec then impStates.isBaleLoadingOn   = imp.isInWorkPosition;
         elseif  BaleWrapper        == spec then impStates.isBaleWrapperOn   = imp.baleWrapperState ~= nil and ((imp.baleWrapperState > 0) and (imp.baleWrapperState < 4));
         elseif  StrawBlower        == spec then impStates.isStrawBlowerOn   = (imp.tipState == Trailer.TIPSTATE_OPENING or imp.tipState == Trailer.TIPSTATE_OPEN);
-        elseif  MixerWagon         == spec then impStates.isMixerWagonOn    = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn());
+        elseif  MixerWagon         == spec then impStates.isMixerWagonOn    = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
         elseif  StumpCutter        == spec then impStates.isStumpCutterOn   = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn());
         elseif  WoodCrusher        == spec then impStates.isWoodCrusherOn   = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn());
         elseif  Cutter             == spec then impStates.isCutterOn        = false; -- TODO
@@ -2217,7 +2228,31 @@ function Glance:static_fillTypeLevelPct(dt, staticParms, veh, implements, cells,
     local fillLvl = nil;
     local fillPct = nil;
 
-    if obj.fillLevelMax and obj.fillLevel and obj.fillLevelMax > 0 and obj.fillLevel > 0 then
+--FS2013>
+    if obj.grainTankCapacity ~= nil and obj.grainTankCapacity > 0 and obj.grainTankFillLevel ~= nil and obj.currentGrainTankFruitType ~= nil then
+      if obj.grainTankFillLevel > 0 and obj.currentGrainTankFruitType ~= FruitUtil.FRUITTYPE_UNKNOWN then
+        fillTpe = FruitUtil.fruitTypeToFillType[obj.currentGrainTankFruitType];
+        fillLvl = obj.grainTankFillLevel;
+        fillPct = math.floor(obj.grainTankFillLevel / obj.grainTankCapacity * 100);
+        --
+        local res = isBreakingThresholds(Glance.notifications["grainTankFull"], fillPct)
+        if res then
+            fillClr = Utils.getNoNil(res.threshold.color, fillClr)
+            notifyLevel = math.max(notifyLevel, res.threshold.level)
+            -- For combines, when hired and grain-tank full, blink the icon.
+            if veh.mapAIHotspot ~= nil then
+                veh.mapAIHotspot:setBlinking(true == res.threshold.blinkIcon)
+            end
+        else
+            if veh.mapAIHotspot ~= nil then
+                veh.mapAIHotspot:setBlinking(false)
+            end
+        end
+        --
+        updateFill(fillTpe,obj.grainTankCapacity,obj.grainTankFillLevel,fillClr)
+      end;
+--<FS2013      
+    elseif obj.fillLevelMax and obj.fillLevel and obj.fillLevelMax > 0 and obj.fillLevel > 0 then
         -- Most likely a baleloader
         fillTpe = g_i18n:getText("bales");
         fillPct = math.floor(obj.fillLevel / obj.fillLevelMax * 100);
@@ -2466,7 +2501,8 @@ function Glance:draw()
     if Glance.forceHide or Glance.hide then
         return;
     end;
-    if (not Glance.ignoreHelpboxVisibility and g_currentMission.showHelpText) or g_currentMission.ingameMap.isFullSize then
+    if (not Glance.ignoreHelpboxVisibility and g_currentMission.showHelpText) 
+    or (g_currentMission.ingameMap ~= nil and g_currentMission.ingameMap.isFullSize) then
         return
     end
     --
