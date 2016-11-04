@@ -1,84 +1,12 @@
 ﻿--
 -- "Glance" - Similar to "Inspector" and "LoadStatus", but different.
 --
--- @team    Freelance Modding Crew (FMC)
--- @author  Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com
+-- @author  Decker_MMIV - fs-uk.com, modcentral.co.uk, forum.farming-simulator.com, modhoster.com
 -- @date    2013-10-xx
 --
 -- Modifikationen erst nach Rücksprache
 -- Do not edit without my permission
 --
--- @history
---  2013-October
---      v0.01       - Initial experiment
---      v0.05       - More information added
---      v0.06       - Detects VeG-S
---  2013-November
---      v0.07       - Misc. fixes regarding multiplayer
---      v0.08       - More fixes for multiplayer
---      v0.09       - If speed is higher than 1 km/h, then vehicle is considered "not blocked".
---  2013-December
---      v0.10       - Added X/Y world-coordinate. (My "cunning plan" is set on hold for now.)
---                  - Special handling of fill-types, testing/using "_windrow" or "filltype_".
---                  - DLC-Ursus BaleWrapper task added; Wrapping Bale.
---  2014-January
---      v0.11       - Begun refactoring code to allow customizable notification-levels, columns, colors, etc.
---      v0.12       - Added support for URF sowing-machine's sprayer.
---      v0.13       - Fully refactored to use GlanceConfig.XML file.
---      v0.14       - Misc. tweaks and added creation of GlanceConfig.XML.
---      v0.15       - Auto-reload GlanceConfig.XML when leaving ESC menu.
---      v0.16       - On a dedicated-server, do not create a GlanceConfig.XML.
---      v0.17       - Only create notifications when being a game client.
---                    A dedicated-server is a pure server without client.
---                    A player creating a multiplayer game-session is both client-and-server.
---      v0.20       - Mod description.
---                  - Tweaked GlanceConfig.XML and loading.
---      v0.21       - Yet another attempt at blocked/collided detection.
---                    Unfortunately this wont work with a dedicated-server as of yet!
---      v0.22       - Fixed crash with 'baleLoaderFull' notification - Reported by DrUptown.
---      v0.23       - Show warning, when can't (or wont) load GlanceConfig.XML.
---                  - Collision/blocked detection hopefully improved at bit.
---      v0.24       - Update notify-level when blocked.
---      v0.25       - Added InputBindings: GlanceMore, GlanceLess
---                    These can be used to increase/decrease the notification-level.
---      v0.26       - Check against notification levels for animal husbandry
---                  - Show notification-level when it is changed.
---  2014-February
---      v0.27       - Creation of GlanceConfig.XML now occurs in the MODS folder, to accommodate dedicated-server.
---                  - getVehicleName() function added to 'Vehicle' table.
---      v0.28       - Added notification of placeables; Greenhouse.
---                  - Tweaked getVehicleName() slighty.
---      v0.29       - Been informed following error in a multiplayer game (dedicated server):
---                      *** 30973.002423714 MoreRealistic - ERROR - RealisticVehicle.updateVehiclePosition - Service car - getLinearVelocity - impossible result returned. velx/vely/velz=-1.#IND/-1.#IND/-1.#IND
---                      *** 30973.002423714 MoreRealistic - ERROR - RealisticVehicle.updateVehiclePosition - Ifor Williams Flat Bed Trailer LM186 - getLinearVelocity - impossible result returned. velx/vely/velz=-1.#IND/-1.#IND/-1.#IND
---                      Error: LUA running function 'update'
---                      mods/zzz_Glance/Glance.lua(858) : attempt to index field '?' (a nil value)
---                      *** 30973.002423714 MoreRealistic - ERROR - RealisticVehicle.updateVehiclePosition - Service car - getLinearVelocity - impossible result returned. velx/vely/velz=-1.#IND/-1.#IND/-1.#IND
---                      [etc.]
---                  - Attempt at fixing the above in getCellData_VehicleAtWorldCorner(), getCellData_VehicleAtWorldPositionXZ() and getCellData_VehicleAtFieldNumber().
---  2014-July
---      v1.1.0      - Support for 'ForestMod'. Number of trees ready to fell.
---  2014-November
---      v2.0.0      - Upgraded to FS15.
---                  - A bit of cleanup, removal of non-functional code.
---                  - Added blinking of hired-helper icon when combine is full.
---      v2.0.1      - On dedicated server, will NOT attempt to create file; Mods\GlanceConfig.XML
---                  - Courseplay v4.00.0056 now has different way of telling if its driving.
---      v2.0.2      - Hired helper map-icon, use grainTankFull's "whenAboveThreshold" to activate blinking of the icon.
---  2014-December
---      v2.1.0      - Re-factored husbandry and placeables. Requires new config-file to be generated.
---                    Now possible to test against fill-levels/-percentages.
---                    Attempting to include placeable MischStation's percentages too. (Marhu / TMT)
---      v2.1.1      - Re-factored methods for testing notification thresholds.
---                  - Attempted to add support for modded husbandry; SchweineZucht.LUA (Marhu / TMT)
---                  - Tweaked default font-size to 0.011 and placementInDisplay to 0.989 (= 1.000 - 0.011)
---      v2.1.2      - Minor code-cleanup.
---      v2.1.6      - Re-factored support for SchweineZucht.LUA, as apparently there can be multiple husbandries for one animal-type.
---      v2.1.7      - Added configuration option for formatting the animals/placeables line.
---                    Look for the `<nonVehicles .. />` in config-file, to see more.
---      v2.1.8      - Warning-notification changed to use show-message instead, as it looks better in FS15.
---      v2.1.9      - Misc. minor changes.
---                  - Changed config-file-name to 'Glance_Config.XML'.
 --
 
 --[[
@@ -244,7 +172,6 @@ function Glance:loadMap(name)
 end;
 
 function Glance:deleteMap()
-  --Glance.soilModLayers = nil;
   self.i18n = nil;
   Glance.initialized = 0;
 end;
@@ -296,12 +223,12 @@ function Glance:update(dt)
           end
       end
     end
---FS2013>   
+--[[FS2013>   
     if Glance.failedConfigLoad ~= nil and Glance.failedConfigLoad > g_currentMission.time then
         local secsRemain = math.floor((Glance.failedConfigLoad - g_currentMission.time) / 1000)
         g_currentMission:addWarning(string.format(g_i18n:getText("config_error"), secsRemain), "bb", "cc");
     end;
---<FS2013    
+--<FS2013]]
   end
   --
   Glance.sumTime = Glance.sumTime + dt;
@@ -315,14 +242,6 @@ function Glance:update(dt)
     end
     --
     if g_currentMission:getIsClient() then
---[[
-        self.drawSoilCondition = {}
-        Glance.makeSoilCondition(self, Glance.sumTime, self.drawSoilCondition);
-        if not next(self.drawSoilCondition) then
-            self.drawSoilCondition = nil;
-        end
---]]
-        --
         self.linesNonVehicles = {};
         
         local lineNonVehicles = {}
@@ -2228,7 +2147,7 @@ function Glance:static_fillTypeLevelPct(dt, staticParms, veh, implements, cells,
     local fillLvl = nil;
     local fillPct = nil;
 
---FS2013>
+--[[FS2013>
     if obj.grainTankCapacity ~= nil and obj.grainTankCapacity > 0 and obj.grainTankFillLevel ~= nil and obj.currentGrainTankFruitType ~= nil then
       if obj.grainTankFillLevel > 0 and obj.currentGrainTankFruitType ~= FruitUtil.FRUITTYPE_UNKNOWN then
         fillTpe = FruitUtil.fruitTypeToFillType[obj.currentGrainTankFruitType];
@@ -2251,8 +2170,9 @@ function Glance:static_fillTypeLevelPct(dt, staticParms, veh, implements, cells,
         --
         updateFill(fillTpe,obj.grainTankCapacity,obj.grainTankFillLevel,fillClr)
       end;
---<FS2013      
-    elseif obj.fillLevelMax and obj.fillLevel and obj.fillLevelMax > 0 and obj.fillLevel > 0 then
+    else
+--<FS2013]]
+    if obj.fillLevelMax and obj.fillLevel and obj.fillLevelMax > 0 and obj.fillLevel > 0 then
         -- Most likely a baleloader
         fillTpe = g_i18n:getText("bales");
         fillPct = math.floor(obj.fillLevel / obj.fillLevelMax * 100);
@@ -2521,28 +2441,6 @@ function Glance:draw()
     end
 
     setTextBold(false);
-
---[[
-    if self.drawSoilCondition then
-        local delimWidth = getTextWidth(Glance.cFontSize, Glance.cColumnDelimChar) * 1.50;
-        xPos = Glance.cStartLineX;
-        for c=1,table.getn(self.drawSoilCondition) do
-            if c > 1 then
-                setTextAlignment(RenderText.ALIGN_CENTER);
-                Glance.renderTextShaded(xPos + (delimWidth / 2),yPos,Glance.cFontSize,Glance.cColumnDelimChar,Glance.cFontShadowOffs, Glance.colors[Glance.lineColorDefault], Glance.colors[Glance.cFontShadowColor]);
-                xPos = xPos + delimWidth;
-            end
-
-            local elem = self.drawSoilCondition[c];
-            if elem then
-                setTextAlignment(RenderText.ALIGN_LEFT);
-                Glance.renderTextShaded(xPos,yPos,Glance.cFontSize,elem[2],Glance.cFontShadowOffs,elem[1], Glance.colors[Glance.cFontShadowColor]);
-                xPos = xPos + getTextWidth(Glance.cFontSize, elem[2])
-            end
-        end;
-        yPos = yPos - Glance.cLineSpacing;
-    end
---]]
 
     if self.linesNonVehicles then
         for _,lineNonVehicles in ipairs(self.linesNonVehicles) do
