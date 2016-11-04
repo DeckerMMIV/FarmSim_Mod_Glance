@@ -77,9 +77,12 @@
 Пожалуйста, проверьте в игре консоль или LOG.TXT для уточнения деталей.
 Или просто удалите файл Glance_Config.XML." />
 
-        <text name="GlanceMore"         text="Glance: Больше уведомлений"  />
-        <text name="GlanceLess"         text="Glance: Меньше уведомлений"  />
+        <text name="input_GLANCE_MORE"  text="Glance: Больше уведомлений"  />
+        <text name="input_GLANCE_LESS"  text="Glance: Меньше уведомлений"  />
 
+        <text name="GlanceMore"         text="Glance: More (level %d)"   /> <!-- need translation -->
+        <text name="GlanceLess"         text="Glance: Less (level %d)"   /> <!-- need translation -->
+        
         <text name="GlanceMinLevel"     text="Минимальный уровень уведомление установлен на: %d" />
     </texts>
 </l10n>

@@ -76,9 +76,12 @@ Muestra notificaciones sobre el estado de las tareas y puede configurarse para m
 Por favor, revise el LOG.TXT o la consola de In_Game para más detalles.
 O directamente elimine el archivo Glance_Config.XML para que se regenere." />
 
-        <text name="GlanceMore"         text="Glance:Más Información"   />
-        <text name="GlanceLess"         text="Glance:Menos Información"   />
+        <text name="input_GLANCE_MORE"  text="Glance: Más Información"   />
+        <text name="input_GLANCE_LESS"  text="Glance: Menos Información"   />
 
+        <text name="GlanceMore"         text="Glance: More (level %d)"   /> <!-- need translation -->
+        <text name="GlanceLess"         text="Glance: Less (level %d)"   /> <!-- need translation -->
+        
         <text name="GlanceMinLevel"     text="El nivel mínimo de notificación esta fijado en: %d" />
     </texts>
 </l10n>

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<modDesc descVersion="25">
+<modDesc descVersion="32">
     <author>Decker_MMIV</author>
     <author_contact>fs-uk.com, modcentral.co.uk, forum.farming-simulator.com</author_contact>
 
@@ -9,7 +9,7 @@
 -->    
     <contributors>SchorschiBW, ja_pizgam, Gonimy_Vetrom, JakobT, pokers, gighen, SicFR57, Alfredo Prieto</contributors>
     
-    <version>2.5.2</version>
+    <version>1.0.0.17</version>
 
     <title>
         <en>Glance</en>
@@ -25,49 +25,41 @@
     <description>
         <en>
 <![CDATA[A notification-and-status utility that can be configured to show only what you need to see
-
-Decker_MMIV - fs-uk.com, modcentral.co.uk, forum.farming-simulator.com, modhoster.com]]>
+]]>
         </en>
         
         <de> 
 <![CDATA[Ein Mitteilungs- und Status-Tool das so konfiguriert werden kann dass man  nur das sieht was man braucht.
-
-Decker_MMIV - fs-uk.com, modcentral.co.uk, forum.farming-simulator.com, modhoster.com]]>
+]]>
         </de>
         
         <pl> 
 <![CDATA[Użyteczne narzędzie powiadamiania i statusu, które może być skonfigurowane tak, aby pokazywać to, co chcesz zobaczyć. 
-
-Decker_MMIV - fs-uk.com, modcentral.co.uk, forum.farming-simulator.com, modhoster.com]]>
+]]>
         </pl>         
         
         <ru> 
 <![CDATA[Утилита для отображения уведомлений/статуса техники и животных. Может работать в соответствии с настройками, чтобы показывать только то, что Вы хотите видеть. 
-
-Decker_MMIV - fs-uk.com, modcentral.co.uk, forum.farming-simulator.com, modhoster.com]]>
+]]>
         </ru>
         
         <hu>
 <![CDATA[Egy állapot- és tevékenység kijelző mód, amiben te magad választhatod meg mit szeretnél látni.
-
-Decker_MMIV - fs-uk.com, modcentral.co.uk, forum.farming-simulator.com, modhoster.com]]>
+]]>
         </hu>
         
         <it>
 <![CDATA[Un servizio di notifica e stato che può essere configurato per mostrare solo quello che hai bisogno di vedere 
-
-Decker_MMIV - fs-uk.com, modcentral.co.uk, forum.farming-simulator.com, modhoster.com]]>
+]]>
         </it>
         
         <fr>
 <![CDATA[Un utilitaire de notification et statut qui peut être configuré pour afficher ce que vous voulez.
-
-Decker_MMIV - fs-uk.com, modcentral.co.uk, forum.farming-simulator.com, modhoster.com]]>
+]]>
         </fr>
         <es>
 <![CDATA[Muestra notificaciones sobre el estado de las tareas y puede configurarse para mostrar solo aquello que se necesite
-
-Decker_MMIV - fs-uk.com, modcentral.co.uk, forum.farming-simulator.com, modhoster.com]]>
+]]>
         </es>
     </description>
 
@@ -81,7 +73,7 @@ Decker_MMIV - fs-uk.com, modcentral.co.uk, forum.farming-simulator.com, modhoste
     </extraSourceFiles>
     
     <inputBindings>
-        <input name="GlanceMore"    category="ONFOOT VEHICLE" key1="KEY_lalt KEY_m" key2="" button="" device="" mouse="" />
-        <input name="GlanceLess"    category="ONFOOT VEHICLE" key1="KEY_lalt KEY_l" key2="" button="" device="" mouse="" />
+        <input visible="true" name="GLANCE_MORE" category="ONFOOT VEHICLE" key1="KEY_lalt KEY_m" />
+        <input visible="true" name="GLANCE_LESS" category="ONFOOT VEHICLE" key1="KEY_lalt KEY_l" />
     </inputBindings>
 </modDesc>

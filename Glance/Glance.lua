@@ -1,12 +1,12 @@
 ﻿--
--- "Glance" - Similar to "Inspector" and "LoadStatus", but different.
+-- Glance
 --
--- @author  Decker_MMIV - fs-uk.com, modcentral.co.uk, forum.farming-simulator.com, modhoster.com
--- @date    2013-10-xx
+-- @author  Decker_MMIV
+-- @contact fs-uk.com, modcentral.co.uk, forum.farming-simulator.com
+-- @date    2016-11-xx
 --
 -- Modifikationen erst nach Rücksprache
 -- Do not edit without my permission
---
 --
 
 --[[
@@ -80,25 +80,41 @@ local function log(...)
 end;
 
 --
-function Glance_Steerable_PostLoad(self, xmlFile)
-  if self.name == nil or self.realVehicleName == nil then
-    self.name = Utils.getXMLI18N(xmlFile, "vehicle.name", "", "(unidentified vehicle)", self.customEnvironment);
-  end
+
+-- Reuse from VehicleGroupsSwitcher
+function Glance_Steerable_PostLoad(self, savegame)
+    if self.motorType == "locomotive" then
+        -- FS17 trains not supported as of yet.
+        return
+    end
+  
+    local storeItem = StoreItemsUtil.storeItemsByXMLFilename[self.configFileName:lower()];
+    if storeItem ~= nil and storeItem.name ~= nil then
+        local brand = ""
+        if storeItem.brand ~= nil and storeItem.brand ~= "" then
+            brand = tostring(storeItem.brand) .. " " 
+        end
+        self.modVeGS = self.modVeGS or {group=0,pos=0}
+        self.modVeGS.vehicleName = brand .. tostring(storeItem.name);
+    end
 end
+
 Steerable.postLoad = Utils.appendedFunction(Steerable.postLoad, Glance_Steerable_PostLoad);
 
 -- Add extra function to Vehicle.LUA
 if Vehicle.getVehicleName == nil then
     Vehicle.getVehicleName = function(self)
-        if self.realVehicleName then return self.realVehicleName; end;
-        if self.name            then return self.name;            end;
+        if self.modVeGS and self.modVeGS.vehicleName then
+            return self.modVeGS.vehicleName
+        end;
         return "(vehicle with no name)";
     end
 end
 
+
 --
 function Glance_VehicleEnterRequestEvent_run(self, connection)
-  Glance.sumTime = Glance.updateIntervalMS; -- Force update, when entering vehicle
+    Glance.sumTime = Glance.updateIntervalMS; -- Force update, when entering vehicle
 end;
 VehicleEnterRequestEvent.run = Utils.appendedFunction(VehicleEnterRequestEvent.run, Glance_VehicleEnterRequestEvent_run);
 
@@ -111,10 +127,10 @@ end
 --
 function Glance:loadMap(name)
     if Glance.initialized > 0 then
-      return
+        return
     end
     if Glance.initialized < 0 then
-      g_inGameMenu.update = Utils.appendedFunction(g_inGameMenu.update, Glance_InGameMenu_Update)
+        g_inGameMenu.update = Utils.appendedFunction(g_inGameMenu.update, Glance_InGameMenu_Update)
     end
     Glance.initialized = 1
     
@@ -126,14 +142,14 @@ function Glance:loadMap(name)
 
     --
     if g_currentMission:getIsServer() then
-      -- Force husbandries to update NOW!
-      if g_currentMission.husbandries ~= nil then
-        for _,husbandry in pairs(g_currentMission.husbandries) do
-          if husbandry.updateMinutesInterval ~= nil then
-            husbandry.updateMinutes = husbandry.updateMinutesInterval + 1
-          end
+        -- Force husbandries to update NOW!
+        if g_currentMission.husbandries ~= nil then
+            for animalType,husbandry in pairs(g_currentMission.husbandries) do
+                if husbandry.updateMinutesInterval ~= nil then
+                    husbandry.updateMinutes = husbandry.updateMinutesInterval + 1
+                end
+            end
         end
-      end
     end
     --
     if g_currentMission:getIsClient() then
@@ -147,33 +163,33 @@ function Glance:loadMap(name)
     end
     --
     self:loadConfig()
-    --
-    Glance.discoverLocationOfSchweineDaten()    
+    ----
+    --Glance.discoverLocationOfSchweineDaten()    
     
     --
-    local fillableMaxFilltypes = 2^Fillable.sendNumBits
-    local function nextFilltype()
-        fillableMaxFilltypes = fillableMaxFilltypes + 1
-        return fillableMaxFilltypes
-    end
-    
-    -- Support for Saegewerk
-    Glance.FILLTYPE_BOARDWOOD   = nextFilltype() --fillableMaxFilltypes + 1
-    Glance.FILLTYPE_LOGS        = nextFilltype() --fillableMaxFilltypes + 2
-    ---- Support for Lettuce_Greenhouse
-    Glance.FILLTYPE_LETTUCE     = nextFilltype() --fillableMaxFilltypes + 3
-    
+    --local fillableMaxFilltypes = 2^Fillable.sendNumBits
+    --local function nextFilltype()
+    --    fillableMaxFilltypes = fillableMaxFilltypes + 1
+    --    return fillableMaxFilltypes
+    --end
     --
-    if g_i18n.globalI18N.getSpeedMeasuringUnit ~= nil then
-        Glance.c_SpeedUnit = g_i18n.globalI18N:getSpeedMeasuringUnit()  -- FS15
-    else
-        Glance.c_SpeedUnit = g_i18n:getText("speedometer")  -- FS2013
-    end
+    ---- Support for Saegewerk
+    --Glance.FILLTYPE_BOARDWOOD   = nextFilltype() --fillableMaxFilltypes + 1
+    --Glance.FILLTYPE_LOGS        = nextFilltype() --fillableMaxFilltypes + 2
+    ------ Support for Lettuce_Greenhouse
+    --Glance.FILLTYPE_LETTUCE     = nextFilltype() --fillableMaxFilltypes + 3
+    --
+    ----
+    --if g_i18n.globalI18N.getSpeedMeasuringUnit ~= nil then
+    --    Glance.c_SpeedUnit = g_i18n.globalI18N:getSpeedMeasuringUnit()  -- FS15
+    --else
+    --    Glance.c_SpeedUnit = g_i18n:getText("speedometer")  -- FS2013
+    --end
 end;
 
 function Glance:deleteMap()
-  self.i18n = nil;
-  Glance.initialized = 0;
+    self.i18n = nil;
+    Glance.initialized = 0;
 end;
 
 function Glance:load(xmlFile)
@@ -188,111 +204,107 @@ end;
 function Glance:keyEvent(unicode, sym, modifier, isDown)
 end;
 
-function Glance.discoverLocationOfSchweineDaten()
-    Glance.mod_SchweineZucht = nil
-
-    local env = getfenv(0);
-    for modName,isLoaded in pairs(g_modIsLoaded) do
-        if isLoaded then
-            if env[modName] ~= nil and env[modName]["g_SchweineDaten"] ~= nil then
-                -- Found location of g_SchweineDaten from SchweineZucht.LUA
-                Glance.mod_SchweineZucht = env[modName];
-                --log("Glance.LUA: Found ",modName,".g_SchweineDaten")
-                print(("** Glance found %s.g_SchweineDaten"):format(modName))
-                break
-            end
-        end
-    end
-end;
+--function Glance.discoverLocationOfSchweineDaten()
+--    Glance.mod_SchweineZucht = nil
+--
+--    local env = getfenv(0);
+--    for modName,isLoaded in pairs(g_modIsLoaded) do
+--        if isLoaded then
+--            if env[modName] ~= nil and env[modName]["g_SchweineDaten"] ~= nil then
+--                -- Found location of g_SchweineDaten from SchweineZucht.LUA
+--                Glance.mod_SchweineZucht = env[modName];
+--                --log("Glance.LUA: Found ",modName,".g_SchweineDaten")
+--                print(("** Glance found %s.g_SchweineDaten"):format(modName))
+--                break
+--            end
+--        end
+--    end
+--end;
 
 
 function Glance:update(dt)
-  if g_dedicatedServerInfo == nil then
-    if Glance.triggerReload ~= nil then
-      -- Simple auto-reload of Glance config, when leaving the ESC menu.
-      Glance.triggerReload = Glance.triggerReload - 1
-      if Glance.triggerReload <= 0 then
-          Glance.triggerReload = nil
-          self:loadConfig()
-          --
-          if Glance.failedConfigLoad ~= nil then
-            if g_currentMission.inGameMessage ~= nil then
-                g_currentMission.inGameMessage:showMessage("Glance", g_i18n:getText("config_error"), 5000);
-                Glance.failedConfigLoad = nil;
+--[[
+    if g_dedicatedServerInfo == nil then
+        if Glance.triggerReload ~= nil then
+            -- Simple auto-reload of Glance config, when leaving the ESC menu.
+            Glance.triggerReload = Glance.triggerReload - 1
+            if Glance.triggerReload <= 0 then
+                Glance.triggerReload = nil
+                self:loadConfig()
+                --
+                if Glance.failedConfigLoad ~= nil then
+                    if g_currentMission.inGameMessage ~= nil then
+                        g_currentMission.inGameMessage:showMessage("Glance", g_i18n:getText("config_error"), 5000);
+                        Glance.failedConfigLoad = nil;
+                    end
+                end
             end
-          end
-      end
-    end
---[[FS2013>   
-    if Glance.failedConfigLoad ~= nil and Glance.failedConfigLoad > g_currentMission.time then
-        local secsRemain = math.floor((Glance.failedConfigLoad - g_currentMission.time) / 1000)
-        g_currentMission:addWarning(string.format(g_i18n:getText("config_error"), secsRemain), "bb", "cc");
-    end;
---<FS2013]]
-  end
-  --
-  Glance.sumTime = Glance.sumTime + dt;
-  if Glance.sumTime >= Glance.updateIntervalMS then
-    Glance.sumTime = 0;
-    Glance.makeUpdateEventFor = {}
-    --
-    if Glance.fieldsRects == nil then
-        Glance.fieldsRects = {}
-        Glance.buildFieldsRects()
-    end
-    --
-    if g_currentMission:getIsClient() then
-        self.linesNonVehicles = {};
-        
-        local lineNonVehicles = {}
-        Glance.makeHusbandriesLine(self, Glance.sumTime, lineNonVehicles);
-        Glance.makePlaceablesLine(self, Glance.sumTime, lineNonVehicles);
-        if next(lineNonVehicles) then
-            table.insert(self.linesNonVehicles, lineNonVehicles)
         end
-
-        lineNonVehicles = {}
-        Glance.makeFieldsLine(self, Glance.sumTime, lineNonVehicles);
-        if next(lineNonVehicles) then
-            table.insert(self.linesNonVehicles, lineNonVehicles)
+    end
+--]]    
+    --
+    Glance.sumTime = Glance.sumTime + dt;
+    if Glance.sumTime >= Glance.updateIntervalMS then
+        Glance.sumTime = 0;
+        Glance.makeUpdateEventFor = {}
+        --
+        if Glance.fieldsRects == nil then
+            Glance.fieldsRects = {}
+            Glance.buildFieldsRects()
         end
         --
-        Glance.makeVehiclesLines(self, Glance.sumTime);
-    else
-        -- TODO - Gather notifications that are only available server-side, and when its a dedicated-server.
-    end
+        if g_currentMission:getIsClient() then
+            self.linesNonVehicles = {};
+            
+            local lineNonVehicles = {}
+            Glance.makeHusbandriesLine(self, Glance.sumTime, lineNonVehicles);
+            Glance.makePlaceablesLine(self, Glance.sumTime, lineNonVehicles);
+            if next(lineNonVehicles) then
+                table.insert(self.linesNonVehicles, lineNonVehicles)
+            end
+        
+            lineNonVehicles = {}
+            Glance.makeFieldsLine(self, Glance.sumTime, lineNonVehicles);
+            if next(lineNonVehicles) then
+                table.insert(self.linesNonVehicles, lineNonVehicles)
+            end
+            --
+            Glance.makeVehiclesLines(self, Glance.sumTime);
+        else
+            -- TODO - Gather notifications that are only available server-side, and when its a dedicated-server.
+        end
+        --
+        if g_currentMission:getIsServer() and next(Glance.makeUpdateEventFor) then
+            -- Only server sends to clients
+            GlanceEvent.sendEvent();
+        end
+    end;
     --
-    if g_currentMission:getIsServer() and next(Glance.makeUpdateEventFor) then
-        -- Only server sends to clients
-        GlanceEvent.sendEvent();
-    end
-  end;
-  --
     if g_currentMission:getIsClient() then
-        if InputBinding.hasEvent(InputBinding.GlanceMore) then
+        if InputBinding.hasEvent(InputBinding.GLANCE_MORE) then
             Glance.minNotifyLevel = math.max(Glance.minNotifyLevel - 1, 0)
             Glance.sumTime = Glance.updateIntervalMS; -- Force update
             Glance.textMinLevelTimeout = g_currentMission.time + 2000
-        elseif InputBinding.hasEvent(InputBinding.GlanceLess) then
+        elseif InputBinding.hasEvent(InputBinding.GLANCE_LESS) then
             Glance.minNotifyLevel = math.min(Glance.minNotifyLevel + 1, Glance.maxNotifyLevel+1)
             Glance.sumTime = Glance.updateIntervalMS; -- Force update
             Glance.textMinLevelTimeout = g_currentMission.time + 2000
         end
         --
-        if g_currentMission.showHelpText then
+        if g_currentMission.showHelpMenu then
             if self.helpButtonsTimeout ~= nil and self.helpButtonsTimeout > g_currentMission.time then
                 if Glance.minNotifyLevel > 0 then
-                    g_currentMission:addHelpButtonText(g_i18n:getText("GlanceMore")..string.format(" (%d)",Glance.minNotifyLevel), InputBinding.GlanceMore);
+                    g_currentMission:addHelpButtonText(g_i18n:getText("GlanceMore"):format(Glance.minNotifyLevel), InputBinding.GLANCE_MORE, nil, GS_PRIO_NORMAL);
                 end
                 if Glance.minNotifyLevel < Glance.maxNotifyLevel+1 then
-                    g_currentMission:addHelpButtonText(g_i18n:getText("GlanceLess")..string.format(" (%d)",Glance.minNotifyLevel), InputBinding.GlanceLess);
+                    g_currentMission:addHelpButtonText(g_i18n:getText("GlanceLess"):format(Glance.minNotifyLevel), InputBinding.GLANCE_LESS, nil, GS_PRIO_NORMAL);
                 end
             end
         end
     end
 end;
 
-Glance.cCfgVersion = 8
+Glance.cCfgVersion = 10
 
 function Glance:getDefaultConfig()
     local function dnl(offset) -- default notification level
@@ -558,24 +570,24 @@ function Glance:loadConfig()
     local fileName = g_modsDirectory .. "/" .. "Glance_Config.XML";
     local tag = "glanceConfig"
 
-    -- Inspired by ZZZ_GPS
-    local function checkIsDedi()
-        local pixelX, pixelY = getScreenModeInfo(getScreenMode());
-        return pixelX*pixelY < 1;
-    end;
-    local isDediServer = checkIsDedi();
-    --
-    local xmlFile = nil
-    if g_dedicatedServerInfo ~= nil or isDediServer then
-        print("** Glance seems to be running on a dedicated-server. So default built-in configuration values will be used.");
-        xmlFile = loadXMLFileFromMemory(tag, self:getDefaultConfig(), true)
-    elseif fileExists(fileName) then
-        xmlFile = loadXMLFile(tag, fileName)
-    else
+    ---- Inspired by ZZZ_GPS
+    --local function checkIsDedi()
+    --    local pixelX, pixelY = getScreenModeInfo(getScreenMode());
+    --    return pixelX*pixelY < 1;
+    --end;
+    --local isDediServer = checkIsDedi();
+    ----
+    --local xmlFile = nil
+    --if g_dedicatedServerInfo ~= nil or isDediServer then
+    --    print("** Glance seems to be running on a dedicated-server. So default built-in configuration values will be used.");
+    --    xmlFile = loadXMLFileFromMemory(tag, self:getDefaultConfig(), true)
+    --elseif fileExists(fileName) then
+    --    xmlFile = loadXMLFile(tag, fileName)
+    --else
         print("** Glance will now try to create a new default configuration file; " .. fileName);
         self:createNewConfig(fileName)
         xmlFile = loadXMLFile(tag, fileName)
-    end;
+    --end;
 
     --
     local version = getXMLInt(xmlFile, "glanceConfig#version")
@@ -730,30 +742,30 @@ end
 -----
 
 function Glance:setProperty(obj, propKey, propValue, noEventSend)
-  if obj == nil or obj == Glance then
-    obj = Glance;
-    netId = 0;
-  else
-    netId = networkGetObjectId(obj);
-  end
-
-  if obj.modGlance == nil then
-    obj.modGlance = {}
-  end
-  if obj.modGlance[propKey] ~= propValue and noEventSend ~= true then
-    self.makeUpdateEventFor[netId] = obj;
-  end
-  obj.modGlance[propKey] = propValue;
+    if obj == nil or obj == Glance then
+        obj = Glance;
+        netId = 0;
+    else
+        netId = networkGetObjectId(obj);
+    end
+    
+    if obj.modGlance == nil then
+        obj.modGlance = {}
+    end
+    if obj.modGlance[propKey] ~= propValue and noEventSend ~= true then
+        self.makeUpdateEventFor[netId] = obj;
+    end
+    obj.modGlance[propKey] = propValue;
 end
 
 function Glance:getProperty(obj, propKey)
-  if obj == nil then
-    obj = Glance
-  end
-  if obj.modGlance ~= nil then
-    return obj.modGlance[propKey];
-  end
-  return nil
+    if obj == nil then
+        obj = Glance
+    end
+    if obj.modGlance ~= nil then
+        return obj.modGlance[propKey];
+    end
+    return nil
 end
 
 -----
@@ -789,7 +801,6 @@ local function isNotifyLevel(ntfy)
 end    
 
 local function isBreakingThresholds(ntfy, value, oldValue)
-
     if (ntfy ~= nil and ntfy.enabled == true and ntfy.level >= Glance.minNotifyLevel and value ~= nil) then
         local thlds = ntfy.thresholds
         if ntfy.belowThreshold ~= nil or ntfy.aboveThreshold ~= nil then
@@ -831,7 +842,6 @@ local function isBreakingThresholds(ntfy, value, oldValue)
             end
         end
     end
-    
     return nil
 end
 
@@ -840,27 +850,27 @@ end
 function Glance.buildFieldsRects()
 
     local function getFieldRects(field)
-      local rects = {}
-      if field ~= nil and field.fieldDimensions ~= nil then
-        for i = 0, getNumOfChildren(field.fieldDimensions) - 1 do
-          local n1 = getChildAt(field.fieldDimensions, i)
-          local n2 = getChildAt(n1, 0)
-          local n3 = getChildAt(n1, 1)
-    
-          local c1 = { getWorldTranslation(n1) }
-          local c2 = { getWorldTranslation(n2) }
-          local c3 = { getWorldTranslation(n3) }
-    
-          local overlap = 10;
-          local x1 = math.min(c1[1],c2[1],c3[1]) - overlap;
-          local z1 = math.min(c1[3],c2[3],c3[3]) - overlap;
-          local x2 = math.max(c1[1],c2[1],c3[1]) + overlap;
-          local z2 = math.max(c1[3],c2[3],c3[3]) + overlap;
-    
-          table.insert(rects, {x1=x1,z1=z1,x2=x2,z2=z2})
+        local rects = {}
+        if field ~= nil and field.fieldDimensions ~= nil then
+            for i = 0, getNumOfChildren(field.fieldDimensions) - 1 do
+                local n1 = getChildAt(field.fieldDimensions, i)
+                local n2 = getChildAt(n1, 0)
+                local n3 = getChildAt(n1, 1)
+            
+                local c1 = { getWorldTranslation(n1) }
+                local c2 = { getWorldTranslation(n2) }
+                local c3 = { getWorldTranslation(n3) }
+            
+                local overlap = 10;
+                local x1 = math.min(c1[1],c2[1],c3[1]) - overlap;
+                local z1 = math.min(c1[3],c2[3],c3[3]) - overlap;
+                local x2 = math.max(c1[1],c2[1],c3[1]) + overlap;
+                local z2 = math.max(c1[3],c2[3],c3[3]) + overlap;
+            
+                table.insert(rects, {x1=x1,z1=z1,x2=x2,z2=z2})
+            end;
         end;
-      end;
-      return rects;
+        return rects;
     end
 
     if  g_currentMission.fieldDefinitionBase ~= nil 
@@ -990,228 +1000,228 @@ function Glance:makePlaceablesLine(dt, notifyList)
             local funcTestPlaceable = nil;
 
             -- plcXmlFilename contains placeable-name in lowercase
-            if string.find(plcXmlFilename, "lettuce_greenhouse") ~= nil then
-                local placeableType = "LettuceGreenhouse"
-                local ntfyLettuceGreenhouse = {}
-                for fillType,fillDesc in pairs(Fillable.fillTypeIndexToDesc) do
-                    local fillName = (fillType ~= Fillable.FILLTYPE_UNKNOWN and fillDesc.name or nil)
-                    local ntfy = getNotification(placeableType, fillName)
-                    if ntfy ~= nil then
-                        ntfyLettuceGreenhouse[fillType] = ntfy
-                    end
-                end
-                --
-                local lettuceGreenhouseSpecialFillTypes = {
-                    [Glance.FILLTYPE_LETTUCE]="lettuce",
-                }
-                for fillType,fillName in pairs(lettuceGreenhouseSpecialFillTypes) do
-                    local ntfy = getNotification(placeableType, fillName)
-                    if ntfy ~= nil then
-                        ntfyLettuceGreenhouse[fillType] = ntfy
-                    end
-                end
-                --
-                funcTestPlaceable = function(plc)
-                    -- Make sure the variables we expect, are actually there.
-                    if not ( plc.FabrikScriptDirtyFlag ~= nil and plc.Produkte ~= nil )
-                    then
-                        return
-                    end
-                    --
-                    local fillLevels = {}
-                    
-                    if plc.Produkte ~= nil then
-                        if plc.Produkte.lettuceboxes ~= nil then
-                            fillLevels[Glance.FILLTYPE_LETTUCE] = 100 * plc.Produkte.lettuceboxes.fillLevel / plc.Produkte.lettuceboxes.capacity
-                        end
-                        if plc.Produkte.lettuce_waste ~= nil then
-                            fillLevels[Fillable.FILLTYPE_CHAFF] = 100 * plc.Produkte.lettuce_waste.fillLevel / plc.Produkte.lettuce_waste.capacity
-                        end
-                    end
-                    if plc.Rohstoffe ~= nil then
-                        if plc.Rohstoffe.Dungemittel ~= nil then
-                            fillLevels[Fillable.FILLTYPE_FERTILIZER] = 100 * plc.Rohstoffe.Dungemittel.fillLevel / plc.Rohstoffe.Dungemittel.capacity
-                        end
-                        if plc.Rohstoffe.Diesel ~= nil then
-                            fillLevels[Fillable.FILLTYPE_FUEL] = 100 * plc.Rohstoffe.Diesel.fillLevel / plc.Rohstoffe.Diesel.capacity
-                        end
-                        if plc.Rohstoffe.Saatgut ~= nil then
-                            fillLevels[Fillable.FILLTYPE_SEEDS] = 100 * plc.Rohstoffe.Saatgut.fillLevel / plc.Rohstoffe.Saatgut.capacity
-                        end
-                        if plc.Rohstoffe.Wasser ~= nil then
-                            fillLevels[Fillable.FILLTYPE_WATER] = 100 * plc.Rohstoffe.Wasser.fillLevel / plc.Rohstoffe.Wasser.capacity
-                        end
-                    end
-                    
-                    local itemCount = nil
-                    for fillType,ntfy in pairs(ntfyLettuceGreenhouse) do
-                        if fillType ~= Fillable.FILLTYPE_UNKNOWN then
-                            local res = isBreakingThresholds(ntfy, fillLevels[fillType])
-                            if res then
-                                updateNotification(placeableType, nil, fillType, res.value, nil, res.threshold.color)
-                                itemCount = 1
-                            end
-                        end
-                    end
-                    if itemCount ~= nil then
-                        updateNotification(placeableType, itemCount)
-                    end
-                end
-            elseif string.find(plcXmlFilename, "greenhouse") ~= nil then
-                local placeableType = "Greenhouse"
-                local ntfyGreenhouse = {}
-                ntfyGreenhouse[Fillable.FILLTYPE_WATER]   = getNotification(placeableType, "water")
-                ntfyGreenhouse[Fillable.FILLTYPE_MANURE]  = getNotification(placeableType, "manure")
-                ntfyGreenhouse[Fillable.FILLTYPE_UNKNOWN] = getNotification(placeableType)
-                --
-                funcTestPlaceable = function(plc)
-                    -- Make sure the variables we expect, are actually there.
-                    if not (    hasNumberValue(plc.waterTankFillLevel) and hasNumberValue(plc.waterTankCapacity,0)
-                            and hasNumberValue(plc.manureFillLevel)    and hasNumberValue(plc.manureCapacity,0)   )
-                    then
-                        return
-                    end
-                    --
-                    local fillLevels = {}
-                    fillLevels[Fillable.FILLTYPE_WATER]  = 100 * plc.waterTankFillLevel / plc.waterTankCapacity;
-                    fillLevels[Fillable.FILLTYPE_MANURE] = 100 * plc.manureFillLevel    / plc.manureCapacity;
-                    
-                    if isNotifyEnabled(ntfyGreenhouse[Fillable.FILLTYPE_UNKNOWN]) then
-                        local minPct = math.min(fillLevels[Fillable.FILLTYPE_WATER], fillLevels[Fillable.FILLTYPE_MANURE])
-                        local res = isBreakingThresholds(ntfyGreenhouse[Fillable.FILLTYPE_UNKNOWN], minPct)
-                        if res then
-                            updateNotification(placeableType, 1, Fillable.FILLTYPE_UNKNOWN, res.value, nil, res.threshold.color)
-                        end
-                    else
-                        local itemCount = nil
-                        for fillType,ntfy in pairs(ntfyGreenhouse) do
-                            if fillType ~= Fillable.FILLTYPE_UNKNOWN then
-                                local res = isBreakingThresholds(ntfy, fillLevels[fillType])
-                                if res then
-                                    updateNotification(placeableType, nil, fillType, res.value, nil, res.threshold.color)
-                                    itemCount = 1
-                                end
-                            end
-                        end
-                        if itemCount ~= nil then
-                            updateNotification(placeableType, itemCount)
-                        end
-                    end
-                end
-            elseif string.find(plcXmlFilename, "mischstation") ~= nil then
-                local placeableType = "MischStation"
-                local ntfyMischStation = {}
-                for fillType,fillDesc in pairs(Fillable.fillTypeIndexToDesc) do
-                    local fillName = (fillType ~= Fillable.FILLTYPE_UNKNOWN and fillDesc.name or nil)
-                    local ntfy = getNotification(placeableType, fillName)
-                    if ntfy ~= nil then
-                        ntfyMischStation[fillType] = ntfy
-                    end
-                end
-                --
-                funcTestPlaceable = function(plc)
-                    -- Make sure the variables we expect, are actually there.
-                    if not (    plc.SetLamp ~= nil and plc.MixLvl ~= nil and plc.LvLIndicator ~= nil and hasNumberValue(plc.LvLIndicator.capacity,0) 
-                            and plc.MixTypLvl ~= nil and plc.MixTypName ~= nil and plc.TipTriggers ~= nil )
-                    then
-                        return
-                    end
-                    --
-                    local fillLevels = {}
-                    fillLevels[Fillable.FILLTYPE_FORAGE] = 100 * plc.MixLvl / plc.LvLIndicator.capacity;
-                    local minPct = fillLevels[Fillable.FILLTYPE_FORAGE];
-                    for i=1,table.getn(plc.MixTypName) do
-                        if plc.MixTypName[i] ~= nil and plc.MixTypName[i].index ~= nil and plc.TipTriggers[i] ~= nil and hasNumberValue(plc.TipTriggers[i].capacity,0) then
-                            local fillType = plc.MixTypName[i].index
-                            local pct = 100 * plc.MixTypLvl[i] / plc.TipTriggers[i].capacity;
-                            fillLevels[fillType] = pct
-                            minPct = math.min(minPct,pct)
-                        end
-                    end
-                    
-                    if isNotifyEnabled(ntfyMischStation[Fillable.FILLTYPE_UNKNOWN]) then
-                        local res = isBreakingThresholds(ntfyMischStation[Fillable.FILLTYPE_UNKNOWN], minPct)
-                        if res then
-                            updateNotification(placeableType, 1, Fillable.FILLTYPE_UNKNOWN, res.value, nil, res.threshold.color)
-                        end
-                    else
-                        local itemCount = nil
-                        for fillType,ntfy in pairs(ntfyMischStation) do
-                            if fillType ~= Fillable.FILLTYPE_UNKNOWN then
-                                local res = isBreakingThresholds(ntfy, fillLevels[fillType])
-                                if res then
-                                    updateNotification(placeableType, nil, fillType, res.value, nil, res.threshold.color)
-                                    itemCount = 1
-                                end
-                            end
-                        end
-                        if itemCount ~= nil then
-                            updateNotification(placeableType, itemCount)
-                        end
-                    end
-                end
-            elseif string.find(plcXmlFilename, "saegewerk") ~= nil then
-                local placeableType = "Saegewerk"
-                local ntfySaegewerk = {}
-                for fillType,fillDesc in pairs(Fillable.fillTypeIndexToDesc) do
-                    local fillName = (fillType ~= Fillable.FILLTYPE_UNKNOWN and fillDesc.name or nil)
-                    local ntfy = getNotification(placeableType, fillName)
-                    if ntfy ~= nil then
-                        ntfySaegewerk[fillType] = ntfy
-                    end
-                end
-                --
-                local saegewerkSpecialFillTypes = {
-                    [Glance.FILLTYPE_BOARDWOOD]="boardWood",
-                    [Glance.FILLTYPE_LOGS]="logs",
-                }
-                for fillType,fillName in pairs(saegewerkSpecialFillTypes) do
-                    local ntfy = getNotification(placeableType, fillName)
-                    if ntfy ~= nil then
-                        ntfySaegewerk[fillType] = ntfy
-                    end
-                end
-                --
-                funcTestPlaceable = function(plc)
-                    -- Make sure the variables we expect, are actually there.
-                    if not ( plc.FabrikScriptDirtyFlag ~= nil and plc.Produkte ~= nil )
-                    then
-                        return
-                    end
-                    --
-                    local fillLevels = {}
-                    
-                    if plc.Produkte ~= nil then
-                        if plc.Produkte.boardwood ~= nil then
-                            fillLevels[Glance.FILLTYPE_BOARDWOOD] = 100 * plc.Produkte.boardwood.fillLevel / plc.Produkte.boardwood.capacity
-                        end
-                        if plc.Produkte.woodChips ~= nil then
-                            fillLevels[Fillable.FILLTYPE_WOODCHIPS] = 100 * plc.Produkte.woodChips.fillLevel / plc.Produkte.woodChips.capacity
-                        end
-                    end
-                    if plc.Rohstoffe ~= nil then
-                        if plc.Rohstoffe.Brennstoffe ~= nil then
-                            fillLevels[Fillable.FILLTYPE_FUEL] = 100 * plc.Rohstoffe.Brennstoffe.fillLevel / plc.Rohstoffe.Brennstoffe.capacity
-                        end
-                        if plc.Rohstoffe.Holz ~= nil then
-                            fillLevels[Glance.FILLTYPE_LOGS] = 100 * plc.Rohstoffe.Holz.fillLevel / plc.Rohstoffe.Holz.capacity
-                        end
-                    end
-                    
-                    local itemCount = nil
-                    for fillType,ntfy in pairs(ntfySaegewerk) do
-                        if fillType ~= Fillable.FILLTYPE_UNKNOWN then
-                            local res = isBreakingThresholds(ntfy, fillLevels[fillType])
-                            if res then
-                                updateNotification(placeableType, nil, fillType, res.value, nil, res.threshold.color)
-                                itemCount = 1
-                            end
-                        end
-                    end
-                    if itemCount ~= nil then
-                        updateNotification(placeableType, itemCount)
-                    end
-                end
+            if string.find(plcXmlFilename, "greenhouse") ~= nil then
+                --local placeableType = "Greenhouse"
+                --local ntfyGreenhouse = {}
+                --ntfyGreenhouse[Fillable.FILLTYPE_WATER]   = getNotification(placeableType, "water")
+                --ntfyGreenhouse[Fillable.FILLTYPE_MANURE]  = getNotification(placeableType, "manure")
+                --ntfyGreenhouse[Fillable.FILLTYPE_UNKNOWN] = getNotification(placeableType)
+                ----
+                --funcTestPlaceable = function(plc)
+                --    -- Make sure the variables we expect, are actually there.
+                --    if not (    hasNumberValue(plc.waterTankFillLevel) and hasNumberValue(plc.waterTankCapacity,0)
+                --            and hasNumberValue(plc.manureFillLevel)    and hasNumberValue(plc.manureCapacity,0)   )
+                --    then
+                --        return
+                --    end
+                --    --
+                --    local fillLevels = {}
+                --    fillLevels[Fillable.FILLTYPE_WATER]  = 100 * plc.waterTankFillLevel / plc.waterTankCapacity;
+                --    fillLevels[Fillable.FILLTYPE_MANURE] = 100 * plc.manureFillLevel    / plc.manureCapacity;
+                --    
+                --    if isNotifyEnabled(ntfyGreenhouse[Fillable.FILLTYPE_UNKNOWN]) then
+                --        local minPct = math.min(fillLevels[Fillable.FILLTYPE_WATER], fillLevels[Fillable.FILLTYPE_MANURE])
+                --        local res = isBreakingThresholds(ntfyGreenhouse[Fillable.FILLTYPE_UNKNOWN], minPct)
+                --        if res then
+                --            updateNotification(placeableType, 1, Fillable.FILLTYPE_UNKNOWN, res.value, nil, res.threshold.color)
+                --        end
+                --    else
+                --        local itemCount = nil
+                --        for fillType,ntfy in pairs(ntfyGreenhouse) do
+                --            if fillType ~= Fillable.FILLTYPE_UNKNOWN then
+                --                local res = isBreakingThresholds(ntfy, fillLevels[fillType])
+                --                if res then
+                --                    updateNotification(placeableType, nil, fillType, res.value, nil, res.threshold.color)
+                --                    itemCount = 1
+                --                end
+                --            end
+                --        end
+                --        if itemCount ~= nil then
+                --            updateNotification(placeableType, itemCount)
+                --        end
+                --    end
+                --end
+            --elseif string.find(plcXmlFilename, "lettuce_greenhouse") ~= nil then
+            --    local placeableType = "LettuceGreenhouse"
+            --    local ntfyLettuceGreenhouse = {}
+            --    for fillType,fillDesc in pairs(Fillable.fillTypeIndexToDesc) do
+            --        local fillName = (fillType ~= Fillable.FILLTYPE_UNKNOWN and fillDesc.name or nil)
+            --        local ntfy = getNotification(placeableType, fillName)
+            --        if ntfy ~= nil then
+            --            ntfyLettuceGreenhouse[fillType] = ntfy
+            --        end
+            --    end
+            --    --
+            --    local lettuceGreenhouseSpecialFillTypes = {
+            --        [Glance.FILLTYPE_LETTUCE]="lettuce",
+            --    }
+            --    for fillType,fillName in pairs(lettuceGreenhouseSpecialFillTypes) do
+            --        local ntfy = getNotification(placeableType, fillName)
+            --        if ntfy ~= nil then
+            --            ntfyLettuceGreenhouse[fillType] = ntfy
+            --        end
+            --    end
+            --    --
+            --    funcTestPlaceable = function(plc)
+            --        -- Make sure the variables we expect, are actually there.
+            --        if not ( plc.FabrikScriptDirtyFlag ~= nil and plc.Produkte ~= nil )
+            --        then
+            --            return
+            --        end
+            --        --
+            --        local fillLevels = {}
+            --        
+            --        if plc.Produkte ~= nil then
+            --            if plc.Produkte.lettuceboxes ~= nil then
+            --                fillLevels[Glance.FILLTYPE_LETTUCE] = 100 * plc.Produkte.lettuceboxes.fillLevel / plc.Produkte.lettuceboxes.capacity
+            --            end
+            --            if plc.Produkte.lettuce_waste ~= nil then
+            --                fillLevels[Fillable.FILLTYPE_CHAFF] = 100 * plc.Produkte.lettuce_waste.fillLevel / plc.Produkte.lettuce_waste.capacity
+            --            end
+            --        end
+            --        if plc.Rohstoffe ~= nil then
+            --            if plc.Rohstoffe.Dungemittel ~= nil then
+            --                fillLevels[Fillable.FILLTYPE_FERTILIZER] = 100 * plc.Rohstoffe.Dungemittel.fillLevel / plc.Rohstoffe.Dungemittel.capacity
+            --            end
+            --            if plc.Rohstoffe.Diesel ~= nil then
+            --                fillLevels[Fillable.FILLTYPE_FUEL] = 100 * plc.Rohstoffe.Diesel.fillLevel / plc.Rohstoffe.Diesel.capacity
+            --            end
+            --            if plc.Rohstoffe.Saatgut ~= nil then
+            --                fillLevels[Fillable.FILLTYPE_SEEDS] = 100 * plc.Rohstoffe.Saatgut.fillLevel / plc.Rohstoffe.Saatgut.capacity
+            --            end
+            --            if plc.Rohstoffe.Wasser ~= nil then
+            --                fillLevels[Fillable.FILLTYPE_WATER] = 100 * plc.Rohstoffe.Wasser.fillLevel / plc.Rohstoffe.Wasser.capacity
+            --            end
+            --        end
+            --        
+            --        local itemCount = nil
+            --        for fillType,ntfy in pairs(ntfyLettuceGreenhouse) do
+            --            if fillType ~= Fillable.FILLTYPE_UNKNOWN then
+            --                local res = isBreakingThresholds(ntfy, fillLevels[fillType])
+            --                if res then
+            --                    updateNotification(placeableType, nil, fillType, res.value, nil, res.threshold.color)
+            --                    itemCount = 1
+            --                end
+            --            end
+            --        end
+            --        if itemCount ~= nil then
+            --            updateNotification(placeableType, itemCount)
+            --        end
+            --    end
+            --elseif string.find(plcXmlFilename, "mischstation") ~= nil then
+            --    local placeableType = "MischStation"
+            --    local ntfyMischStation = {}
+            --    for fillType,fillDesc in pairs(Fillable.fillTypeIndexToDesc) do
+            --        local fillName = (fillType ~= Fillable.FILLTYPE_UNKNOWN and fillDesc.name or nil)
+            --        local ntfy = getNotification(placeableType, fillName)
+            --        if ntfy ~= nil then
+            --            ntfyMischStation[fillType] = ntfy
+            --        end
+            --    end
+            --    --
+            --    funcTestPlaceable = function(plc)
+            --        -- Make sure the variables we expect, are actually there.
+            --        if not (    plc.SetLamp ~= nil and plc.MixLvl ~= nil and plc.LvLIndicator ~= nil and hasNumberValue(plc.LvLIndicator.capacity,0) 
+            --                and plc.MixTypLvl ~= nil and plc.MixTypName ~= nil and plc.TipTriggers ~= nil )
+            --        then
+            --            return
+            --        end
+            --        --
+            --        local fillLevels = {}
+            --        fillLevels[Fillable.FILLTYPE_FORAGE] = 100 * plc.MixLvl / plc.LvLIndicator.capacity;
+            --        local minPct = fillLevels[Fillable.FILLTYPE_FORAGE];
+            --        for i=1,table.getn(plc.MixTypName) do
+            --            if plc.MixTypName[i] ~= nil and plc.MixTypName[i].index ~= nil and plc.TipTriggers[i] ~= nil and hasNumberValue(plc.TipTriggers[i].capacity,0) then
+            --                local fillType = plc.MixTypName[i].index
+            --                local pct = 100 * plc.MixTypLvl[i] / plc.TipTriggers[i].capacity;
+            --                fillLevels[fillType] = pct
+            --                minPct = math.min(minPct,pct)
+            --            end
+            --        end
+            --        
+            --        if isNotifyEnabled(ntfyMischStation[Fillable.FILLTYPE_UNKNOWN]) then
+            --            local res = isBreakingThresholds(ntfyMischStation[Fillable.FILLTYPE_UNKNOWN], minPct)
+            --            if res then
+            --                updateNotification(placeableType, 1, Fillable.FILLTYPE_UNKNOWN, res.value, nil, res.threshold.color)
+            --            end
+            --        else
+            --            local itemCount = nil
+            --            for fillType,ntfy in pairs(ntfyMischStation) do
+            --                if fillType ~= Fillable.FILLTYPE_UNKNOWN then
+            --                    local res = isBreakingThresholds(ntfy, fillLevels[fillType])
+            --                    if res then
+            --                        updateNotification(placeableType, nil, fillType, res.value, nil, res.threshold.color)
+            --                        itemCount = 1
+            --                    end
+            --                end
+            --            end
+            --            if itemCount ~= nil then
+            --                updateNotification(placeableType, itemCount)
+            --            end
+            --        end
+            --    end
+            --elseif string.find(plcXmlFilename, "saegewerk") ~= nil then
+            --    local placeableType = "Saegewerk"
+            --    local ntfySaegewerk = {}
+            --    for fillType,fillDesc in pairs(Fillable.fillTypeIndexToDesc) do
+            --        local fillName = (fillType ~= Fillable.FILLTYPE_UNKNOWN and fillDesc.name or nil)
+            --        local ntfy = getNotification(placeableType, fillName)
+            --        if ntfy ~= nil then
+            --            ntfySaegewerk[fillType] = ntfy
+            --        end
+            --    end
+            --    --
+            --    local saegewerkSpecialFillTypes = {
+            --        [Glance.FILLTYPE_BOARDWOOD]="boardWood",
+            --        [Glance.FILLTYPE_LOGS]="logs",
+            --    }
+            --    for fillType,fillName in pairs(saegewerkSpecialFillTypes) do
+            --        local ntfy = getNotification(placeableType, fillName)
+            --        if ntfy ~= nil then
+            --            ntfySaegewerk[fillType] = ntfy
+            --        end
+            --    end
+            --    --
+            --    funcTestPlaceable = function(plc)
+            --        -- Make sure the variables we expect, are actually there.
+            --        if not ( plc.FabrikScriptDirtyFlag ~= nil and plc.Produkte ~= nil )
+            --        then
+            --            return
+            --        end
+            --        --
+            --        local fillLevels = {}
+            --        
+            --        if plc.Produkte ~= nil then
+            --            if plc.Produkte.boardwood ~= nil then
+            --                fillLevels[Glance.FILLTYPE_BOARDWOOD] = 100 * plc.Produkte.boardwood.fillLevel / plc.Produkte.boardwood.capacity
+            --            end
+            --            if plc.Produkte.woodChips ~= nil then
+            --                fillLevels[Fillable.FILLTYPE_WOODCHIPS] = 100 * plc.Produkte.woodChips.fillLevel / plc.Produkte.woodChips.capacity
+            --            end
+            --        end
+            --        if plc.Rohstoffe ~= nil then
+            --            if plc.Rohstoffe.Brennstoffe ~= nil then
+            --                fillLevels[Fillable.FILLTYPE_FUEL] = 100 * plc.Rohstoffe.Brennstoffe.fillLevel / plc.Rohstoffe.Brennstoffe.capacity
+            --            end
+            --            if plc.Rohstoffe.Holz ~= nil then
+            --                fillLevels[Glance.FILLTYPE_LOGS] = 100 * plc.Rohstoffe.Holz.fillLevel / plc.Rohstoffe.Holz.capacity
+            --            end
+            --        end
+            --        
+            --        local itemCount = nil
+            --        for fillType,ntfy in pairs(ntfySaegewerk) do
+            --            if fillType ~= Fillable.FILLTYPE_UNKNOWN then
+            --                local res = isBreakingThresholds(ntfy, fillLevels[fillType])
+            --                if res then
+            --                    updateNotification(placeableType, nil, fillType, res.value, nil, res.threshold.color)
+            --                    itemCount = 1
+            --                end
+            --            end
+            --        end
+            --        if itemCount ~= nil then
+            --            updateNotification(placeableType, itemCount)
+            --        end
+            --    end
             else
                 -- TODO - Add other useful placeables???
             end
@@ -1591,97 +1601,97 @@ Glance.alignTypes["right"]  = RenderText.ALIGN_RIGHT
 Glance.alignTypes["center"] = RenderText.ALIGN_CENTER
 
 function Glance:makeVehiclesLines()
-  local columns = {}
-  for i,col in pairs(Glance.columnOrder) do
-    if col.enabled == true then
-        local column = {
-            sufOff      = Glance.columnSpacing --getTextWidth(Glance.cFontSize, Glance.columnSpacingTxt)
-            ,delimPos   = nil
-            ,pos        = 0
-            ,minWidth   = getTextWidth(Glance.cFontSize, col.minWidthText)
-            ,maxLetters = col.maxTextLen
-            ,alignment  = Glance.alignTypes[col.align] or RenderText.ALIGN_LEFT
-            ,color      = getNotificationColor(col.color)
-        };
-        table.insert(columns, column)
-    end
-  end
-  self.linesVehicles = { columns }
-  local lines = 1
-  --
-  local steerables = {}
-  for _,v in pairs(g_currentMission.steerables) do
-    table.insert(steerables,v);
-  end
-  if VehicleGroupsSwitcher ~= nil then
-    -- Sort steerables in same order as in VehicleGroupsSwitcher.
-    table.sort(steerables, function(l,r)
-        if l.modVeGS == nil or r.modVeGS == nil then
-            return false
+    local columns = {}
+    for i,col in pairs(Glance.columnOrder) do
+        if col.enabled == true then
+            local column = {
+                sufOff      = Glance.columnSpacing --getTextWidth(Glance.cFontSize, Glance.columnSpacingTxt)
+                ,delimPos   = nil
+                ,pos        = 0
+                ,minWidth   = getTextWidth(Glance.cFontSize, col.minWidthText)
+                ,maxLetters = col.maxTextLen
+                ,alignment  = Glance.alignTypes[col.align] or RenderText.ALIGN_LEFT
+                ,color      = getNotificationColor(col.color)
+            };
+            table.insert(columns, column)
         end
-        lPos = l.modVeGS.group*100 + l.modVeGS.pos;
-        rPos = r.modVeGS.group*100 + r.modVeGS.pos;
-        return lPos < rPos;
-    end);
-  end
-
-  local maxV = table.getn(steerables);
-  for v=1,maxV do
-    local cells = {}
-    infoLevel, lineColor = Glance.getNotificationsForSteerable(self, dt, cells, steerables[v])
-    if infoLevel >= Glance.minNotifyLevel then
-        -- Add line
-        local columns = {}
-        for i,colParms in pairs(Glance.columnOrder) do
-            if colParms.enabled == true then
-                local column = {}
-                for _,contain in pairs(colParms.contains) do
-                    if Glance["getCellData_"..contain] ~= nil then
-                        local data = Glance["getCellData_"..contain](self, dt, lineColor, colParms, cells, steerables[v])
-                        if data ~= nil then
-                            for _,v in pairs(data) do
-                                table.insert(column, v)
+    end
+    self.linesVehicles = { columns }
+    local lines = 1
+    --
+    local steerables = {}
+    for _,v in pairs(g_currentMission.steerables) do
+        table.insert(steerables,v);
+    end
+    if VehicleGroupsSwitcher ~= nil then
+        -- Sort steerables in same order as in VehicleGroupsSwitcher.
+        table.sort(steerables, function(l,r)
+            if l.modVeGS == nil or r.modVeGS == nil then
+                return false
+            end
+            lPos = l.modVeGS.group*100 + l.modVeGS.pos;
+            rPos = r.modVeGS.group*100 + r.modVeGS.pos;
+            return lPos < rPos;
+        end);
+    end
+    
+    local maxV = table.getn(steerables);
+    for v=1,maxV do
+        local cells = {}
+        infoLevel, lineColor = Glance.getNotificationsForSteerable(self, dt, cells, steerables[v])
+        if infoLevel >= Glance.minNotifyLevel then
+            -- Add line
+            local columns = {}
+            for i,colParms in pairs(Glance.columnOrder) do
+                if colParms.enabled == true then
+                    local column = {}
+                    for _,contain in pairs(colParms.contains) do
+                        if Glance["getCellData_"..contain] ~= nil then
+                            local data = Glance["getCellData_"..contain](self, dt, lineColor, colParms, cells, steerables[v])
+                            if data ~= nil then
+                                for _,v in pairs(data) do
+                                    table.insert(column, v)
+                                end
                             end
                         end
                     end
+                    table.insert(columns, column)
                 end
-                table.insert(columns, column)
             end
+            lines = lines + 1
+            self.linesVehicles[lines] = columns
         end
-        lines = lines + 1
-        self.linesVehicles[lines] = columns
     end
-  end
-
-  -- Find max text width per column
-  for i=2,table.getn(self.linesVehicles) do
+    
+    -- Find max text width per column
+    for i=2,table.getn(self.linesVehicles) do
+        for c=1,table.getn(self.linesVehicles[1]) do
+            for e=1,table.getn(self.linesVehicles[i][c]) do
+                --
+                if self.linesVehicles[1][c].maxLetters ~= nil and self.linesVehicles[i][c][e][2]:len() > self.linesVehicles[1][c].maxLetters then
+                    self.linesVehicles[i][c][e][2] = self.linesVehicles[i][c][e][2]:sub(1, self.linesVehicles[1][c].maxLetters) .. ".."; --   "…"; -- 0x2026  -- "…"
+                end
+                --
+                local txtWidth = getTextWidth(Glance.cFontSize, self.linesVehicles[i][c][e][2]);
+                --log("i="..i..",c="..c..",e="..e..",txt=" .. tostring(self.linesVehicles[i][c][e][2])..",txtWidth="..tostring(txtWidth));
+                self.linesVehicles[1][c].minWidth = math.max(self.linesVehicles[1][c].minWidth, txtWidth);
+            end
+        end;
+    end;
+    
+    -- Update column positions.
+    local xPos = 0.0;
     for c=1,table.getn(self.linesVehicles[1]) do
-      for e=1,table.getn(self.linesVehicles[i][c]) do
-        --
-        if self.linesVehicles[1][c].maxLetters ~= nil and self.linesVehicles[i][c][e][2]:len() > self.linesVehicles[1][c].maxLetters then
-            self.linesVehicles[i][c][e][2] = self.linesVehicles[i][c][e][2]:sub(1, self.linesVehicles[1][c].maxLetters) .. ".."; --   "…"; -- 0x2026  -- "…"
-        end
-        --
-        local txtWidth = getTextWidth(Glance.cFontSize, self.linesVehicles[i][c][e][2]);
-        --log("i="..i..",c="..c..",e="..e..",txt=" .. tostring(self.linesVehicles[i][c][e][2])..",txtWidth="..tostring(txtWidth));
-        self.linesVehicles[1][c].minWidth = math.max(self.linesVehicles[1][c].minWidth, txtWidth);
-      end
-    end;
-  end;
-
-  -- Update column positions.
-  local xPos = 0.0;
-  for c=1,table.getn(self.linesVehicles[1]) do
-    if (self.linesVehicles[1][c].alignment == RenderText.ALIGN_LEFT) then
-      self.linesVehicles[1][c].pos = xPos;
-    elseif (self.linesVehicles[1][c].alignment == RenderText.ALIGN_CENTER) then
-      self.linesVehicles[1][c].pos = xPos + (self.linesVehicles[1][c].minWidth / 2);
-    elseif (self.linesVehicles[1][c].alignment == RenderText.ALIGN_RIGHT) then
-      self.linesVehicles[1][c].pos = xPos + self.linesVehicles[1][c].minWidth;
-    end;
-
-    xPos = xPos + self.linesVehicles[1][c].minWidth + self.linesVehicles[1][c].sufOff;
-  end
+        if (self.linesVehicles[1][c].alignment == RenderText.ALIGN_LEFT) then
+            self.linesVehicles[1][c].pos = xPos;
+        elseif (self.linesVehicles[1][c].alignment == RenderText.ALIGN_CENTER) then
+            self.linesVehicles[1][c].pos = xPos + (self.linesVehicles[1][c].minWidth / 2);
+        elseif (self.linesVehicles[1][c].alignment == RenderText.ALIGN_RIGHT) then
+            self.linesVehicles[1][c].pos = xPos + self.linesVehicles[1][c].minWidth;
+        end;
+        
+        xPos = xPos + self.linesVehicles[1][c].minWidth + self.linesVehicles[1][c].sufOff;
+    end
 
 end
 
@@ -1707,80 +1717,81 @@ function Glance:getCellData_ColumnDelim(dt, lineColor, colParms, cells, veh)
     return { { getNotificationColor(colParms.color, lineColor), Utils.getNoNil(colParms.text, Glance.cColumnDelimChar) } }
 end
 function Glance:getCellData_VehicleAtWorldPositionXZ(dt, lineColor, colParms, cells, veh)
-  if veh.components and veh.components[1] and veh.components[1].node then
-      local wx,_,wz = getWorldTranslation(veh.components[1].node);
-
-      if wx~=wx or wz~=wz then -- v0.29
-        -- Something is very wrong!
-        local vehName = "(unknown vehicle name)"
-        if veh.getVehicleName ~= nil then
-            vehName = veh.getVehicleName()
+    if veh.components and veh.components[1] and veh.components[1].node then
+        local wx,_,wz = getWorldTranslation(veh.components[1].node);
+    
+        if wx~=wx or wz~=wz then -- v0.29
+            -- Something is very wrong!
+            local vehName = "(unknown vehicle name)"
+            if veh.getVehicleName ~= nil then
+                vehName = veh.getVehicleName()
+            end
+            log("ERROR - Glance:getCellData_VehicleAtWorldPositionXZ(), getWorldTranslation() returned invalid values: x/_/z="..tostring(wx).."/_/"..tostring(wz)..", for vehicle: "..vehName)
+            return
         end
-        log("ERROR - Glance:getCellData_VehicleAtWorldPositionXZ(), getWorldTranslation() returned invalid values: x/_/z="..tostring(wx).."/_/"..tostring(wz)..", for vehicle: "..vehName)
-        return
-      end
-
-      -- World location
-
-      local pdaMap = Utils.getNoNil(g_currentMission.ingameMap, g_currentMission.missionPDA)
-      wx = wx + pdaMap.worldCenterOffsetX;
-      wz = wz + pdaMap.worldCenterOffsetZ;
-      return { { getNotificationColor(lineColor), string.format("%dx%d", wx,wz) } }
-  end
+    
+        -- World location
+    
+        local pdaMap = Utils.getNoNil(g_currentMission.ingameMap, g_currentMission.missionPDA)
+        wx = wx + pdaMap.worldCenterOffsetX;
+        wz = wz + pdaMap.worldCenterOffsetZ;
+        return { { getNotificationColor(lineColor), string.format("%dx%d", wx,wz) } }
+    end
 end
 function Glance:getCellData_VehicleAtWorldCorner(dt, lineColor, colParms, cells, veh)
-  if veh.components and veh.components[1] and veh.components[1].node then
-      local wx,_,wz = getWorldTranslation(veh.components[1].node);
-
-      if wx~=wx or wz~=wz then -- v0.29
-        -- Something is very wrong!
-        local vehName = "(unknown vehicle name)"
-        if veh.getVehicleName ~= nil then
-            vehName = veh.getVehicleName()
+    if veh.components and veh.components[1] and veh.components[1].node then
+        local wx,_,wz = getWorldTranslation(veh.components[1].node);
+    
+        if wx~=wx or wz~=wz then -- v0.29
+            -- Something is very wrong!
+            local vehName = "(unknown vehicle name)"
+            if veh.getVehicleName ~= nil then
+                vehName = veh.getVehicleName()
+            end
+            log("ERROR - Glance:getCellData_VehicleAtWorldCorner(), getWorldTranslation() returned invalid values: x/_/z="..tostring(wx).."/_/"..tostring(wz)..", for vehicle: "..vehName)
+            return
         end
-        log("ERROR - Glance:getCellData_VehicleAtWorldCorner(), getWorldTranslation() returned invalid values: x/_/z="..tostring(wx).."/_/"..tostring(wz)..", for vehicle: "..vehName)
-        return
-      end
-
-      -- World location
-      local pdaMap = Utils.getNoNil(g_currentMission.ingameMap, g_currentMission.missionPDA)
-      wx = wx + pdaMap.worldCenterOffsetX;
-      wz = wz + pdaMap.worldCenterOffsetZ;
-      -- Determine world corner - 3x3 grid
-      wx = 1 + Utils.clamp(math.floor(wx / (pdaMap.worldSizeX / 3 + 1)), 0, 2); -- We '+1' if at any point the worldSizeX would be zero.
-      wz = 1 + Utils.clamp(math.floor(wz / (pdaMap.worldSizeZ / 3 + 1)), 0, 2); -- We '+1' if at any point the worldSizeX would be zero.
-      return { { getNotificationColor(lineColor), self.cWorldCorners3x3[wz][wx] } }
-  end
+    
+        -- World location
+        local pdaMap = Utils.getNoNil(g_currentMission.ingameMap, g_currentMission.missionPDA)
+        wx = wx + pdaMap.worldCenterOffsetX;
+        wz = wz + pdaMap.worldCenterOffsetZ;
+        -- Determine world corner - 3x3 grid
+        wx = 1 + Utils.clamp(math.floor(wx / (pdaMap.worldSizeX / 3 + 1)), 0, 2); -- We '+1' if at any point the worldSizeX would be zero.
+        wz = 1 + Utils.clamp(math.floor(wz / (pdaMap.worldSizeZ / 3 + 1)), 0, 2); -- We '+1' if at any point the worldSizeX would be zero.
+        return { { getNotificationColor(lineColor), self.cWorldCorners3x3[wz][wx] } }
+    end
 end
 function Glance:getCellData_VehicleAtFieldNumber(dt, lineColor, colParms, cells, veh)
-  if veh.components and veh.components[1] and veh.components[1].node then
-      local wx,_,wz = getWorldTranslation(veh.components[1].node);
-
-      if wx~=wx or wz~=wz then -- v0.29
-        -- Something is very wrong!
-        local vehName = "(unknown vehicle name)"
-        if veh.getVehicleName ~= nil then
-            vehName = veh.getVehicleName()
+    if veh.components and veh.components[1] and veh.components[1].node then
+        local wx,_,wz = getWorldTranslation(veh.components[1].node);
+    
+        if wx~=wx or wz~=wz then -- v0.29
+            -- Something is very wrong!
+            local vehName = "(unknown vehicle name)"
+            if veh.getVehicleName ~= nil then
+                vehName = veh.getVehicleName()
+            end
+            log("ERROR - Glance:getCellData_VehicleAtFieldNumber(), getWorldTranslation() returned invalid values: x/_/z="..tostring(wx).."/_/"..tostring(wz)..", for vehicle: "..vehName)
+            return
         end
-        log("ERROR - Glance:getCellData_VehicleAtFieldNumber(), getWorldTranslation() returned invalid values: x/_/z="..tostring(wx).."/_/"..tostring(wz)..", for vehicle: "..vehName)
-        return
-      end
-
-      -- Find field
-      local closestField = nil;
-      for fieldNum,fieldRects in ipairs(Glance.fieldsRects) do
-        for _,rect in ipairs(fieldRects) do
-          if  rect.x1 <= wx and wx <= rect.x2
-          and rect.z1 <= wz and wz <= rect.z2 then
-            closestField = fieldNum;
-            break
-          end
+    
+        -- Find field
+        local closestField = nil;
+        for fieldNum,fieldRects in ipairs(Glance.fieldsRects) do
+            for _,rect in ipairs(fieldRects) do
+                if  rect.x1 <= wx and wx <= rect.x2
+                and rect.z1 <= wz and wz <= rect.z2
+                then
+                    closestField = fieldNum;
+                    break
+                end
+            end
+            if closestField ~= nil then
+                return { { getNotificationColor(lineColor), string.format(g_i18n:getText("closestfield"), closestField) } }
+            end;
         end
-        if closestField ~= nil then
-          return { { getNotificationColor(lineColor), string.format(g_i18n:getText("closestfield"), closestField) } }
-        end;
-      end
-  end
+    end
 end
 function Glance:getCellData_VehicleName(dt, lineColor, colParms, cells, veh)
     if veh.getVehicleName ~= nil then
@@ -1841,27 +1852,27 @@ end
 --end
 
 function Glance:notify_vehicleFuelLow(dt, notifyParms, veh)
-  if veh.fuelCapacity ~= nil and veh.fuelCapacity > 0 then
-    local fuelPct = math.floor(veh.fuelFillLevel / veh.fuelCapacity * 100);
-    local res = isBreakingThresholds(notifyParms, fuelPct)
-    if res then
-        return { "FuelLow", string.format(g_i18n:getText("fuellow"), tostring(res.value)) }
-    end
-  end;
+    if veh.fuelCapacity ~= nil and veh.fuelCapacity > 0 then
+        local fuelPct = math.floor(veh.fuelFillLevel / veh.fuelCapacity * 100);
+        local res = isBreakingThresholds(notifyParms, fuelPct)
+        if res then
+            return { "FuelLow", string.format(g_i18n:getText("fuellow"), tostring(res.value)) }
+        end
+    end;
 end
 
 function Glance:notify_engineOnButNotControlled(dt, notifyParms, veh)
-  if veh.isMotorStarted then
-    if veh.isControlled
-    or veh.isHired
-    or (veh.getIsCourseplayDriving ~= nil and veh:getIsCourseplayDriving())
-    or (veh.modFM ~= nil and veh.modFM.FollowVehicleObj ~= nil)
-    then
-      -- do nothing
-    else
-      return { "EngineOn", g_i18n:getText("engineon") }
-    end;
-  end
+    if veh.isMotorStarted then
+        if veh.isControlled
+        or veh.isHired
+        or (veh.getIsCourseplayDriving ~= nil and veh:getIsCourseplayDriving())
+        or (veh.modFM ~= nil and veh.modFM.FollowVehicleObj ~= nil)
+        then
+            -- do nothing
+        else
+            return { "EngineOn", g_i18n:getText("engineon") }
+        end;
+    end
 end
 
 --[[
@@ -1967,346 +1978,295 @@ function Glance:static_controllerAndMovement(dt, _, veh, implements, cells, noti
     cells["MovementSpeed"] = {}
     cells["Collision"] = {}
 
-  if vehIsControlled and veh.isMotorStarted then
-    local speedKmh = 0
-    --if veh.isRealistic and veh.realDisplaySpeed ~= nil then -- Support for Dural's MoreRealistic mod.
-    --  speedKmh = veh.realDisplaySpeed * 3.6;
-    --else
-      speedKmh = veh.lastSpeed * 3600
-    --end
-    --
-    local waiting = nil;
-    if g_currentMission:getIsServer() then
-      if (veh.getIsCourseplayDriving ~= nil and veh:getIsCourseplayDriving()) and veh.cp ~= nil and veh.cp.wait then
-        -- CoursePlay waiting?
-        waiting = true
-      end
-      self:setProperty(veh, "cpWaiting", waiting)
-    else
-      waiting = self:getProperty(veh, "cpWaiting");
-    end
-    --
-    local ntfyIdle = Glance.notifications["vehicleIdleMovement"]
-    
-    --
-    local res = isBreakingThresholds(ntfyIdle, speedKmh)
-    if res then
-        -- Not moving.
-        notifyLevel = math.max(notifyLevel, res.threshold.level)
-
-        if waiting then
-            cells["MovementSpeed"] = { { getNotificationColor(res.color, notifyLineColor), g_i18n:getText("cp_waiting") } };
-        else
-            cells["MovementSpeed"] = { { getNotificationColor(res.color, notifyLineColor), g_i18n:getText("speedIdle") } };
-        end
-    else
-        cells["MovementSpeed"] = { { getNotificationColor(notifyLineColor), string.format(g_i18n:getText("speed+Unit"), g_i18n:getSpeed(speedKmh), Glance.c_SpeedUnit) } }
-    end
-
-    ---
-
-    local ntfyCollision = Glance.notifications["vehicleCollision"]
-    if ntfyCollision ~= nil then
-        local hasCollision = self:getProperty(veh, "hasCollision");
+    if vehIsControlled and veh.isMotorStarted then
+        local speedKmh = 0
+        speedKmh = veh.lastSpeed * 3600
+        --
+        local waiting = nil;
         if g_currentMission:getIsServer() then
-            local notifyBlockedMS = nil;
-            if vehIsControlledByComputer and speedKmh < Glance.collisionDetection_belowThreshold then
-                notifyBlockedMS = self:getProperty(veh, "notifyBlockedMS")
-                if notifyBlockedMS ~= nil then
-                    if g_currentMission.time >= notifyBlockedMS then
-                        -- Not been moving during threshold time
-                        hasCollision = true
+        if (veh.getIsCourseplayDriving ~= nil and veh:getIsCourseplayDriving()) and veh.cp ~= nil and veh.cp.wait then
+            -- CoursePlay waiting?
+            waiting = true
+        end
+        self:setProperty(veh, "cpWaiting", waiting)
+        else
+        waiting = self:getProperty(veh, "cpWaiting");
+        end
+        --
+        local ntfyIdle = Glance.notifications["vehicleIdleMovement"]
+        
+        --
+        local res = isBreakingThresholds(ntfyIdle, speedKmh)
+        if res then
+            -- Not moving.
+            notifyLevel = math.max(notifyLevel, res.threshold.level)
+    
+            if waiting then
+                cells["MovementSpeed"] = { { getNotificationColor(res.color, notifyLineColor), g_i18n:getText("cp_waiting") } };
+            else
+                cells["MovementSpeed"] = { { getNotificationColor(res.color, notifyLineColor), g_i18n:getText("speedIdle") } };
+            end
+        else
+            cells["MovementSpeed"] = { { getNotificationColor(notifyLineColor), string.format(g_i18n:getText("speed+Unit"), g_i18n:getSpeed(speedKmh), Glance.c_SpeedUnit) } }
+        end
+    
+        ---
+    
+        local ntfyCollision = Glance.notifications["vehicleCollision"]
+        if ntfyCollision ~= nil then
+            local hasCollision = self:getProperty(veh, "hasCollision");
+            if g_currentMission:getIsServer() then
+                local notifyBlockedMS = nil;
+                if vehIsControlledByComputer and speedKmh < Glance.collisionDetection_belowThreshold then
+                    notifyBlockedMS = self:getProperty(veh, "notifyBlockedMS")
+                    if notifyBlockedMS ~= nil then
+                        if g_currentMission.time >= notifyBlockedMS then
+                            -- Not been moving during threshold time
+                            hasCollision = true
+                        end
+                    else
+                        if not waiting then -- not CoursePlay or not cp-waiting
+                            if veh.numCollidingVehicles ~= nil then
+                                for _,numCollisions in pairs(veh.numCollidingVehicles) do
+                                    if numCollisions > 0 then
+                                        -- Begin timeout
+                                        notifyBlockedMS = g_currentMission.time + ntfyCollision.aboveThreshold
+                                        break;
+                                    end;
+                                end;
+                            end
+                            if math.abs(veh.lastSpeedAcceleration) > 0.0 then
+                                -- Begin timeout
+                                notifyBlockedMS = g_currentMission.time + ntfyCollision.aboveThreshold
+                            end
+                        end
                     end
                 else
-                    if not waiting then -- not CoursePlay or not cp-waiting
-                        if veh.numCollidingVehicles ~= nil then
-                            for _,numCollisions in pairs(veh.numCollidingVehicles) do
-                                if numCollisions > 0 then
-                                    -- Begin timeout
-                                    notifyBlockedMS = g_currentMission.time + ntfyCollision.aboveThreshold
-                                    break;
-                                end;
-                            end;
-                        end
-                        if math.abs(veh.lastSpeedAcceleration) > 0.0 then
-                            -- Begin timeout
-                            notifyBlockedMS = g_currentMission.time + ntfyCollision.aboveThreshold
-                        end
-                    end
+                    hasCollision = nil;
                 end
-            else
-                hasCollision = nil;
+                self:setProperty(veh, "notifyBlockedMS", notifyBlockedMS, true) -- this is a server-side property only
+                self:setProperty(veh, "hasCollision", hasCollision);
             end
-            self:setProperty(veh, "notifyBlockedMS", notifyBlockedMS, true) -- this is a server-side property only
-            self:setProperty(veh, "hasCollision", hasCollision);
+            if hasCollision ~= nil and ntfyCollision.enabled == true then
+                notifyLevel = math.max(notifyLevel, ntfyCollision.level)
+                cells["Collision"] = { { getNotificationColor(ntfyCollision.color, notifyLineColor), g_i18n:getText("collision") } };
+            end
         end
-        if hasCollision ~= nil and ntfyCollision.enabled == true then
-            notifyLevel = math.max(notifyLevel, ntfyCollision.level)
-            cells["Collision"] = { { getNotificationColor(ntfyCollision.color, notifyLineColor), g_i18n:getText("collision") } };
-        end
-    end
 
-  end
+    end
 
     ---
     return notifyLevel, notifyLineColor
 end
 
 function Glance:static_activeTask(dt, staticParms, veh, implements, cells, notify_lineColor)
-  -- Three state variables; nil = not-present, false = present-TurnedOFF, true = present-TurnedON
-  local impStates = {}
-  for _,imp in pairs(implements) do
-    for _,spec in pairs(imp.specializations) do
-        if      Sprayer            == spec then impStates.isSprayerOn       = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
-        elseif  ManureSpreader     == spec then impStates.isSprayerOn       = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
-        elseif  ManureBarrel       == spec then impStates.isSprayerOn       = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
-        elseif  SowingMachine      == spec then impStates.isSeederOn        = (imp.movingDirection > 0 and imp.sowingMachineHasGroundContact and (not imp.needsActivation or (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn));
-        elseif  TreePlanter        == spec then impStates.isTreePlanterOn   = (imp.movingDirection > 0                                       and (not imp.needsActivation or (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn())));
-        elseif  Cultivator         == spec then impStates.isCultivatorOn    = (imp.cultivatorHasGroundContact and (not imp.onlyActiveWhenLowered or imp:isLowered(false)) );
-        elseif  Plough             == spec then impStates.isPloughOn        = imp.ploughHasGroundContact;
-        elseif  Combine            == spec then impStates.isHarvesterOn     = ((imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isThreshing) and imp:getIsThreshingAllowed(false);
-        elseif  ForageWagon        == spec then impStates.isForageWagonOn   = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
-        elseif  Baler              == spec then impStates.isBalerOn         = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
-        elseif  Mower              == spec then impStates.isMowerOn         = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
-        elseif  Tedder             == spec then impStates.isTedderOn        = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
-        elseif  Windrower          == spec then impStates.isWindrowerOn     = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
-        elseif  FruitPreparer      == spec then impStates.isFruitPreparerOn = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
-        elseif  BaleLoader         == spec then impStates.isBaleLoadingOn   = imp.isInWorkPosition;
-        elseif  BaleWrapper        == spec then impStates.isBaleWrapperOn   = imp.baleWrapperState ~= nil and ((imp.baleWrapperState > 0) and (imp.baleWrapperState < 4));
-        elseif  StrawBlower        == spec then impStates.isStrawBlowerOn   = (imp.tipState == Trailer.TIPSTATE_OPENING or imp.tipState == Trailer.TIPSTATE_OPEN);
-        elseif  MixerWagon         == spec then impStates.isMixerWagonOn    = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
-        elseif  StumpCutter        == spec then impStates.isStumpCutterOn   = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn());
-        elseif  WoodCrusher        == spec then impStates.isWoodCrusherOn   = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn());
-        elseif  Cutter             == spec then impStates.isCutterOn        = false; -- TODO
-        elseif  Trailer            == spec then impStates.isTrailerOn       = (imp.movingDirection > 0.0001) or (imp.movingDirection < -0.0001);
-                                                impStates.isTrailerUnloads  = (imp.tipState == Trailer.TIPSTATE_OPENING or imp.tipState == Trailer.TIPSTATE_OPEN);
-        end;
+    -- Three state variables; nil = not-present, false = present-TurnedOFF, true = present-TurnedON
+    local impStates = {}
+    for _,imp in pairs(implements) do
+        for _,spec in pairs(imp.specializations) do
+            if      Sprayer            == spec then impStates.isSprayerOn       = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+            elseif  ManureSpreader     == spec then impStates.isSprayerOn       = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+            elseif  ManureBarrel       == spec then impStates.isSprayerOn       = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+            elseif  SowingMachine      == spec then impStates.isSeederOn        = (imp.movingDirection > 0 and imp.sowingMachineHasGroundContact and (not imp.needsActivation or (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn));
+            elseif  TreePlanter        == spec then impStates.isTreePlanterOn   = (imp.movingDirection > 0                                       and (not imp.needsActivation or (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn())));
+            elseif  Cultivator         == spec then impStates.isCultivatorOn    = (imp.cultivatorHasGroundContact and (not imp.onlyActiveWhenLowered or imp:isLowered(false)) );
+            elseif  Plough             == spec then impStates.isPloughOn        = imp.ploughHasGroundContact;
+            elseif  Combine            == spec then impStates.isHarvesterOn     = ((imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isThreshing) and imp:getIsThreshingAllowed(false);
+            elseif  ForageWagon        == spec then impStates.isForageWagonOn   = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+            elseif  Baler              == spec then impStates.isBalerOn         = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+            elseif  Mower              == spec then impStates.isMowerOn         = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+            elseif  Tedder             == spec then impStates.isTedderOn        = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+            elseif  Windrower          == spec then impStates.isWindrowerOn     = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+            elseif  FruitPreparer      == spec then impStates.isFruitPreparerOn = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+            elseif  BaleLoader         == spec then impStates.isBaleLoadingOn   = imp.isInWorkPosition;
+            elseif  BaleWrapper        == spec then impStates.isBaleWrapperOn   = imp.baleWrapperState ~= nil and ((imp.baleWrapperState > 0) and (imp.baleWrapperState < 4));
+            elseif  StrawBlower        == spec then impStates.isStrawBlowerOn   = (imp.tipState == Trailer.TIPSTATE_OPENING or imp.tipState == Trailer.TIPSTATE_OPEN);
+            elseif  MixerWagon         == spec then impStates.isMixerWagonOn    = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+            elseif  StumpCutter        == spec then impStates.isStumpCutterOn   = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn());
+            elseif  WoodCrusher        == spec then impStates.isWoodCrusherOn   = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn());
+            elseif  Cutter             == spec then impStates.isCutterOn        = false; -- TODO
+            elseif  Trailer            == spec then impStates.isTrailerOn       = (imp.movingDirection > 0.0001) or (imp.movingDirection < -0.0001);
+                                                    impStates.isTrailerUnloads  = (imp.tipState == Trailer.TIPSTATE_OPENING or imp.tipState == Trailer.TIPSTATE_OPEN);
+            end;
+        end
+    end;
+
+
+    local function withDelim(txtVal)
+        if txtVal ~= nil then
+            return txtVal..", "
+        else
+            return ""
+        end
     end
-  end;
 
-
-  local function withDelim(txtVal)
-    if txtVal ~= nil then
-      return txtVal..", "
-    else
-      return ""
+    local txt = nil; -- No task.
+    if impStates.isHarvesterOn      then txt = withDelim(txt) .. g_i18n:getText("task_Harvesting"   ); end;
+    if impStates.isFruitPreparerOn  then txt = withDelim(txt) .. g_i18n:getText("task_Defoliator"   ); end;
+    if impStates.isBaleLoadingOn    then txt = withDelim(txt) .. g_i18n:getText("task_Loading_bales"); end;
+    if impStates.isBaleWrapperOn    then txt = withDelim(txt) .. g_i18n:getText("task_Wrapping_bale"); end;
+    if impStates.isBalerOn          then txt = withDelim(txt) .. g_i18n:getText("task_Baling"       ); end;
+    if impStates.isForageWagonOn    then txt = withDelim(txt) .. g_i18n:getText("task_Foraging"     ); end;
+    if impStates.isTedderOn         then txt = withDelim(txt) .. g_i18n:getText("task_Tedding"      ); end;
+    if impStates.isWindrowerOn      then txt = withDelim(txt) .. g_i18n:getText("task_Swathing"     ); end;
+    if impStates.isMowerOn          then txt = withDelim(txt) .. g_i18n:getText("task_Mowing"       ); end;
+    if impStates.isSprayerOn        then txt = withDelim(txt) .. g_i18n:getText("task_Spraying"     ); end;
+    if impStates.isSeederOn         then txt = withDelim(txt) .. g_i18n:getText("task_Seeding"      ); end;
+    if impStates.isTreePlanterOn    then txt = withDelim(txt) .. g_i18n:getText("task_TreePlanting" ); end;
+    if impStates.isStrawBlowerOn    then txt = withDelim(txt) .. g_i18n:getText("task_Bedding"      ); end;
+    if impStates.isMixerWagonOn     then txt = withDelim(txt) .. g_i18n:getText("task_Feeding"      ); end;
+    if impStates.isCutterOn         then txt = withDelim(txt) .. g_i18n:getText("task_Cutting"      ); end;
+    if impStates.isStumpCutterOn    then txt = withDelim(txt) .. g_i18n:getText("task_StumpCutting" ); end;
+    if impStates.isWoodCrusherOn    then txt = withDelim(txt) .. g_i18n:getText("task_WoodCrushing" ); end;
+    if impStates.isCultivatorOn     then txt = withDelim(txt) .. g_i18n:getText("task_Cultivating"  ); end;
+    if impStates.isPloughOn         then txt = withDelim(txt) .. g_i18n:getText("task_Ploughing"    ); end;
+    if impStates.isTrailerUnloads   then txt = withDelim(txt) .. g_i18n:getText("task_Unloading"    ); end;
+    
+    if txt == nil and impStates.isTrailerOn then txt = withDelim(txt) .. g_i18n:getText("task_Transporting" ); end;
+    
+    if txt ~= nil then
+        cells["ActiveTask"] = { { getNotificationColor(notify_lineColor), txt } }
     end
-  end
-
-  local txt = nil; -- No task.
-  if impStates.isHarvesterOn      then txt = withDelim(txt) .. g_i18n:getText("task_Harvesting"   ); end;
-  if impStates.isFruitPreparerOn  then txt = withDelim(txt) .. g_i18n:getText("task_Defoliator"   ); end;
-  if impStates.isBaleLoadingOn    then txt = withDelim(txt) .. g_i18n:getText("task_Loading_bales"); end;
-  if impStates.isBaleWrapperOn    then txt = withDelim(txt) .. g_i18n:getText("task_Wrapping_bale"); end;
-  if impStates.isBalerOn          then txt = withDelim(txt) .. g_i18n:getText("task_Baling"       ); end;
-  if impStates.isForageWagonOn    then txt = withDelim(txt) .. g_i18n:getText("task_Foraging"     ); end;
-  if impStates.isTedderOn         then txt = withDelim(txt) .. g_i18n:getText("task_Tedding"      ); end;
-  if impStates.isWindrowerOn      then txt = withDelim(txt) .. g_i18n:getText("task_Swathing"     ); end;
-  if impStates.isMowerOn          then txt = withDelim(txt) .. g_i18n:getText("task_Mowing"       ); end;
-  if impStates.isSprayerOn        then txt = withDelim(txt) .. g_i18n:getText("task_Spraying"     ); end;
-  if impStates.isSeederOn         then txt = withDelim(txt) .. g_i18n:getText("task_Seeding"      ); end;
-  if impStates.isTreePlanterOn    then txt = withDelim(txt) .. g_i18n:getText("task_TreePlanting" ); end;
-  if impStates.isStrawBlowerOn    then txt = withDelim(txt) .. g_i18n:getText("task_Bedding"      ); end;
-  if impStates.isMixerWagonOn     then txt = withDelim(txt) .. g_i18n:getText("task_Feeding"      ); end;
-  if impStates.isCutterOn         then txt = withDelim(txt) .. g_i18n:getText("task_Cutting"      ); end;
-  if impStates.isStumpCutterOn    then txt = withDelim(txt) .. g_i18n:getText("task_StumpCutting" ); end;
-  if impStates.isWoodCrusherOn    then txt = withDelim(txt) .. g_i18n:getText("task_WoodCrushing" ); end;
-  if impStates.isCultivatorOn     then txt = withDelim(txt) .. g_i18n:getText("task_Cultivating"  ); end;
-  if impStates.isPloughOn         then txt = withDelim(txt) .. g_i18n:getText("task_Ploughing"    ); end;
-  if impStates.isTrailerUnloads   then txt = withDelim(txt) .. g_i18n:getText("task_Unloading"    ); end;
-
-  if txt == nil and impStates.isTrailerOn then txt = withDelim(txt) .. g_i18n:getText("task_Transporting" ); end;
-
-  if txt ~= nil then
-    cells["ActiveTask"] = { { getNotificationColor(notify_lineColor), txt } }
-  end
-  --
-  return -1; -- notifyLevel
+    --
+    return -1; -- notifyLevel
 end
 
 function Glance:static_fillTypeLevelPct(dt, staticParms, veh, implements, cells, notify_lineColor)
-  local notifyLevel = 0
-
-  -- Examine each implement for fillable parts.
-  self.fillTypesCapacityLevelColor = {}
-  local function updateFill(fillType,capacity,level,color)
-    if self.fillTypesCapacityLevelColor[fillType] == nil then
-        self.fillTypesCapacityLevelColor[fillType] = {capacity=capacity, level=level, color=color}
-    else
-        self.fillTypesCapacityLevelColor[fillType].capacity = self.fillTypesCapacityLevelColor[fillType].capacity + capacity
-        self.fillTypesCapacityLevelColor[fillType].level    = self.fillTypesCapacityLevelColor[fillType].level    + level
-        if self.fillTypesCapacityLevelColor[fillType].color == nil then
-            self.fillTypesCapacityLevelColor[fillType].color = color
-        end
-    end
-  end
-  --
-  for _,obj in pairs(implements) do
-    local fillClr = notify_lineColor;
-    local fillTpe = nil;
-    local fillLvl = nil;
-    local fillPct = nil;
-
---[[FS2013>
-    if obj.grainTankCapacity ~= nil and obj.grainTankCapacity > 0 and obj.grainTankFillLevel ~= nil and obj.currentGrainTankFruitType ~= nil then
-      if obj.grainTankFillLevel > 0 and obj.currentGrainTankFruitType ~= FruitUtil.FRUITTYPE_UNKNOWN then
-        fillTpe = FruitUtil.fruitTypeToFillType[obj.currentGrainTankFruitType];
-        fillLvl = obj.grainTankFillLevel;
-        fillPct = math.floor(obj.grainTankFillLevel / obj.grainTankCapacity * 100);
-        --
-        local res = isBreakingThresholds(Glance.notifications["grainTankFull"], fillPct)
-        if res then
-            fillClr = Utils.getNoNil(res.threshold.color, fillClr)
-            notifyLevel = math.max(notifyLevel, res.threshold.level)
-            -- For combines, when hired and grain-tank full, blink the icon.
-            if veh.mapAIHotspot ~= nil then
-                veh.mapAIHotspot:setBlinking(true == res.threshold.blinkIcon)
-            end
+    local notifyLevel = 0
+    
+    -- Examine each implement for fillable parts.
+    self.fillTypesCapacityLevelColor = {}
+    local function updateFill(fillType,capacity,level,color)
+        if self.fillTypesCapacityLevelColor[fillType] == nil then
+            self.fillTypesCapacityLevelColor[fillType] = {capacity=capacity, level=level, color=color}
         else
-            if veh.mapAIHotspot ~= nil then
-                veh.mapAIHotspot:setBlinking(false)
+            self.fillTypesCapacityLevelColor[fillType].capacity = self.fillTypesCapacityLevelColor[fillType].capacity + capacity
+            self.fillTypesCapacityLevelColor[fillType].level    = self.fillTypesCapacityLevelColor[fillType].level    + level
+            if self.fillTypesCapacityLevelColor[fillType].color == nil then
+                self.fillTypesCapacityLevelColor[fillType].color = color
             end
         end
-        --
-        updateFill(fillTpe,obj.grainTankCapacity,obj.grainTankFillLevel,fillClr)
-      end;
-    else
---<FS2013]]
-    if obj.fillLevelMax and obj.fillLevel and obj.fillLevelMax > 0 and obj.fillLevel > 0 then
-        -- Most likely a baleloader
-        fillTpe = g_i18n:getText("bales");
-        fillPct = math.floor(obj.fillLevel / obj.fillLevelMax * 100);
-        fillLvl = obj.fillLevel;
-        --
-        local res = isBreakingThresholds(Glance.notifications["baleLoaderFull"], fillPct)
-        if res then
-            fillClr = Utils.getNoNil(res.threshold.color, fillClr)
-            notifyLevel = math.max(notifyLevel, res.threshold.level)
-        end
-        --
-        updateFill(fillTpe,obj.fillLevelMax,obj.fillLevel,fillClr)
-    elseif obj.capacity and obj.capacity > 0 and obj.fillLevel then
-      if obj.fillLevel > 0 then
-        fillTpe = obj.currentFillType;
-        fillPct = math.floor(obj.fillLevel / obj.capacity * 100);
-        fillLvl = obj.fillLevel;
-        --
-        if SpecializationUtil.hasSpecialization(SowingMachine, obj.specializations) then
-            -- For sowingmachine, show the selected seed type.
-            fillTpe = FruitUtil.fruitTypeToFillType[obj.seeds[obj.currentSeed]];
-            local res = isBreakingThresholds(Glance.notifications["seederLow"], fillPct)
+    end
+    --
+    for _,obj in pairs(implements) do
+        local fillClr = notify_lineColor;
+        local fillTpe = nil;
+        local fillLvl = nil;
+        local fillPct = nil;
+        
+        if obj.fillLevelMax and obj.fillLevel and obj.fillLevelMax > 0 and obj.fillLevel > 0 then
+            -- Most likely a baleloader
+            fillTpe = g_i18n:getText("bales");
+            fillPct = math.floor(obj.fillLevel / obj.fillLevelMax * 100);
+            fillLvl = obj.fillLevel;
+            --
+            local res = isBreakingThresholds(Glance.notifications["baleLoaderFull"], fillPct)
             if res then
                 fillClr = Utils.getNoNil(res.threshold.color, fillClr)
                 notifyLevel = math.max(notifyLevel, res.threshold.level)
             end
-        elseif SpecializationUtil.hasSpecialization(Sprayer, obj.specializations) then
-            local res = isBreakingThresholds(Glance.notifications["sprayerLow"], fillPct)
-            if res then
-                fillClr = Utils.getNoNil(res.threshold.color, fillClr)
-                notifyLevel = math.max(notifyLevel, res.threshold.level)
-            end
-        elseif SpecializationUtil.hasSpecialization(ForageWagon, obj.specializations) then
-            local res = isBreakingThresholds(Glance.notifications["forageWagonFull"], fillPct)
-            if res then
-                fillClr = Utils.getNoNil(res.threshold.color, fillClr)
-                notifyLevel = math.max(notifyLevel, res.threshold.level)
-            end
-        elseif SpecializationUtil.hasSpecialization(Trailer, obj.specializations) then
-            local res = isBreakingThresholds(Glance.notifications["trailerFull"], fillPct)
-            if res then
-                fillClr = Utils.getNoNil(res.threshold.color, fillClr)
-                notifyLevel = math.max(notifyLevel, res.threshold.level)
-            end
-        elseif SpecializationUtil.hasSpecialization(Combine, obj.specializations) then
-            local res = isBreakingThresholds(Glance.notifications["grainTankFull"], fillPct)
-            if res then
-                fillClr = Utils.getNoNil(res.threshold.color, fillClr)
-                notifyLevel = math.max(notifyLevel, res.threshold.level)
-                -- For combines, when hired and grain-tank full, blink the icon.
-                if veh.mapAIHotspot ~= nil then
-                    veh.mapAIHotspot:setBlinking(true == res.threshold.blinkIcon)
+            --
+            updateFill(fillTpe,obj.fillLevelMax,obj.fillLevel,fillClr)
+        elseif obj.capacity and obj.capacity > 0 and obj.fillLevel then
+            if obj.fillLevel > 0 then
+                fillTpe = obj.currentFillType;
+                fillPct = math.floor(obj.fillLevel / obj.capacity * 100);
+                fillLvl = obj.fillLevel;
+                --
+                if SpecializationUtil.hasSpecialization(SowingMachine, obj.specializations) then
+                    -- For sowingmachine, show the selected seed type.
+                    fillTpe = FruitUtil.fruitTypeToFillType[obj.seeds[obj.currentSeed]];
+                    local res = isBreakingThresholds(Glance.notifications["seederLow"], fillPct)
+                    if res then
+                        fillClr = Utils.getNoNil(res.threshold.color, fillClr)
+                        notifyLevel = math.max(notifyLevel, res.threshold.level)
+                    end
+                elseif SpecializationUtil.hasSpecialization(Sprayer, obj.specializations) then
+                    local res = isBreakingThresholds(Glance.notifications["sprayerLow"], fillPct)
+                    if res then
+                        fillClr = Utils.getNoNil(res.threshold.color, fillClr)
+                        notifyLevel = math.max(notifyLevel, res.threshold.level)
+                    end
+                elseif SpecializationUtil.hasSpecialization(ForageWagon, obj.specializations) then
+                    local res = isBreakingThresholds(Glance.notifications["forageWagonFull"], fillPct)
+                    if res then
+                        fillClr = Utils.getNoNil(res.threshold.color, fillClr)
+                        notifyLevel = math.max(notifyLevel, res.threshold.level)
+                    end
+                elseif SpecializationUtil.hasSpecialization(Trailer, obj.specializations) then
+                    local res = isBreakingThresholds(Glance.notifications["trailerFull"], fillPct)
+                    if res then
+                        fillClr = Utils.getNoNil(res.threshold.color, fillClr)
+                        notifyLevel = math.max(notifyLevel, res.threshold.level)
+                    end
+                elseif SpecializationUtil.hasSpecialization(Combine, obj.specializations) then
+                    local res = isBreakingThresholds(Glance.notifications["grainTankFull"], fillPct)
+                    if res then
+                        fillClr = Utils.getNoNil(res.threshold.color, fillClr)
+                        notifyLevel = math.max(notifyLevel, res.threshold.level)
+                        -- For combines, when hired and grain-tank full, blink the icon.
+                        if veh.mapAIHotspot ~= nil then
+                            veh.mapAIHotspot:setBlinking(true == res.threshold.blinkIcon)
+                        end
+                    else
+                        if veh.mapAIHotspot ~= nil then
+                            veh.mapAIHotspot:setBlinking(false)
+                        end
+                    end
                 end
-            else
-                if veh.mapAIHotspot ~= nil then
-                    veh.mapAIHotspot:setBlinking(false)
-                end
-            end
-        end
-        --
-        updateFill(fillTpe,obj.capacity,obj.fillLevel,fillClr)
-      elseif SpecializationUtil.hasSpecialization(Trailer, obj.specializations) then
-        updateFill("n/a",obj.capacity,0,fillClr)
-      end;
+                --
+                updateFill(fillTpe,obj.capacity,obj.fillLevel,fillClr)
+            elseif SpecializationUtil.hasSpecialization(Trailer, obj.specializations) then
+                updateFill("n/a",obj.capacity,0,fillClr)
+            end;
+        end;
     end;
---[[
-    -- Support for URF sowingmachines' sprayer
-    if obj.isUrfSeeder then
-        if obj.sprayCapacity and obj.sprayCapacity > 0 and obj.sprayFillLevel then
-          if obj.sprayFillLevel > 0 then
-            fillTpe = obj.currentSprayFillType;
-            fillPct = math.floor(obj.sprayFillLevel / obj.sprayCapacity * 100);
-            fillLvl = obj.sprayFillLevel;
-            --
-            local ntfy = Glance.notifications["sprayerLow"]
-            if ntfy ~= nil and ntfy.enabled == true then
-                if fillPct < ntfy.belowThreshold then
-                    fillClr = ntfy.color or fillClr
-                    notifyLevel = math.max(notifyLevel, ntfy.level)
-                end
+    --
+    cells["FillLevel"] = {}
+    cells["FillPct"]   = {}
+    cells["FillType"]  = {}
+    --
+    local freeCapacity = self.fillTypesCapacityLevelColor["n/a"]
+    self.fillTypesCapacityLevelColor["n/a"] = nil
+    for fillTpe,v in pairs(self.fillTypesCapacityLevelColor) do
+        local fillClr = getNotificationColor(v.color)
+        local fillLvl = v.level
+        local fillCap = v.capacity
+        --
+        if freeCapacity ~= nil then
+            fillCap = fillCap + freeCapacity.capacity
+            freeCapacity = nil
+        end
+        local fillPct = math.floor(fillLvl / fillCap * 100);
+        --
+        local fillNme = ""
+        if type(fillTpe) == type("") then
+            -- Not a "normal" Fillable type
+            fillNme = fillTpe;
+        else
+            fillNme = Fillable.fillTypeIntToName[fillTpe];
+        end
+        if fillNme == nil then
+            fillNme = g_i18n:getText("unknownFillType")
+        end
+        local fillFrmtStr = "%s";
+        if Utils.endsWith(fillNme, "_windrow") then
+            fillFrmtStr = string.format("%s/%%s", g_i18n:getText("straw"))
+            fillNme = string.sub(fillNme,1,fillNme:len() - 8)
+        end
+        for _,pfx in pairs({"","filltype_"}) do
+            if self.i18n:hasText(pfx..fillNme) then
+                fillNme = self.i18n:getText(pfx..fillNme);
+                break
             end
-            --
-            updateFill(fillTpe,obj.sprayCapacity,obj.sprayFillLevel,fillClr)
-          end
         end
-    end
---]]
-  end;
-  --
-  cells["FillLevel"] = {}
-  cells["FillPct"]   = {}
-  cells["FillType"]  = {}
-  --
-  local freeCapacity = self.fillTypesCapacityLevelColor["n/a"]
-  self.fillTypesCapacityLevelColor["n/a"] = nil
-  for fillTpe,v in pairs(self.fillTypesCapacityLevelColor) do
-    local fillClr = getNotificationColor(v.color)
-    local fillLvl = v.level
-    local fillCap = v.capacity
-    --
-    if freeCapacity ~= nil then
-        fillCap = fillCap + freeCapacity.capacity
-        freeCapacity = nil
-    end
-    local fillPct = math.floor(fillLvl / fillCap * 100);
-    --
-    local fillNme = ""
-    if type(fillTpe) == type("") then
-        -- Not a "normal" Fillable type
-        fillNme = fillTpe;
-    else
-        fillNme = Fillable.fillTypeIntToName[fillTpe];
-    end
-    if fillNme == nil then
-        fillNme = g_i18n:getText("unknownFillType")
-    end
-    local fillFrmtStr = "%s";
-    if Utils.endsWith(fillNme, "_windrow") then
-        fillFrmtStr = string.format("%s/%%s", g_i18n:getText("straw"))
-        fillNme = string.sub(fillNme,1,fillNme:len() - 8)
-    end
-    for _,pfx in pairs({"","filltype_"}) do
-        if self.i18n:hasText(pfx..fillNme) then
-            fillNme = self.i18n:getText(pfx..fillNme);
-            break
-        end
+        --
+        table.insert(cells["FillLevel"], { fillClr, string.format("%d", fillLvl)        } );
+        table.insert(cells["FillPct"],   { fillClr, string.format("(%d%%)", fillPct)    } );
+        table.insert(cells["FillType"],  { fillClr, string.format(fillFrmtStr, fillNme) } );
     end
     --
-    table.insert(cells["FillLevel"], { fillClr, string.format("%d", fillLvl)        } );
-    table.insert(cells["FillPct"],   { fillClr, string.format("(%d%%)", fillPct)    } );
-    table.insert(cells["FillType"],  { fillClr, string.format(fillFrmtStr, fillNme) } );
-  end
-  --
-  return notifyLevel
+    return notifyLevel
 end
 
 -- https://github.com/DeckerMMIV/FarmSim_Mod_Glance/issues/8
@@ -2326,22 +2286,22 @@ function Glance:static_balerNetWraps(dt, staticParms, veh, implements, cells, no
         and obj.numNetWraps ~= nil
         and obj.netRoleTop ~= nil
         then
-          -- Krone Ultima
-          local foilLength = obj.wrapperFoilHolders[1].remainingFoilLength * 2;
-          local foilPerBale = obj.baseFoilUsePerBale * obj.baleSizes[obj.baleSizeIndex].size;
-          local numBalesFoil = (foilPerBale>0) and tostring(math.ceil(foilLength / foilPerBale)) or "-";
-    
-          local netPerBale = obj.numNetWraps * math.pi * obj.baleSizes[obj.baleSizeIndex].size;
-          local numBalesNet = (netPerBale>0) and tostring(math.ceil(obj.netRoleTop.length / netPerBale)) or "-";
-          
-          -- TODO: g_i18n'ify
-          -- TODO: Notification level/coloring.
-          cells["balerNumFoils"]     = { {getNotificationColor("default"), "Foils:"    .. numBalesFoil } }
-          cells["balerNumNets"]      = { {getNotificationColor("default"), "NetWraps:" .. numBalesNet  } }
-          cells["balerNumFoilsNets"] = { {getNotificationColor("default"), "Foils:" .. numBalesFoil .." / NetWraps:" .. numBalesNet } }   
-    
-          --
-          break
+            -- Krone Ultima
+            local foilLength = obj.wrapperFoilHolders[1].remainingFoilLength * 2;
+            local foilPerBale = obj.baseFoilUsePerBale * obj.baleSizes[obj.baleSizeIndex].size;
+            local numBalesFoil = (foilPerBale>0) and tostring(math.ceil(foilLength / foilPerBale)) or "-";
+            
+            local netPerBale = obj.numNetWraps * math.pi * obj.baleSizes[obj.baleSizeIndex].size;
+            local numBalesNet = (netPerBale>0) and tostring(math.ceil(obj.netRoleTop.length / netPerBale)) or "-";
+            
+            -- TODO: g_i18n'ify
+            -- TODO: Notification level/coloring.
+            cells["balerNumFoils"]     = { {getNotificationColor("default"), "Foils:"    .. numBalesFoil } }
+            cells["balerNumNets"]      = { {getNotificationColor("default"), "NetWraps:" .. numBalesNet  } }
+            cells["balerNumFoilsNets"] = { {getNotificationColor("default"), "Foils:" .. numBalesFoil .." / NetWraps:" .. numBalesNet } }   
+            
+            --
+            break
         end
     end
     

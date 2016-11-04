@@ -76,9 +76,12 @@ Un utilitaire de notification et statut qui peut être configuré pour afficher 
 Veuillez vérifier la console dans le jeu ou le fichier LOG.TXT pour de plus de détails.
 Ou supprimez le fichier Glance_Config.XML." />
  
-        <text name="GlanceMore"         text="Glance:Plus de détails"   />
-        <text name="GlanceLess"         text="Glance:Moins de détails"   />
+        <text name="input_GLANCE_MORE"  text="Glance: Plus de détails"   />
+        <text name="input_GLANCE_LESS"  text="Glance: Moins de détails"   />
  
+        <text name="GlanceMore"         text="Glance: More (level %d)"   /> <!-- need translation -->
+        <text name="GlanceLess"         text="Glance: Less (level %d)"   /> <!-- need translation -->
+        
         <text name="GlanceMinLevel"     text="Niveau minimum de notification est à: %d" />
     </texts>
 </l10n>
