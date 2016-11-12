@@ -71,6 +71,8 @@ Muestra notificaciones sobre el estado de las tareas y puede configurarse para m
         <text name="task_StumpCutting"  text="Quitando tocones"    />
         <text name="task_WoodCrushing"  text="Haciendo chips"    />
         <text name="task_TreePlanting"  text="Plantando árboles"    />
+        <text name="task_Weeding"       text="Weeding"          />
+        <text name="task_LivestockTransport" text="Livestock transport" />
 
         <text name="config_error"       text="'Glance' tiene problemas para cargar el archivo Glance_Config.XML.
 Por favor, revise el LOG.TXT o la consola de In_Game para más detalles.

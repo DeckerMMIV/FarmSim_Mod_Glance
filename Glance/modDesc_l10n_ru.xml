@@ -72,6 +72,8 @@
         <text name="task_StumpCutting"  text="Корчевание пней"      />
         <text name="task_WoodCrushing"  text="Дробление древесины"  />
         <text name="task_TreePlanting"  text="Посадка деревьев"     />
+        <text name="task_Weeding"       text="Weeding"          />
+        <text name="task_LivestockTransport" text="Livestock transport" />
 
         <text name="config_error"       text="'Glance' не может загрузить файл Glance_Config.XML.
 Пожалуйста, проверьте в игре консоль или LOG.TXT для уточнения деталей.

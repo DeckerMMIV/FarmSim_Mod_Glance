@@ -71,6 +71,8 @@ A notification-and-status utility that can be configured to show only what you n
         <text name="task_StumpCutting"  text="Stump cutting"    />
         <text name="task_WoodCrushing"  text="Wood crushing"    />
         <text name="task_TreePlanting"  text="Tree planting"    />
+        <text name="task_Weeding"       text="Weeding"          />
+        <text name="task_LivestockTransport" text="Livestock transport" />
 
         <text name="config_error"       text="'Glance' had a problem when loading its Glance_Config.XML file.
 Please check in-game console or LOG.TXT for details.

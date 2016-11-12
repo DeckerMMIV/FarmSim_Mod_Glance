@@ -73,6 +73,8 @@ tak, aby pokazywać to, co chcesz zobaczyć.
         <text name="task_StumpCutting"  text="Niszczenie pni" />
         <text name="task_WoodCrushing"  text="Rąbanie drewna" />
         <text name="task_TreePlanting"  text="Sadzonki drzew" />
+        <text name="task_Weeding"       text="Weeding"          />
+        <text name="task_LivestockTransport" text="Livestock transport" />
 
         <text name="config_error"       text="'Glance' ma problem z załadowaniem pliku 'Glance_Config.XML'.
 Proszę sprawdzić w kolnsoli w grze lub w 'LOG.TXT' szczegóły lub po prostu usunąć 'Glance_Config.XML'." />

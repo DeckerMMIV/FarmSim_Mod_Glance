@@ -291,7 +291,7 @@ function Glance:update(dt)
             Glance.textMinLevelTimeout = g_currentMission.time + 2000
         end
         --
-        if g_currentMission.showHelpMenu then
+        --if g_currentMission.showHelpMenu then
             if self.helpButtonsTimeout ~= nil and self.helpButtonsTimeout > g_currentMission.time then
                 if Glance.minNotifyLevel > 0 then
                     g_currentMission:addHelpButtonText(g_i18n:getText("GlanceMore"):format(Glance.minNotifyLevel), InputBinding.GLANCE_MORE, nil, GS_PRIO_NORMAL);
@@ -300,7 +300,7 @@ function Glance:update(dt)
                     g_currentMission:addHelpButtonText(g_i18n:getText("GlanceLess"):format(Glance.minNotifyLevel), InputBinding.GLANCE_LESS, nil, GS_PRIO_NORMAL);
                 end
             end
-        end
+        --end
     end
 end;
 
@@ -2096,68 +2096,69 @@ function Glance:static_activeTask(dt, staticParms, veh, implements, cells, notif
     local impStates = {}
     for _,imp in pairs(implements) do
         for _,spec in pairs(imp.specializations) do
-            if      Sprayer            == spec then impStates.isSprayerOn       = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
-            elseif  ManureSpreader     == spec then impStates.isSprayerOn       = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
-            elseif  ManureBarrel       == spec then impStates.isSprayerOn       = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
-            elseif  SowingMachine      == spec then impStates.isSeederOn        = (imp.movingDirection > 0 and imp.sowingMachineHasGroundContact and (not imp.needsActivation or (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn));
-            elseif  TreePlanter        == spec then impStates.isTreePlanterOn   = (imp.movingDirection > 0                                       and (not imp.needsActivation or (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn())));
-            elseif  Cultivator         == spec then impStates.isCultivatorOn    = (imp.cultivatorHasGroundContact and (not imp.onlyActiveWhenLowered or imp:isLowered(false)) );
-            elseif  Plough             == spec then impStates.isPloughOn        = imp.ploughHasGroundContact;
-            elseif  Combine            == spec then impStates.isHarvesterOn     = ((imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isThreshing) and imp:getIsThreshingAllowed(false);
-            elseif  ForageWagon        == spec then impStates.isForageWagonOn   = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
-            elseif  Baler              == spec then impStates.isBalerOn         = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
-            elseif  Mower              == spec then impStates.isMowerOn         = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
-            elseif  Tedder             == spec then impStates.isTedderOn        = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
-            elseif  Windrower          == spec then impStates.isWindrowerOn     = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
-            elseif  FruitPreparer      == spec then impStates.isFruitPreparerOn = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
-            elseif  BaleLoader         == spec then impStates.isBaleLoadingOn   = imp.isInWorkPosition;
-            elseif  BaleWrapper        == spec then impStates.isBaleWrapperOn   = imp.baleWrapperState ~= nil and ((imp.baleWrapperState > 0) and (imp.baleWrapperState < 4));
-            elseif  StrawBlower        == spec then impStates.isStrawBlowerOn   = (imp.tipState == Trailer.TIPSTATE_OPENING or imp.tipState == Trailer.TIPSTATE_OPEN);
-            elseif  MixerWagon         == spec then impStates.isMixerWagonOn    = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
-            elseif  StumpCutter        == spec then impStates.isStumpCutterOn   = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn());
-            elseif  WoodCrusher        == spec then impStates.isWoodCrusherOn   = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn());
-            elseif  Cutter             == spec then impStates.isCutterOn        = false; -- TODO
-            elseif  Trailer            == spec then impStates.isTrailerOn       = (imp.movingDirection > 0.0001) or (imp.movingDirection < -0.0001);
-                                                    impStates.isTrailerUnloads  = (imp.tipState == Trailer.TIPSTATE_OPENING or imp.tipState == Trailer.TIPSTATE_OPEN);
+            if      Sprayer            == spec then impStates.isSprayerOn           = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+            elseif  ManureSpreader     == spec then impStates.isSprayerOn           = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+            elseif  ManureBarrel       == spec then impStates.isSprayerOn           = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+            elseif  SowingMachine      == spec then impStates.isSeederOn            = (imp.movingDirection > 0 and imp.sowingMachineHasGroundContact and (not imp.needsActivation or (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn));
+            elseif  TreePlanter        == spec then impStates.isTreePlanterOn       = (imp.movingDirection > 0                                       and (not imp.needsActivation or (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn())));
+            elseif  Cultivator         == spec then impStates.isCultivatorOn        = (imp.cultivatorHasGroundContact and (not imp.onlyActiveWhenLowered or imp:isLowered(false)) );
+            elseif  Plough             == spec then impStates.isPloughOn            = imp.ploughHasGroundContact;
+            elseif  Combine            == spec then impStates.isHarvesterOn         = ((imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isThreshing) and imp:getIsThreshingAllowed(false);
+            elseif  ForageWagon        == spec then impStates.isForageWagonOn       = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+            elseif  Baler              == spec then impStates.isBalerOn             = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+            elseif  Mower              == spec then impStates.isMowerOn             = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+            elseif  Tedder             == spec then impStates.isTedderOn            = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+            elseif  Windrower          == spec then impStates.isWindrowerOn         = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+            elseif  Weeder             == spec then impStates.isWeederOn            = imp.doGroundManipulation;
+            elseif  FruitPreparer      == spec then impStates.isFruitPreparerOn     = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+            elseif  BaleLoader         == spec then impStates.isBaleLoadingOn       = imp.isInWorkPosition;
+            elseif  BaleWrapper        == spec then impStates.isBaleWrapperOn       = imp.baleWrapperState ~= nil and ((imp.baleWrapperState > 0) and (imp.baleWrapperState < 4));
+            elseif  StrawBlower        == spec then impStates.isStrawBlowerOn       = (imp.tipState == Trailer.TIPSTATE_OPENING or imp.tipState == Trailer.TIPSTATE_OPEN);
+            elseif  MixerWagon         == spec then impStates.isMixerWagonOn        = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+            elseif  StumpCutter        == spec then impStates.isStumpCutterOn       = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn());
+            elseif  WoodCrusher        == spec then impStates.isWoodCrusherOn       = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn());
+            elseif  Cutter             == spec then impStates.isCutterOn            = false; -- TODO
+            elseif  LivestockTrailer   == spec then impStates.isLivestockTrailerOn  = ((imp.movingDirection > 0.0001) or (imp.movingDirection < -0.0001)) and (imp.getUnitFillLevel ~= nil and imp:getUnitFillLevel(1) > 0);
+            elseif  Trailer            == spec then impStates.isTrailerOn           = (imp.movingDirection > 0.0001) or (imp.movingDirection < -0.0001);
+                                                    impStates.isTrailerUnloads      = (imp.tipState == Trailer.TIPSTATE_OPENING or imp.tipState == Trailer.TIPSTATE_OPEN);
             end;
         end
     end;
 
-
-    local function withDelim(txtVal)
-        if txtVal ~= nil then
-            return txtVal..", "
-        else
-            return ""
+    local taskList = {}
+    if impStates.isHarvesterOn          then table.insert(taskList, "task_Harvesting"           ); end;
+    if impStates.isFruitPreparerOn      then table.insert(taskList, "task_Defoliator"           ); end;
+    if impStates.isBaleLoadingOn        then table.insert(taskList, "task_Loading_bales"        ); end;
+    if impStates.isBaleWrapperOn        then table.insert(taskList, "task_Wrapping_bale"        ); end;
+    if impStates.isBalerOn              then table.insert(taskList, "task_Baling"               ); end;
+    if impStates.isForageWagonOn        then table.insert(taskList, "task_Foraging"             ); end;
+    if impStates.isTedderOn             then table.insert(taskList, "task_Tedding"              ); end;
+    if impStates.isWindrowerOn          then table.insert(taskList, "task_Swathing"             ); end;
+    if impStates.isMowerOn              then table.insert(taskList, "task_Mowing"               ); end;
+    if impStates.isSprayerOn            then table.insert(taskList, "task_Spraying"             ); end;
+    if impStates.isSeederOn             then table.insert(taskList, "task_Seeding"              ); end;
+    if impStates.isTreePlanterOn        then table.insert(taskList, "task_TreePlanting"         ); end;
+    if impStates.isStrawBlowerOn        then table.insert(taskList, "task_Bedding"              ); end;
+    if impStates.isMixerWagonOn         then table.insert(taskList, "task_Feeding"              ); end;
+    if impStates.isCutterOn             then table.insert(taskList, "task_Cutting"              ); end;
+    if impStates.isStumpCutterOn        then table.insert(taskList, "task_StumpCutting"         ); end;
+    if impStates.isWoodCrusherOn        then table.insert(taskList, "task_WoodCrushing"         ); end;
+    if impStates.isCultivatorOn         then table.insert(taskList, "task_Cultivating"          ); end;
+    if impStates.isPloughOn             then table.insert(taskList, "task_Ploughing"            ); end;
+    if impStates.isWeederOn             then table.insert(taskList, "task_Weeding"              ); end;
+    if impStates.isLivestockTrailerOn   then table.insert(taskList, "task_LivestockTransport"   ); end;
+    if impStates.isTrailerUnloads       then table.insert(taskList, "task_Unloading"            ); end;
+    
+    if #taskList <= 0 and impStates.isTrailerOn then table.insert(taskList, "task_Transporting" ); end;
+    
+    if #taskList > 0 then
+        for i=#taskList,1,-1 do
+            if g_i18n:hasText(taskList[i]) then
+                taskList[i] = g_i18n:getText(taskList[i])
+            end
         end
-    end
-
-    local txt = nil; -- No task.
-    if impStates.isHarvesterOn      then txt = withDelim(txt) .. g_i18n:getText("task_Harvesting"   ); end;
-    if impStates.isFruitPreparerOn  then txt = withDelim(txt) .. g_i18n:getText("task_Defoliator"   ); end;
-    if impStates.isBaleLoadingOn    then txt = withDelim(txt) .. g_i18n:getText("task_Loading_bales"); end;
-    if impStates.isBaleWrapperOn    then txt = withDelim(txt) .. g_i18n:getText("task_Wrapping_bale"); end;
-    if impStates.isBalerOn          then txt = withDelim(txt) .. g_i18n:getText("task_Baling"       ); end;
-    if impStates.isForageWagonOn    then txt = withDelim(txt) .. g_i18n:getText("task_Foraging"     ); end;
-    if impStates.isTedderOn         then txt = withDelim(txt) .. g_i18n:getText("task_Tedding"      ); end;
-    if impStates.isWindrowerOn      then txt = withDelim(txt) .. g_i18n:getText("task_Swathing"     ); end;
-    if impStates.isMowerOn          then txt = withDelim(txt) .. g_i18n:getText("task_Mowing"       ); end;
-    if impStates.isSprayerOn        then txt = withDelim(txt) .. g_i18n:getText("task_Spraying"     ); end;
-    if impStates.isSeederOn         then txt = withDelim(txt) .. g_i18n:getText("task_Seeding"      ); end;
-    if impStates.isTreePlanterOn    then txt = withDelim(txt) .. g_i18n:getText("task_TreePlanting" ); end;
-    if impStates.isStrawBlowerOn    then txt = withDelim(txt) .. g_i18n:getText("task_Bedding"      ); end;
-    if impStates.isMixerWagonOn     then txt = withDelim(txt) .. g_i18n:getText("task_Feeding"      ); end;
-    if impStates.isCutterOn         then txt = withDelim(txt) .. g_i18n:getText("task_Cutting"      ); end;
-    if impStates.isStumpCutterOn    then txt = withDelim(txt) .. g_i18n:getText("task_StumpCutting" ); end;
-    if impStates.isWoodCrusherOn    then txt = withDelim(txt) .. g_i18n:getText("task_WoodCrushing" ); end;
-    if impStates.isCultivatorOn     then txt = withDelim(txt) .. g_i18n:getText("task_Cultivating"  ); end;
-    if impStates.isPloughOn         then txt = withDelim(txt) .. g_i18n:getText("task_Ploughing"    ); end;
-    if impStates.isTrailerUnloads   then txt = withDelim(txt) .. g_i18n:getText("task_Unloading"    ); end;
     
-    if txt == nil and impStates.isTrailerOn then txt = withDelim(txt) .. g_i18n:getText("task_Transporting" ); end;
-    
-    if txt ~= nil then
-        cells["ActiveTask"] = { { getNotificationColor(notify_lineColor), txt } }
+        cells["ActiveTask"] = { { getNotificationColor(notify_lineColor), table.concat(taskList, ", ") } }
     end
     --
     return -1; -- notifyLevel
@@ -2182,25 +2183,6 @@ function Glance:static_fillTypeLevelPct(dt, staticParms, veh, implements, cells,
     --
     for _,obj in pairs(implements) do
         local fillClr = notify_lineColor;
-        --local fillTpe = nil;
-        --local fillLvl = nil;
-        --local fillCap = nil;
-        --local fillPct = nil;
-        
-        --if obj.fillLevelMax and obj.fillLevel and obj.fillLevelMax > 0 and obj.fillLevel > 0 then
-        --    -- Most likely a baleloader
-        --    fillTpe = g_i18n:getText("bales");
-        --    fillPct = math.floor(obj.fillLevel / obj.fillLevelMax * 100);
-        --    fillLvl = obj.fillLevel;
-        --    --
-        --    local res = isBreakingThresholds(Glance.notifications["baleLoaderFull"], fillPct)
-        --    if res then
-        --        fillClr = Utils.getNoNil(res.threshold.color, fillClr)
-        --        notifyLevel = math.max(notifyLevel, res.threshold.level)
-        --    end
-        --    --
-        --    updateFill(fillTpe,obj.fillLevelMax,obj.fillLevel,fillClr)
-        --else
         if obj.getCurrentFillTypes ~= nil and obj.getFillLevel ~= nil and obj.getCapacity ~= nil then
             for _,fillTpe in pairs(obj:getCurrentFillTypes()) do
                 local fillLvl = obj:getFillLevel(fillTpe);
@@ -2217,6 +2199,14 @@ function Glance:static_fillTypeLevelPct(dt, staticParms, veh, implements, cells,
                     end
                 elseif SpecializationUtil.hasSpecialization(Sprayer, obj.specializations) then
                     local res = isBreakingThresholds(Glance.notifications["sprayerLow"], fillPct)
+                    if res then
+                        fillClr = Utils.getNoNil(res.threshold.color, fillClr)
+                        notifyLevel = math.max(notifyLevel, res.threshold.level)
+                    end
+                elseif SpecializationUtil.hasSpecialization(WaterTrailer, obj.specializations)
+                    or SpecializationUtil.hasSpecialization(FuelTrailer, obj.specializations)
+                then
+                    local res = isBreakingThresholds(Glance.notifications["liquidsLow"], fillPct)
                     if res then
                         fillClr = Utils.getNoNil(res.threshold.color, fillClr)
                         notifyLevel = math.max(notifyLevel, res.threshold.level)
@@ -2289,7 +2279,6 @@ function Glance:static_fillTypeLevelPct(dt, staticParms, veh, implements, cells,
         end
         local fillFrmtStr = "%s";
         if Utils.endsWith(fillNme, "_windrow") then
-            --fillFrmtStr = string.format("%s/%%s", g_i18n:getText("straw"))
             fillNme = string.sub(fillNme,1,fillNme:len() - 8)
         end
         for _,pfx in pairs({"fillType_",""}) do

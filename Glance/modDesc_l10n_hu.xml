@@ -74,6 +74,8 @@ mit szeretnél látni.
         <text name="task_StumpCutting"  text="Tönkvágás"/>
         <text name="task_WoodCrushing"  text="Faaprítás"/>
         <text name="task_TreePlanting"  text="Faültetés"/>
+        <text name="task_Weeding"       text="Weeding"          />
+        <text name="task_LivestockTransport" text="Livestock transport" />
 
         <text name="config_error"       text="'Glance' nem tudja betölteni a Glance_Config.XML fájlt.
 További információért ellenőrizd a játékban a Glance konzolt vagy a LOG.TXT-t.
