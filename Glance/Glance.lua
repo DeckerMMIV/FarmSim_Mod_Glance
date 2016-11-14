@@ -570,24 +570,17 @@ function Glance:loadConfig()
     local fileName = g_modsDirectory .. "/" .. "Glance_Config.XML";
     local tag = "glanceConfig"
 
-    ---- Inspired by ZZZ_GPS
-    --local function checkIsDedi()
-    --    local pixelX, pixelY = getScreenModeInfo(getScreenMode());
-    --    return pixelX*pixelY < 1;
-    --end;
-    --local isDediServer = checkIsDedi();
-    ----
-    --local xmlFile = nil
-    --if g_dedicatedServerInfo ~= nil or isDediServer then
-    --    print("** Glance seems to be running on a dedicated-server. So default built-in configuration values will be used.");
-    --    xmlFile = loadXMLFileFromMemory(tag, self:getDefaultConfig(), true)
-    --elseif fileExists(fileName) then
-    --    xmlFile = loadXMLFile(tag, fileName)
-    --else
+    local xmlFile = nil
+    if g_dedicatedServerInfo ~= nil then
+        print("** Glance seems to be running on a dedicated-server. So default built-in configuration values will be used.");
+        xmlFile = loadXMLFileFromMemory(tag, self:getDefaultConfig(), true)
+    elseif fileExists(fileName) then
+        xmlFile = loadXMLFile(tag, fileName)
+    else
         print("** Glance will now try to create a new default configuration file; " .. fileName);
         self:createNewConfig(fileName)
         xmlFile = loadXMLFile(tag, fileName)
-    --end;
+    end;
 
     --
     local version = getXMLInt(xmlFile, "glanceConfig#version")
