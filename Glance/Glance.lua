@@ -94,7 +94,7 @@ function Glance_Steerable_PostLoad(self, savegame)
         if storeItem.brand ~= nil and storeItem.brand ~= "" then
             brand = tostring(storeItem.brand) .. " " 
         end
-        self.modVeGS = self.modVeGS or {group=0,pos=0}
+        self.modVeGS = Utils.getNoNil(self.modVeGS, {group=0,pos=0})
         self.modVeGS.vehicleName = brand .. tostring(storeItem.name);
     end
 end
@@ -292,6 +292,7 @@ function Glance:update(dt)
         end
         --
         --if g_currentMission.showHelpMenu then
+        --if g_gameSettings:getValue("showHelpMenu") then
             if self.helpButtonsTimeout ~= nil and self.helpButtonsTimeout > g_currentMission.time then
                 if Glance.minNotifyLevel > 0 then
                     g_currentMission:addHelpButtonText(g_i18n:getText("GlanceMore"):format(Glance.minNotifyLevel), InputBinding.GLANCE_MORE, nil, GS_PRIO_NORMAL);
@@ -2401,7 +2402,7 @@ function Glance:draw()
     if Glance.forceHide or Glance.hide then
         return;
     end;
-    if (not Glance.ignoreHelpboxVisibility and g_currentMission.showHelpMenu) 
+    if (not Glance.ignoreHelpboxVisibility and g_gameSettings:getValue("showHelpMenu")) 
     or (g_currentMission.ingameMap ~= nil and g_currentMission.ingameMap.isFullSize) then
         return
     end
