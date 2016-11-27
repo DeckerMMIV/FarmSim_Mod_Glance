@@ -367,7 +367,7 @@ function Glance:getDefaultConfig()
 ,'        <notification  enabled="true"  type="vehicleBroken"             level="'..dnl( 0)..'"   color="red" />'
 ,'        <notification  enabled="true"  type="vehicleCollision"          level="'..dnl( 3)..'"   whenBelow=""      whenAbove="10000"  color="red" /> <!-- threshold unit is "milliseconds" -->'
 ,'        <notification  enabled="true"  type="vehicleIdleMovement"       level="'..dnl(-2)..'"   whenBelow="0.5"   whenAbove=""                   /> <!-- threshold unit is "km/h" -->'
-,'        <notification  enabled="true"  type="vehicleFuelLow"            level="'..dnl(-1)..'"   whenBelow="5"     whenAbove=""       color="red" /> <!-- threshold unit is "percentage" -->'
+,'        <notification  enabled="true"  type="vehicleFuelLow"            level="'..dnl( 0)..'"   whenBelow="5"     whenAbove=""       color="red" /> <!-- threshold unit is "percentage" -->'
 ,''
 ,'        <!-- Vehicle fill-level -->'
 ,'        <notification  enabled="true"  type="grainTankFull"             level="'..dnl( 2)..'"     > <!-- threshold unit is "percentage" -->'
@@ -381,6 +381,9 @@ function Glance:getDefaultConfig()
 ,'              <threshold level="'..dnl( 0)..'" whenBelow="" whenAbove="99.99" color="orange" />'
 ,'              <threshold level="'..dnl(-1)..'" whenBelow="" whenAbove="80"    color="yellow" />'
 ,'        </notification>'
+,'        <notification  enabled="true"  type="liquidsLow"                level="'..dnl(-1)..'"   color="gray" > <!-- threshold unit is "percentage" -->'
+,'              <threshold level="'..dnl( 0)..'" whenBelow="5" whenAbove="0"  color="red" />'
+,'        </notification>'
 ,'        <notification  enabled="true"  type="sprayerLow"                level="'..dnl( 0)..'"   color="gray" > <!-- threshold unit is "percentage" -->'
 ,'              <!-- threshold level="'..dnl(-1)..'" whenBelow="5" whenAbove="0"   color="yellow" /-->'
 ,'              <threshold level="'..dnl( 0)..'" whenBelow="2" whenAbove="-1"  color="red" />'
@@ -390,9 +393,11 @@ function Glance:getDefaultConfig()
 ,'              <threshold level="'..dnl( 0)..'" whenBelow="2" whenAbove="-1"  color="red"   />'
 ,'        </notification>'
 ,''
+--[[
 ,'        <!-- Fields specific -->'           
 ,'        <notification  enabled="true"  type="balesWithinFields"             level="'..dnl(-1)..'"   whenBelow=""  whenAbove="0"  color="yellow" /> <!-- threshold unit is "units" -->'
 ,'        <notification  enabled="false" type="balesOutsideFields"            level="'..dnl(-2)..'"   whenBelow=""  whenAbove="0"  color="yellow" /> <!-- threshold unit is "units" -->'
+--]]
 ,''
 ,'        <!-- Animal husbandry - Productivity, Wool pallet, Eggs (pickup objects) -->'
 ,'        <!--                                "husbandry[:<animalTypeName>]:(PickupObjects|Pallet|Productivity)"  -->'
@@ -400,25 +405,23 @@ function Glance:getDefaultConfig()
 ,'        <notification  enabled="true"  type="husbandry:Pallet"              level="'..dnl(-2)..'"  > <!-- threshold unit is "percentage" -->'
 ,'              <threshold  level="'..dnl( 1)..'"  whenBelow=""     whenAbove="99.99" color="red"       />'
 ,'              <threshold  level="'..dnl( 0)..'"  whenBelow=""     whenAbove="95"    color="yellow"    />'
-,'              <!-- threshold  level="'..dnl(-2)..'"  whenBelow="95"   whenAbove=""                        /-->'
 ,'        </notification>'
-,'        <notification  enabled="true"  type="husbandry:Productivity"        level="'..dnl(-2)..'"     > <!-- threshold unit is "percentage" -->'
-,'              <threshold  level="'..dnl( 0)..'"  whenBelow="50" whenAbove=""      color="red"     />'
-,'              <threshold  level="'..dnl(-1)..'"  whenBelow="75" whenAbove=""      color="orange"  />'
-,'              <threshold  level="'..dnl(-2)..'"  whenBelow="95" whenAbove=""      color="yellow"  />'
+,'        <notification  enabled="true"  type="husbandry:Productivity"        level="'..dnl( 0)..'"     > <!-- threshold unit is "percentage" -->'
+,'              <threshold  level="'..dnl( 0)..'"  whenBelow="75" whenAbove="0"      color="red"     />'
+,'              <threshold  level="'..dnl(-1)..'"  whenBelow="85" whenAbove="0"      color="orange"  />'
+,'              <threshold  level="'..dnl(-2)..'"  whenBelow="95" whenAbove="0"      color="yellow"  />'
 ,'        </notification>'
 ,'        <notification  enabled="true"  type="husbandry:sheep:Productivity"  level="'..dnl( 0)..'"   whenBelow="90"   whenAbove="0"      color="yellow" /> <!-- threshold unit is "percentage" -->'
 ,''
+--[[
 ,'        <!-- Animal husbandry - Fill-level -->'
 ,'        <!--                                "husbandry[:<animalTypeName>]:<fillTypeName>"  -->'
 ,'        <notification  enabled="true"  type="husbandry:forage"              level="'..dnl( 0)..'"   whenBelow="1000"  whenAbove=""  color="yellow"  text="TMR"     /> <!-- threshold unit is "units" -->'
 ,'        <notification  enabled="false" type="husbandry:chicken:forage"      level="'..dnl(-3)..'"   whenBelow=""      whenAbove=""  color="yellow"                 /> <!-- chickens do not require forage, so hide it by setting enabled to false -->'
 ,'        <notification  enabled="true"  type="husbandry:sheep:forage"        level="'..dnl( 0)..'"   whenBelow="100"   whenAbove=""  color="yellow"  text="Grass"   /> <!-- sheep do not really take forage, but Grass -->'
---[[
 ,'        <EXAMPLEnotification  enabled="true"  type="husbandry:cow:forage"          level="'..dnl( 0)..'"   whenBelow="1000"   color="yellow"  text="TMR"     /> <!-- threshold unit is "units" -->'
 ,'        <EXAMPLEnotification  enabled="false" type="husbandry:cow:silage"          level="'..dnl( 0)..'"   whenBelow="1000"   color="yellow"  text="Silage"  /> <!-- threshold unit is "units" -->'
 ,'        <EXAMPLEnotification  enabled="false" type="husbandry:cow:grass_windrow"   level="'..dnl( 0)..'"   whenBelow="1000"   color="yellow"  text="Grass"   /> <!-- threshold unit is "units" -->'
---]]
 ,'        <notification  enabled="true"  type="husbandry:cow:wheat_windrow"   level="'..dnl(-2)..'"   text="Straw"   > <!-- threshold unit is "units" -->'
 ,'              <threshold  level="'..dnl( 0)..'"  whenBelow="1000" whenAbove=""      color="red"       />'
 ,'              <threshold  level="'..dnl(-1)..'"  whenBelow="5000" whenAbove=""      color="yellow"    />'
@@ -435,7 +438,6 @@ function Glance:getDefaultConfig()
 ,'        <notification  enabled="false" type="husbandry:Silo_fruits"         level="'..dnl( 0)..'"   whenBelow="1000"  whenAbove=""   color="yellow"  text="SiloFruits" /> <!-- threshold unit is "units" -->'
 ,'        <notification  enabled="false" type="husbandry:beef:beef"           level="'..dnl( 0)..'"   whenBelow=""      whenAbove="10" color="yellow"  text="Cattle"     /> <!-- threshold unit is "units" -->'
 ,'        <notification  enabled="false" type="husbandry:pig:pig"             level="'..dnl( 0)..'"   whenBelow=""      whenAbove="10" color="yellow"  text="Piglets"    /> <!-- threshold unit is "units" -->'
---[[
 ,'        <EXAMPLEnotification  enabled="false" type="husbandry:cow:water"           level="'..dnl( 0)..'"   whenBelow="100"    color="yellow"                    /> <!-- threshold unit is "units" -->'
 ,'        <EXAMPLEnotification  enabled="false" type="husbandry:pig:forage"          level="'..dnl( 0)..'"   whenBelow="1000"   color="yellow"  text="TMR"        /> <!-- threshold unit is "units" -->'
 ,'        <EXAMPLEnotification  enabled="false" type="husbandry:pig:grain_fruits"    level="'..dnl( 0)..'"   whenBelow="1000"   color="yellow"  text="Grains"     /> <!-- threshold unit is "units" -->'
@@ -452,6 +454,7 @@ function Glance:getDefaultConfig()
 ,'        <notification  enabled="true"  type="placeable:Greenhouse:water"    level="'..dnl(-1)..'"   whenBelow="10"  whenAbove=""  color="yellow" /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="true"  type="placeable:Greenhouse:manure"   level="'..dnl(-1)..'"   whenBelow="10"  whenAbove=""  color="yellow" /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="false" type="placeable:Greenhouse"          level="'..dnl(-1)..'"   whenBelow="10"  whenAbove=""  color="yellow" /> <!-- threshold unit is "percentage" -->'
+--[[
 ,'        <!-- mod support -->'
 ,'        <notification  enabled="false" type="placeable:MischStation:wheat_windrow"    level="'..dnl(-1)..'"   whenBelow="1"   whenAbove=""  color="yellow"  text="Straw"  /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="false" type="placeable:MischStation:barley_windrow"   level="'..dnl(-1)..'"   whenBelow="1"   whenAbove=""  color="yellow"  text="Straw"  /> <!-- threshold unit is "percentage" -->'
@@ -502,7 +505,7 @@ function Glance:getDefaultConfig()
 ,'              <threshold  level="'..dnl( 1)..'"  whenBelow="1"     color="red"       />'
 ,'              <threshold  level="'..dnl( 0)..'"  whenBelow="3"     color="yellow"    />'
 ,'        </notification>'
-
+--]]
 ,''
 ,'        <!-- Additional mods -->'
 ,'        <notification  enabled="true"  type="engineOnButNotControlled"  level="'..dnl( 0)..'"   color="yellow"/>'
@@ -879,7 +882,7 @@ end
 -----
 
 function Glance:makeFieldsLine(dt, notifyList)
-
+--[[
     local balesWithinFields  = Glance.notifications["balesWithinFields"]
     local balesOutsideFields = Glance.notifications["balesOutsideFields"]
 
@@ -940,6 +943,7 @@ function Glance:makeFieldsLine(dt, notifyList)
             table.insert(notifyList, { getNotificationColor(balesOutsideFields.color), (g_i18n:getText("balesElsewhere")):format(fieldsBales["0"]) });
         end
     end
+--]]
 end
 
 -----
@@ -2261,30 +2265,35 @@ function Glance:static_fillTypeLevelPct(dt, staticParms, veh, implements, cells,
         end
         local fillPct = math.floor(fillLvl / fillCap * 100);
         --
-        local fillNme = ""
+        local fillDesc = nil
+        local fillNme = nil
         if type(fillTpe) == type("") then
             -- Not a "normal" Fillable type
             fillNme = fillTpe;
+            fillDesc = FillUtil.fillTypeNameToDesc[fillTpe]
         else
-            fillNme = FillUtil.fillTypeIntToName[fillTpe];
+            fillDesc = FillUtil.fillTypeIndexToDesc[fillTpe]
+        end
+        if fillDesc ~= nil and fillDesc.nameI18N ~= nil then
+            fillNme = fillDesc.nameI18N;
         end
         if fillNme == nil then
             fillNme = g_i18n:getText("unknownFillType")
         end
-        local fillFrmtStr = "%s";
-        if Utils.endsWith(fillNme, "_windrow") then
-            fillNme = string.sub(fillNme,1,fillNme:len() - 8)
-        end
-        for _,pfx in pairs({"fillType_",""}) do
-            if self.i18n:hasText(pfx..fillNme) then
-                fillNme = self.i18n:getText(pfx..fillNme);
-                break
-            end
-        end
+        --local fillFrmtStr = "%s";
+        --if Utils.endsWith(fillNme, "_windrow") then
+        --    fillNme = string.sub(fillNme,1,fillNme:len() - 8)
+        --end
+        --for _,pfx in pairs({"fillType_",""}) do
+        --    if self.i18n:hasText(pfx..fillNme) then
+        --        fillNme = self.i18n:getText(pfx..fillNme);
+        --        break
+        --    end
+        --end
         --
         table.insert(cells["FillLevel"], { fillClr, string.format("%d", fillLvl)        } );
         table.insert(cells["FillPct"],   { fillClr, string.format("(%d%%)", fillPct)    } );
-        table.insert(cells["FillType"],  { fillClr, string.format(fillFrmtStr, fillNme) } );
+        table.insert(cells["FillType"],  { fillClr, fillNme } );
     end
     --
     return notifyLevel
