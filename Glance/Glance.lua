@@ -325,6 +325,13 @@ function Glance:getDefaultConfig()
 ,'             Set faster or slower update interval in milliseconds, though no less than 500 (half a second) or higher than 60000 (a full minute). -->'
 ,'        <notification  minimumLevel="'..dnl()..'"  updateIntervalMs="2000"  ignoreHelpboxVisibility="false" />'
 ,''
+,'        <!-- Size of the font is measured in percentage of the screen-height, which goes from 0.0000 (0%) to 1.0000 (100%)'
+,'             Next row position is calculated from \'size + rowSpacing\', which then gives the rowHeight. -->'
+,'        <font  size="0.011"  rowSpacing="-0.001"  shadowOffset="0.00128"  shadowColor="black" />'
+,''
+,'        <!-- Left/Bottom is at 0.0000 (0%) and right/top is at 1.0000 (100%) -->'
+,'        <placementInDisplay  positionXY="0.000 0.999" />'
+,''
 ,'        <!-- Custom color names and their color RGBA-value in percentages, where 0.00 = 0x00 (0%) and 1.00 = 0xFF (100%) -->'
 ,'        <colors>'
 ,'            <color name="white"   rgba="0.95 0.95 0.95 1.00" />'
@@ -342,13 +349,6 @@ function Glance:getDefaultConfig()
 ,'            <vehicleControlledByPlayer    color="white" />'
 ,'            <vehicleControlledByComputer  color="blue" />'
 ,'        </lineColors>'
-,''
-,'        <!-- Size of the font is measured in percentage of the screen-height, which goes from 0.0000 (0%) to 1.0000 (100%)'
-,'             Next row position is calculated from \'size + rowSpacing\', which then gives the rowHeight. -->'
-,'        <font  size="0.011"  rowSpacing="-0.001"  shadowOffset="0.00128"  shadowColor="black" />'
-,''
-,'        <!-- Left/Bottom is at 0.0000 (0%) and right/top is at 1.0000 (100%) -->'
-,'        <placementInDisplay  positionXY="0.000 0.999" />'
 ,'    </general>'
 ,''
 ,'    <notifications>'
@@ -407,9 +407,9 @@ function Glance:getDefaultConfig()
 ,'              <threshold  level="'..dnl( 0)..'"  whenBelow=""     whenAbove="95"    color="yellow"    />'
 ,'        </notification>'
 ,'        <notification  enabled="true"  type="husbandry:Productivity"        level="'..dnl( 0)..'"     > <!-- threshold unit is "percentage" -->'
-,'              <threshold  level="'..dnl( 0)..'"  whenBelow="75" whenAbove="0"      color="red"     />'
-,'              <threshold  level="'..dnl(-1)..'"  whenBelow="85" whenAbove="0"      color="orange"  />'
-,'              <threshold  level="'..dnl(-2)..'"  whenBelow="95" whenAbove="0"      color="yellow"  />'
+,'              <threshold  level="'..dnl( 2)..'"  whenBelow="75" whenAbove="0"      color="red"     />'
+,'              <threshold  level="'..dnl( 1)..'"  whenBelow="85" whenAbove="0"      color="orange"  />'
+,'              <threshold  level="'..dnl( 0)..'"  whenBelow="95" whenAbove="0"      color="yellow"  />'
 ,'        </notification>'
 ,'        <notification  enabled="true"  type="husbandry:sheep:Productivity"  level="'..dnl( 0)..'"   whenBelow="90"   whenAbove="0"      color="yellow" /> <!-- threshold unit is "percentage" -->'
 ,''
@@ -543,7 +543,7 @@ function Glance:getDefaultConfig()
 ,'        <column  enabled="true"  contains="ColumnDelim"                                          align="left"    minWidthText="I"                 text="" />'
 ,'        <column  enabled="true"  contains="FillTypeName"                                         align="left"    minWidthText=""  maxTextLen="12" />'
 ,'        <column  enabled="true"  contains="ColumnDelim"                  color="gray"            align="center"  minWidthText=""                  text="'..Glance.cColumnDelimChar..'" />'
-,'        <column  enabled="true"  contains="ActiveTask;EngineOn;BalerNumFoilsNets"                align="left"    minWidthText=""                  />'
+,'        <column  enabled="true"  contains="ActiveTask;EngineOn"                                  align="left"    minWidthText=""                  />'
 ,'    </vehiclesColumnOrder>'
 ,'</glanceConfig>'
     }
@@ -956,330 +956,344 @@ function Glance:makePlaceablesLine(dt, notifyList)
                                .fillTypes[<idx>]    (fill-type-index)
                                .storageName         (string)
 
+                               
+    g_currentMission.ownedItems[].storeItem.category    'placeables'
+                                           .species     'placeables'
+                                           .xmlFilename
+                                           .xmlFilenameLower
+                                           
+                                 .items[].
+                               
 --]]
 
-    if g_currentMission.placeables ~= nil then
-
-        local function getNotification(placeableType,subElement)
-            local keyArray = {}
-            if subElement ~= nil then
-                table.insert(keyArray, "placeable:"..placeableType..":"..subElement)
-            else
-                table.insert(keyArray, "placeable:"..placeableType)
+    local function getNotification(placeableType,subElement)
+        local keyArray = {}
+        if subElement ~= nil then
+            table.insert(keyArray, "placeable:"..placeableType..":"..subElement)
+        else
+            table.insert(keyArray, "placeable:"..placeableType)
+        end
+        for _,key in pairs(keyArray) do
+            if Glance.notifications[key] ~= nil then
+                return Glance.notifications[key]
             end
-            for _,key in pairs(keyArray) do
-                if Glance.notifications[key] ~= nil then
-                    return Glance.notifications[key]
+        end
+        return nil
+    end
+    --
+    local foundNotifications = {}
+    local function updateNotification(placeableType, addItemCount, fillType, newLow, newHigh, newColorName)
+        if foundNotifications[placeableType] == nil then
+            foundNotifications[placeableType] = {}
+            foundNotifications[placeableType].fillLevels = {}
+            foundNotifications[placeableType].itemCount = 0
+        end
+        if addItemCount ~= nil then
+            foundNotifications[placeableType].itemCount = foundNotifications[placeableType].itemCount + addItemCount
+        end
+        if fillType ~= nil then
+            local pct = foundNotifications[placeableType].fillLevels[fillType]
+            if newLow ~= nil and (pct == nil or pct > newLow) then
+                foundNotifications[placeableType].fillLevels[fillType] = newLow
+                if newColorName ~= nil then
+                    foundNotifications[placeableType].color = newColorName
                 end
             end
-            return nil
+            if newHigh ~= nil and (pct == nil or pct < newHigh) then
+                foundNotifications[placeableType].fillLevels[fillType] = newHigh
+                if newColorName ~= nil then
+                    foundNotifications[placeableType].color = newColorName
+                end
+            end
         end
+    end
+
+    --for plcXmlFilename,plcTable in pairs(g_currentMission.placeables) do
+    for _,oi in pairs(g_currentMission.ownedItems) do
+      if  nil ~= oi.storeItem
+      and "placeables" == oi.storeItem.category
+      and nil ~= oi.storeItem.xmlFilenameLower
+      then
+        local funcTestPlaceable = nil
+        local plcTable = oi.items
+        local plcXmlFilename = oi.storeItem.xmlFilenameLower
+
         --
-        local foundNotifications = {}
-        local function updateNotification(placeableType, addItemCount, fillType, newLow, newHigh, newColorName)
-            if foundNotifications[placeableType] == nil then
-                foundNotifications[placeableType] = {}
-                foundNotifications[placeableType].fillLevels = {}
-                foundNotifications[placeableType].itemCount = 0
-            end
-            if addItemCount ~= nil then
-                foundNotifications[placeableType].itemCount = foundNotifications[placeableType].itemCount + addItemCount
-            end
-            --if fillType ~= nil then
-            --    local pct = foundNotifications[placeableType].fillLevels[fillType]
-            --    if newLow ~= nil and (pct == nil or pct > newLow) then
-            --        foundNotifications[placeableType].fillLevels[fillType] = newLow
-            --        if newColorName ~= nil then
-            --            foundNotifications[placeableType].color = newColorName
-            --        end
-            --    end
-            --    if newHigh ~= nil and (pct == nil or pct < newHigh) then
-            --        foundNotifications[placeableType].fillLevels[fillType] = newHigh
-            --        if newColorName ~= nil then
-            --            foundNotifications[placeableType].color = newColorName
-            --        end
-            --    end
-            --end
-        end
-
-        for plcXmlFilename,plcTable in pairs(g_currentMission.placeables) do
-            local funcTestPlaceable = nil;
-
-            -- plcXmlFilename contains placeable-name in lowercase
-            if string.find(plcXmlFilename, "greenhouse") ~= nil then
-                --local placeableType = "Greenhouse"
-                --local ntfyGreenhouse = {}
-                --ntfyGreenhouse[Fillable.FILLTYPE_WATER]   = getNotification(placeableType, "water")
-                --ntfyGreenhouse[Fillable.FILLTYPE_MANURE]  = getNotification(placeableType, "manure")
-                --ntfyGreenhouse[Fillable.FILLTYPE_UNKNOWN] = getNotification(placeableType)
-                ----
-                --funcTestPlaceable = function(plc)
-                --    -- Make sure the variables we expect, are actually there.
-                --    if not (    hasNumberValue(plc.waterTankFillLevel) and hasNumberValue(plc.waterTankCapacity,0)
-                --            and hasNumberValue(plc.manureFillLevel)    and hasNumberValue(plc.manureCapacity,0)   )
-                --    then
-                --        return
-                --    end
-                --    --
-                --    local fillLevels = {}
-                --    fillLevels[Fillable.FILLTYPE_WATER]  = 100 * plc.waterTankFillLevel / plc.waterTankCapacity;
-                --    fillLevels[Fillable.FILLTYPE_MANURE] = 100 * plc.manureFillLevel    / plc.manureCapacity;
-                --    
-                --    if isNotifyEnabled(ntfyGreenhouse[Fillable.FILLTYPE_UNKNOWN]) then
-                --        local minPct = math.min(fillLevels[Fillable.FILLTYPE_WATER], fillLevels[Fillable.FILLTYPE_MANURE])
-                --        local res = isBreakingThresholds(ntfyGreenhouse[Fillable.FILLTYPE_UNKNOWN], minPct)
-                --        if res then
-                --            updateNotification(placeableType, 1, Fillable.FILLTYPE_UNKNOWN, res.value, nil, res.threshold.color)
-                --        end
-                --    else
-                --        local itemCount = nil
-                --        for fillType,ntfy in pairs(ntfyGreenhouse) do
-                --            if fillType ~= Fillable.FILLTYPE_UNKNOWN then
-                --                local res = isBreakingThresholds(ntfy, fillLevels[fillType])
-                --                if res then
-                --                    updateNotification(placeableType, nil, fillType, res.value, nil, res.threshold.color)
-                --                    itemCount = 1
-                --                end
-                --            end
-                --        end
-                --        if itemCount ~= nil then
-                --            updateNotification(placeableType, itemCount)
-                --        end
-                --    end
-                --end
-            --elseif string.find(plcXmlFilename, "lettuce_greenhouse") ~= nil then
-            --    local placeableType = "LettuceGreenhouse"
-            --    local ntfyLettuceGreenhouse = {}
-            --    for fillType,fillDesc in pairs(Fillable.fillTypeIndexToDesc) do
-            --        local fillName = (fillType ~= Fillable.FILLTYPE_UNKNOWN and fillDesc.name or nil)
-            --        local ntfy = getNotification(placeableType, fillName)
-            --        if ntfy ~= nil then
-            --            ntfyLettuceGreenhouse[fillType] = ntfy
-            --        end
-            --    end
-            --    --
-            --    local lettuceGreenhouseSpecialFillTypes = {
-            --        [Glance.FILLTYPE_LETTUCE]="lettuce",
-            --    }
-            --    for fillType,fillName in pairs(lettuceGreenhouseSpecialFillTypes) do
-            --        local ntfy = getNotification(placeableType, fillName)
-            --        if ntfy ~= nil then
-            --            ntfyLettuceGreenhouse[fillType] = ntfy
-            --        end
-            --    end
-            --    --
-            --    funcTestPlaceable = function(plc)
-            --        -- Make sure the variables we expect, are actually there.
-            --        if not ( plc.FabrikScriptDirtyFlag ~= nil and plc.Produkte ~= nil )
-            --        then
-            --            return
-            --        end
-            --        --
-            --        local fillLevels = {}
-            --        
-            --        if plc.Produkte ~= nil then
-            --            if plc.Produkte.lettuceboxes ~= nil then
-            --                fillLevels[Glance.FILLTYPE_LETTUCE] = 100 * plc.Produkte.lettuceboxes.fillLevel / plc.Produkte.lettuceboxes.capacity
-            --            end
-            --            if plc.Produkte.lettuce_waste ~= nil then
-            --                fillLevels[Fillable.FILLTYPE_CHAFF] = 100 * plc.Produkte.lettuce_waste.fillLevel / plc.Produkte.lettuce_waste.capacity
-            --            end
-            --        end
-            --        if plc.Rohstoffe ~= nil then
-            --            if plc.Rohstoffe.Dungemittel ~= nil then
-            --                fillLevels[Fillable.FILLTYPE_FERTILIZER] = 100 * plc.Rohstoffe.Dungemittel.fillLevel / plc.Rohstoffe.Dungemittel.capacity
-            --            end
-            --            if plc.Rohstoffe.Diesel ~= nil then
-            --                fillLevels[Fillable.FILLTYPE_FUEL] = 100 * plc.Rohstoffe.Diesel.fillLevel / plc.Rohstoffe.Diesel.capacity
-            --            end
-            --            if plc.Rohstoffe.Saatgut ~= nil then
-            --                fillLevels[Fillable.FILLTYPE_SEEDS] = 100 * plc.Rohstoffe.Saatgut.fillLevel / plc.Rohstoffe.Saatgut.capacity
-            --            end
-            --            if plc.Rohstoffe.Wasser ~= nil then
-            --                fillLevels[Fillable.FILLTYPE_WATER] = 100 * plc.Rohstoffe.Wasser.fillLevel / plc.Rohstoffe.Wasser.capacity
-            --            end
-            --        end
-            --        
-            --        local itemCount = nil
-            --        for fillType,ntfy in pairs(ntfyLettuceGreenhouse) do
-            --            if fillType ~= Fillable.FILLTYPE_UNKNOWN then
-            --                local res = isBreakingThresholds(ntfy, fillLevels[fillType])
-            --                if res then
-            --                    updateNotification(placeableType, nil, fillType, res.value, nil, res.threshold.color)
-            --                    itemCount = 1
-            --                end
-            --            end
-            --        end
-            --        if itemCount ~= nil then
-            --            updateNotification(placeableType, itemCount)
-            --        end
-            --    end
-            --elseif string.find(plcXmlFilename, "mischstation") ~= nil then
-            --    local placeableType = "MischStation"
-            --    local ntfyMischStation = {}
-            --    for fillType,fillDesc in pairs(Fillable.fillTypeIndexToDesc) do
-            --        local fillName = (fillType ~= Fillable.FILLTYPE_UNKNOWN and fillDesc.name or nil)
-            --        local ntfy = getNotification(placeableType, fillName)
-            --        if ntfy ~= nil then
-            --            ntfyMischStation[fillType] = ntfy
-            --        end
-            --    end
-            --    --
-            --    funcTestPlaceable = function(plc)
-            --        -- Make sure the variables we expect, are actually there.
-            --        if not (    plc.SetLamp ~= nil and plc.MixLvl ~= nil and plc.LvLIndicator ~= nil and hasNumberValue(plc.LvLIndicator.capacity,0) 
-            --                and plc.MixTypLvl ~= nil and plc.MixTypName ~= nil and plc.TipTriggers ~= nil )
-            --        then
-            --            return
-            --        end
-            --        --
-            --        local fillLevels = {}
-            --        fillLevels[Fillable.FILLTYPE_FORAGE] = 100 * plc.MixLvl / plc.LvLIndicator.capacity;
-            --        local minPct = fillLevels[Fillable.FILLTYPE_FORAGE];
-            --        for i=1,table.getn(plc.MixTypName) do
-            --            if plc.MixTypName[i] ~= nil and plc.MixTypName[i].index ~= nil and plc.TipTriggers[i] ~= nil and hasNumberValue(plc.TipTriggers[i].capacity,0) then
-            --                local fillType = plc.MixTypName[i].index
-            --                local pct = 100 * plc.MixTypLvl[i] / plc.TipTriggers[i].capacity;
-            --                fillLevels[fillType] = pct
-            --                minPct = math.min(minPct,pct)
-            --            end
-            --        end
-            --        
-            --        if isNotifyEnabled(ntfyMischStation[Fillable.FILLTYPE_UNKNOWN]) then
-            --            local res = isBreakingThresholds(ntfyMischStation[Fillable.FILLTYPE_UNKNOWN], minPct)
-            --            if res then
-            --                updateNotification(placeableType, 1, Fillable.FILLTYPE_UNKNOWN, res.value, nil, res.threshold.color)
-            --            end
-            --        else
-            --            local itemCount = nil
-            --            for fillType,ntfy in pairs(ntfyMischStation) do
-            --                if fillType ~= Fillable.FILLTYPE_UNKNOWN then
-            --                    local res = isBreakingThresholds(ntfy, fillLevels[fillType])
-            --                    if res then
-            --                        updateNotification(placeableType, nil, fillType, res.value, nil, res.threshold.color)
-            --                        itemCount = 1
-            --                    end
-            --                end
-            --            end
-            --            if itemCount ~= nil then
-            --                updateNotification(placeableType, itemCount)
-            --            end
-            --        end
-            --    end
-            --elseif string.find(plcXmlFilename, "saegewerk") ~= nil then
-            --    local placeableType = "Saegewerk"
-            --    local ntfySaegewerk = {}
-            --    for fillType,fillDesc in pairs(Fillable.fillTypeIndexToDesc) do
-            --        local fillName = (fillType ~= Fillable.FILLTYPE_UNKNOWN and fillDesc.name or nil)
-            --        local ntfy = getNotification(placeableType, fillName)
-            --        if ntfy ~= nil then
-            --            ntfySaegewerk[fillType] = ntfy
-            --        end
-            --    end
-            --    --
-            --    local saegewerkSpecialFillTypes = {
-            --        [Glance.FILLTYPE_BOARDWOOD]="boardWood",
-            --        [Glance.FILLTYPE_LOGS]="logs",
-            --    }
-            --    for fillType,fillName in pairs(saegewerkSpecialFillTypes) do
-            --        local ntfy = getNotification(placeableType, fillName)
-            --        if ntfy ~= nil then
-            --            ntfySaegewerk[fillType] = ntfy
-            --        end
-            --    end
-            --    --
-            --    funcTestPlaceable = function(plc)
-            --        -- Make sure the variables we expect, are actually there.
-            --        if not ( plc.FabrikScriptDirtyFlag ~= nil and plc.Produkte ~= nil )
-            --        then
-            --            return
-            --        end
-            --        --
-            --        local fillLevels = {}
-            --        
-            --        if plc.Produkte ~= nil then
-            --            if plc.Produkte.boardwood ~= nil then
-            --                fillLevels[Glance.FILLTYPE_BOARDWOOD] = 100 * plc.Produkte.boardwood.fillLevel / plc.Produkte.boardwood.capacity
-            --            end
-            --            if plc.Produkte.woodChips ~= nil then
-            --                fillLevels[Fillable.FILLTYPE_WOODCHIPS] = 100 * plc.Produkte.woodChips.fillLevel / plc.Produkte.woodChips.capacity
-            --            end
-            --        end
-            --        if plc.Rohstoffe ~= nil then
-            --            if plc.Rohstoffe.Brennstoffe ~= nil then
-            --                fillLevels[Fillable.FILLTYPE_FUEL] = 100 * plc.Rohstoffe.Brennstoffe.fillLevel / plc.Rohstoffe.Brennstoffe.capacity
-            --            end
-            --            if plc.Rohstoffe.Holz ~= nil then
-            --                fillLevels[Glance.FILLTYPE_LOGS] = 100 * plc.Rohstoffe.Holz.fillLevel / plc.Rohstoffe.Holz.capacity
-            --            end
-            --        end
-            --        
-            --        local itemCount = nil
-            --        for fillType,ntfy in pairs(ntfySaegewerk) do
-            --            if fillType ~= Fillable.FILLTYPE_UNKNOWN then
-            --                local res = isBreakingThresholds(ntfy, fillLevels[fillType])
-            --                if res then
-            --                    updateNotification(placeableType, nil, fillType, res.value, nil, res.threshold.color)
-            --                    itemCount = 1
-            --                end
-            --            end
-            --        end
-            --        if itemCount ~= nil then
-            --            updateNotification(placeableType, itemCount)
-            --        end
-            --    end
-            else
-                -- TODO - Add other useful placeables???
-            end
-
+        if string.find(plcXmlFilename, "greenhouse") ~= nil then
+            local placeableType = "Greenhouse"
+            local ntfyGreenhouse = {}
+            ntfyGreenhouse[FillUtil.FILLTYPE_WATER]   = getNotification(placeableType, "water")
+            ntfyGreenhouse[FillUtil.FILLTYPE_MANURE]  = getNotification(placeableType, "manure")
+            ntfyGreenhouse[FillUtil.FILLTYPE_UNKNOWN] = getNotification(placeableType)
             --
-            if funcTestPlaceable ~= nil then
-                for _,plc in pairs(plcTable) do
-                    funcTestPlaceable(plc)
+            funcTestPlaceable = function(plc)
+                -- Make sure the variables we expect, are actually there.
+                if not (    hasNumberValue(plc.waterTankFillLevel) and hasNumberValue(plc.waterTankCapacity,0)
+                        and hasNumberValue(plc.manureFillLevel)    and hasNumberValue(plc.manureCapacity   ,0) )
+                then
+                    return
                 end
-            end
-        end
-       
-        --
-        local function getFillType_NameI18N(fillType)
-            if fillType <= FillUtil.NUM_FILLTYPES then
-                return FillUtil.fillTypeIndexToDesc[fillType].nameI18N
-            end
-            --if fillType == Glance.FILLTYPE_BOARDWOOD then
-            --    return "BoardWood" -- TODO g_i18n:getText()
-            --end
-            --if fillType == Glance.FILLTYPE_LOGS then
-            --    return "Logs" -- TODO g_i18n:getText()
-            --end
-            --if fillType == Glance.FILLTYPE_LETTUCE then
-            --    return "Lettuce" -- TODO g_i18n:getText()
-            --end
-            return ("(unknown:%s)"):format(tostring(fillType))
-        end
-        
-        for typ,elem in pairs(foundNotifications) do
-            if g_i18n:hasText("TypeDesc_"..typ) then
-                typ = g_i18n:getText("TypeDesc_"..typ)
-            elseif g_i18n:hasText(typ) then
-                typ = g_i18n:getText(typ)
-            end
-            local txt = string.upper(string.sub(typ,1,1))..string.sub(typ,2)
-            if elem.itemCount ~= nil and elem.itemCount > 1 then
-                txt = txt .. ("(x%d)"):format(elem.itemCount)
-            end
-            if elem.fillLevels[FillUtil.FILLTYPE_UNKNOWN] ~= nil then
-                txt = txt .. (Glance.nonVehiclesFillLevelFormat):format("", "", ("%.0f%%"):format(elem.fillLevels[FillUtil.FILLTYPE_UNKNOWN]))
-            else
-                local prefix=":"
-                for fillType,fillPct in pairs(elem.fillLevels) do
-                    if fillType ~= FillUtil.FILLTYPE_UNKNOWN then
-                        txt = txt .. (Glance.nonVehiclesFillLevelFormat):format(prefix, getFillType_NameI18N(fillType), ("%.0f%%"):format(fillPct))
-                        prefix=","
+                --
+                local fillLevels = {}
+                fillLevels[FillUtil.FILLTYPE_WATER]  = 100 * plc.waterTankFillLevel / plc.waterTankCapacity;
+                fillLevels[FillUtil.FILLTYPE_MANURE] = 100 * plc.manureFillLevel    / plc.manureCapacity;
+                
+                if isNotifyEnabled(ntfyGreenhouse[FillUtil.FILLTYPE_UNKNOWN]) then
+                    local minPct = math.min(fillLevels[FillUtil.FILLTYPE_WATER], fillLevels[FillUtil.FILLTYPE_MANURE])
+                    local res = isBreakingThresholds(ntfyGreenhouse[FillUtil.FILLTYPE_UNKNOWN], minPct)
+                    if res then
+                        updateNotification(placeableType, 1, FillUtil.FILLTYPE_UNKNOWN, res.value, nil, res.threshold.color)
+                    end
+                else
+                    local itemCount = nil
+                    for fillType,ntfy in pairs(ntfyGreenhouse) do
+                        if fillType ~= FillUtil.FILLTYPE_UNKNOWN then
+                            local res = isBreakingThresholds(ntfy, fillLevels[fillType])
+                            if res then
+                                updateNotification(placeableType, nil, fillType, res.value, nil, res.threshold.color)
+                                itemCount = 1
+                            end
+                        end
+                    end
+                    if itemCount ~= nil then
+                        updateNotification(placeableType, itemCount)
                     end
                 end
             end
-            table.insert(notifyList, { getNotificationColor(elem.color), txt });
+        --elseif string.find(plcXmlFilename, "lettuce_greenhouse") ~= nil then
+        --    local placeableType = "LettuceGreenhouse"
+        --    local ntfyLettuceGreenhouse = {}
+        --    for fillType,fillDesc in pairs(Fillable.fillTypeIndexToDesc) do
+        --        local fillName = (fillType ~= Fillable.FILLTYPE_UNKNOWN and fillDesc.name or nil)
+        --        local ntfy = getNotification(placeableType, fillName)
+        --        if ntfy ~= nil then
+        --            ntfyLettuceGreenhouse[fillType] = ntfy
+        --        end
+        --    end
+        --    --
+        --    local lettuceGreenhouseSpecialFillTypes = {
+        --        [Glance.FILLTYPE_LETTUCE]="lettuce",
+        --    }
+        --    for fillType,fillName in pairs(lettuceGreenhouseSpecialFillTypes) do
+        --        local ntfy = getNotification(placeableType, fillName)
+        --        if ntfy ~= nil then
+        --            ntfyLettuceGreenhouse[fillType] = ntfy
+        --        end
+        --    end
+        --    --
+        --    funcTestPlaceable = function(plc)
+        --        -- Make sure the variables we expect, are actually there.
+        --        if not ( plc.FabrikScriptDirtyFlag ~= nil and plc.Produkte ~= nil )
+        --        then
+        --            return
+        --        end
+        --        --
+        --        local fillLevels = {}
+        --        
+        --        if plc.Produkte ~= nil then
+        --            if plc.Produkte.lettuceboxes ~= nil then
+        --                fillLevels[Glance.FILLTYPE_LETTUCE] = 100 * plc.Produkte.lettuceboxes.fillLevel / plc.Produkte.lettuceboxes.capacity
+        --            end
+        --            if plc.Produkte.lettuce_waste ~= nil then
+        --                fillLevels[Fillable.FILLTYPE_CHAFF] = 100 * plc.Produkte.lettuce_waste.fillLevel / plc.Produkte.lettuce_waste.capacity
+        --            end
+        --        end
+        --        if plc.Rohstoffe ~= nil then
+        --            if plc.Rohstoffe.Dungemittel ~= nil then
+        --                fillLevels[Fillable.FILLTYPE_FERTILIZER] = 100 * plc.Rohstoffe.Dungemittel.fillLevel / plc.Rohstoffe.Dungemittel.capacity
+        --            end
+        --            if plc.Rohstoffe.Diesel ~= nil then
+        --                fillLevels[Fillable.FILLTYPE_FUEL] = 100 * plc.Rohstoffe.Diesel.fillLevel / plc.Rohstoffe.Diesel.capacity
+        --            end
+        --            if plc.Rohstoffe.Saatgut ~= nil then
+        --                fillLevels[Fillable.FILLTYPE_SEEDS] = 100 * plc.Rohstoffe.Saatgut.fillLevel / plc.Rohstoffe.Saatgut.capacity
+        --            end
+        --            if plc.Rohstoffe.Wasser ~= nil then
+        --                fillLevels[Fillable.FILLTYPE_WATER] = 100 * plc.Rohstoffe.Wasser.fillLevel / plc.Rohstoffe.Wasser.capacity
+        --            end
+        --        end
+        --        
+        --        local itemCount = nil
+        --        for fillType,ntfy in pairs(ntfyLettuceGreenhouse) do
+        --            if fillType ~= Fillable.FILLTYPE_UNKNOWN then
+        --                local res = isBreakingThresholds(ntfy, fillLevels[fillType])
+        --                if res then
+        --                    updateNotification(placeableType, nil, fillType, res.value, nil, res.threshold.color)
+        --                    itemCount = 1
+        --                end
+        --            end
+        --        end
+        --        if itemCount ~= nil then
+        --            updateNotification(placeableType, itemCount)
+        --        end
+        --    end
+        --elseif string.find(plcXmlFilename, "mischstation") ~= nil then
+        --    local placeableType = "MischStation"
+        --    local ntfyMischStation = {}
+        --    for fillType,fillDesc in pairs(Fillable.fillTypeIndexToDesc) do
+        --        local fillName = (fillType ~= Fillable.FILLTYPE_UNKNOWN and fillDesc.name or nil)
+        --        local ntfy = getNotification(placeableType, fillName)
+        --        if ntfy ~= nil then
+        --            ntfyMischStation[fillType] = ntfy
+        --        end
+        --    end
+        --    --
+        --    funcTestPlaceable = function(plc)
+        --        -- Make sure the variables we expect, are actually there.
+        --        if not (    plc.SetLamp ~= nil and plc.MixLvl ~= nil and plc.LvLIndicator ~= nil and hasNumberValue(plc.LvLIndicator.capacity,0) 
+        --                and plc.MixTypLvl ~= nil and plc.MixTypName ~= nil and plc.TipTriggers ~= nil )
+        --        then
+        --            return
+        --        end
+        --        --
+        --        local fillLevels = {}
+        --        fillLevels[Fillable.FILLTYPE_FORAGE] = 100 * plc.MixLvl / plc.LvLIndicator.capacity;
+        --        local minPct = fillLevels[Fillable.FILLTYPE_FORAGE];
+        --        for i=1,table.getn(plc.MixTypName) do
+        --            if plc.MixTypName[i] ~= nil and plc.MixTypName[i].index ~= nil and plc.TipTriggers[i] ~= nil and hasNumberValue(plc.TipTriggers[i].capacity,0) then
+        --                local fillType = plc.MixTypName[i].index
+        --                local pct = 100 * plc.MixTypLvl[i] / plc.TipTriggers[i].capacity;
+        --                fillLevels[fillType] = pct
+        --                minPct = math.min(minPct,pct)
+        --            end
+        --        end
+        --        
+        --        if isNotifyEnabled(ntfyMischStation[Fillable.FILLTYPE_UNKNOWN]) then
+        --            local res = isBreakingThresholds(ntfyMischStation[Fillable.FILLTYPE_UNKNOWN], minPct)
+        --            if res then
+        --                updateNotification(placeableType, 1, Fillable.FILLTYPE_UNKNOWN, res.value, nil, res.threshold.color)
+        --            end
+        --        else
+        --            local itemCount = nil
+        --            for fillType,ntfy in pairs(ntfyMischStation) do
+        --                if fillType ~= Fillable.FILLTYPE_UNKNOWN then
+        --                    local res = isBreakingThresholds(ntfy, fillLevels[fillType])
+        --                    if res then
+        --                        updateNotification(placeableType, nil, fillType, res.value, nil, res.threshold.color)
+        --                        itemCount = 1
+        --                    end
+        --                end
+        --            end
+        --            if itemCount ~= nil then
+        --                updateNotification(placeableType, itemCount)
+        --            end
+        --        end
+        --    end
+        --elseif string.find(plcXmlFilename, "saegewerk") ~= nil then
+        --    local placeableType = "Saegewerk"
+        --    local ntfySaegewerk = {}
+        --    for fillType,fillDesc in pairs(Fillable.fillTypeIndexToDesc) do
+        --        local fillName = (fillType ~= Fillable.FILLTYPE_UNKNOWN and fillDesc.name or nil)
+        --        local ntfy = getNotification(placeableType, fillName)
+        --        if ntfy ~= nil then
+        --            ntfySaegewerk[fillType] = ntfy
+        --        end
+        --    end
+        --    --
+        --    local saegewerkSpecialFillTypes = {
+        --        [Glance.FILLTYPE_BOARDWOOD]="boardWood",
+        --        [Glance.FILLTYPE_LOGS]="logs",
+        --    }
+        --    for fillType,fillName in pairs(saegewerkSpecialFillTypes) do
+        --        local ntfy = getNotification(placeableType, fillName)
+        --        if ntfy ~= nil then
+        --            ntfySaegewerk[fillType] = ntfy
+        --        end
+        --    end
+        --    --
+        --    funcTestPlaceable = function(plc)
+        --        -- Make sure the variables we expect, are actually there.
+        --        if not ( plc.FabrikScriptDirtyFlag ~= nil and plc.Produkte ~= nil )
+        --        then
+        --            return
+        --        end
+        --        --
+        --        local fillLevels = {}
+        --        
+        --        if plc.Produkte ~= nil then
+        --            if plc.Produkte.boardwood ~= nil then
+        --                fillLevels[Glance.FILLTYPE_BOARDWOOD] = 100 * plc.Produkte.boardwood.fillLevel / plc.Produkte.boardwood.capacity
+        --            end
+        --            if plc.Produkte.woodChips ~= nil then
+        --                fillLevels[Fillable.FILLTYPE_WOODCHIPS] = 100 * plc.Produkte.woodChips.fillLevel / plc.Produkte.woodChips.capacity
+        --            end
+        --        end
+        --        if plc.Rohstoffe ~= nil then
+        --            if plc.Rohstoffe.Brennstoffe ~= nil then
+        --                fillLevels[Fillable.FILLTYPE_FUEL] = 100 * plc.Rohstoffe.Brennstoffe.fillLevel / plc.Rohstoffe.Brennstoffe.capacity
+        --            end
+        --            if plc.Rohstoffe.Holz ~= nil then
+        --                fillLevels[Glance.FILLTYPE_LOGS] = 100 * plc.Rohstoffe.Holz.fillLevel / plc.Rohstoffe.Holz.capacity
+        --            end
+        --        end
+        --        
+        --        local itemCount = nil
+        --        for fillType,ntfy in pairs(ntfySaegewerk) do
+        --            if fillType ~= Fillable.FILLTYPE_UNKNOWN then
+        --                local res = isBreakingThresholds(ntfy, fillLevels[fillType])
+        --                if res then
+        --                    updateNotification(placeableType, nil, fillType, res.value, nil, res.threshold.color)
+        --                    itemCount = 1
+        --                end
+        --            end
+        --        end
+        --        if itemCount ~= nil then
+        --            updateNotification(placeableType, itemCount)
+        --        end
+        --    end
+        else
+            -- TODO - Add other useful placeables???
         end
+
+        --
+        if funcTestPlaceable ~= nil and plcTable ~= nil then
+            for _,plc in pairs(plcTable) do
+                funcTestPlaceable(plc)
+            end
+        end
+      end
+    end
+   
+    --
+    local function getFillType_NameI18N(fillType)
+        local fillDesc = FillUtil.fillTypeIndexToDesc[fillType]
+        if nil ~= fillDesc and nil ~= fillDesc.nameI18N then
+            return fillDesc.nameI18N
+        end
+        --if fillType == Glance.FILLTYPE_BOARDWOOD then
+        --    return "BoardWood" -- TODO g_i18n:getText()
+        --end
+        --if fillType == Glance.FILLTYPE_LOGS then
+        --    return "Logs" -- TODO g_i18n:getText()
+        --end
+        --if fillType == Glance.FILLTYPE_LETTUCE then
+        --    return "Lettuce" -- TODO g_i18n:getText()
+        --end
+        return ("(unknown:%s)"):format(tostring(fillType))
+    end
+    
+    for typ,elem in pairs(foundNotifications) do
+        if g_i18n:hasText("TypeDesc_"..typ) then
+            typ = g_i18n:getText("TypeDesc_"..typ)
+        elseif g_i18n:hasText(typ) then
+            typ = g_i18n:getText(typ)
+        end
+        local txt = string.upper(string.sub(typ,1,1))..string.sub(typ,2)
+        if elem.itemCount ~= nil and elem.itemCount > 1 then
+            txt = txt .. ("(x%d)"):format(elem.itemCount)
+        end
+        if elem.fillLevels[FillUtil.FILLTYPE_UNKNOWN] ~= nil then
+            txt = txt .. (Glance.nonVehiclesFillLevelFormat):format("", "", ("%.0f%%"):format(elem.fillLevels[FillUtil.FILLTYPE_UNKNOWN]))
+        else
+            local prefix=":"
+            for fillType,fillPct in pairs(elem.fillLevels) do
+                if fillType ~= FillUtil.FILLTYPE_UNKNOWN then
+                    txt = txt .. (Glance.nonVehiclesFillLevelFormat):format(prefix, getFillType_NameI18N(fillType), ("%.0f%%"):format(fillPct))
+                    prefix=","
+                end
+            end
+        end
+        table.insert(notifyList, { getNotificationColor(elem.color), txt });
     end
 
 --[[
@@ -1860,7 +1874,7 @@ end
 function Glance:getCellData_ActiveTask(dt, lineColor, colParms, cells, veh)
     return cells["ActiveTask"]
 end
---
+--[[
 function Glance:getCellData_BalerNumFoilsNets(dt, lineColor, colParms, cells, veh)
     return cells["balerNumFoilsNets"]
 end
@@ -1870,6 +1884,7 @@ end
 function Glance:getCellData_BalerNumNets(dt, lineColor, colParms, cells, veh)
     return cells["balerNumNets"]
 end
+--]]
 -----
 
 function Glance:notify_vehicleBroken(dt, notifyParms, veh)
