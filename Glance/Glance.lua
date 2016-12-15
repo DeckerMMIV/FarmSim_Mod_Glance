@@ -185,6 +185,12 @@ function Glance:loadMap(name)
     --else
     --    Glance.c_SpeedUnit = g_i18n:getText("speedometer")  -- FS2013
     --end
+
+    Glance.c_KeysMoreLess = ("[%s] / [%s]"):format(
+        table.concat(InputBinding.getRawKeyNamesOfDigitalAction(InputBinding.GLANCE_MORE), ' '),
+        table.concat(InputBinding.getRawKeyNamesOfDigitalAction(InputBinding.GLANCE_LESS), ' ')
+    )
+    
 end;
 
 function Glance:deleteMap()
@@ -326,12 +332,18 @@ function Glance:update(dt)
         --if g_currentMission.showHelpMenu then
         --if g_gameSettings:getValue("showHelpMenu") then
             if self.helpButtonsTimeout ~= nil and self.helpButtonsTimeout > g_currentMission.time then
-                if Glance.minNotifyLevel > 0 then
-                    g_currentMission:addHelpButtonText(g_i18n:getText("GlanceMore"):format(Glance.minNotifyLevel), InputBinding.GLANCE_MORE, nil, GS_PRIO_NORMAL);
-                end
-                if Glance.minNotifyLevel < Glance.maxNotifyLevel+1 then
-                    g_currentMission:addHelpButtonText(g_i18n:getText("GlanceLess"):format(Glance.minNotifyLevel), InputBinding.GLANCE_LESS, nil, GS_PRIO_NORMAL);
-                end
+                --if Glance.minNotifyLevel > 0 then
+                --    g_currentMission:addHelpButtonText(g_i18n:getText("GlanceMore"):format(Glance.minNotifyLevel), InputBinding.GLANCE_MORE, nil, GS_PRIO_NORMAL);
+                --end
+                --if Glance.minNotifyLevel < Glance.maxNotifyLevel+1 then
+                --    g_currentMission:addHelpButtonText(g_i18n:getText("GlanceLess"):format(Glance.minNotifyLevel), InputBinding.GLANCE_LESS, nil, GS_PRIO_NORMAL);
+                --end
+                
+                local txt = ("%s - %s"):format(
+                    Glance.c_KeysMoreLess,
+                    (g_i18n:getText("GlanceLevel")):format(Glance.minNotifyLevel)
+                )
+                g_currentMission:addExtraPrintText(txt, nil, GS_PRIO_NORMAL);
             end
         --end
     end
@@ -2312,11 +2324,13 @@ function Glance:static_fillTypeLevelPct(dt, staticParms, veh, implements, cells,
                 --
                 if SpecializationUtil.hasSpecialization(SowingMachine, obj.specializations) then
                     -- For sowingmachine, show the selected seed type.
-                    fillTpe = FruitUtil.fruitTypeToFillType[obj.seeds[obj.currentSeed]];
-                    local res = isBreakingThresholds(Glance.notifications["seederLow"], fillPct)
-                    if res then
-                        fillClr = Utils.getNoNil(res.threshold.color, fillClr)
-                        notifyLevel = math.max(notifyLevel, res.threshold.level)
+                    if fillTpe == FillUtil.FILLTYPE_SEEDS then
+                        fillTpe = FruitUtil.fruitTypeToFillType[obj.seeds[obj.currentSeed]];
+                        local res = isBreakingThresholds(Glance.notifications["seederLow"], fillPct)
+                        if res then
+                            fillClr = Utils.getNoNil(res.threshold.color, fillClr)
+                            notifyLevel = math.max(notifyLevel, res.threshold.level)
+                        end
                     end
                 elseif SpecializationUtil.hasSpecialization(Sprayer, obj.specializations) then
                     local res = isBreakingThresholds(Glance.notifications["sprayerLow"], fillPct)

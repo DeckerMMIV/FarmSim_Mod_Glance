@@ -72,8 +72,8 @@ solo quello che hai bisogno di vedere
         <text name="task_StumpCutting"  text="Taglio tronchi"    />
         <text name="task_WoodCrushing"  text="Cippatura"    />
         <text name="task_TreePlanting"  text="Pianta Alberi"    />
-        <text name="task_Weeding"       text="Weeding"          />
-        <text name="task_LivestockTransport" text="Livestock transport" />
+        <text name="task_Weeding"       text="Weeding"          /> <!-- need translation -->
+        <text name="task_LivestockTransport" text="Livestock transport" /> <!-- need translation -->
 
         <text name="config_error"       text="'Glance'  ha un problema quando cerca di caricare il file Glance_Config.XML.
 Perfavore controlla la console o il file LOG.TXT
@@ -82,8 +82,7 @@ o semplicemente rimuovi il file Glance_Config.XML." />
         <text name="input_GLANCE_MORE"  text="Glance: Più Info"   />
         <text name="input_GLANCE_LESS"  text="Glance: Meno Info"   />
 
-        <text name="GlanceMore"         text="Glance: More (level %d)"   /> <!-- need translation -->
-        <text name="GlanceLess"         text="Glance: Less (level %d)"   /> <!-- need translation -->
+        <text name="GlanceLevel"        text="Glance (level %d)"   /> <!-- need translation -->
         
         <text name="GlanceMinLevel"     text="Il livello di notifica minima è settato al: %d" />
     </texts>

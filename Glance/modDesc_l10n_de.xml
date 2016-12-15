@@ -73,8 +73,8 @@ Ein Mitteilungs- und Status-Tool das so konfiguriert werden kann dass man nur da
         <text name="task_StumpCutting"  text="Stumps fräsen"   />
         <text name="task_WoodCrushing"  text="Holz häckseln"   />
         <text name="task_TreePlanting"  text="Bäume pflanzen"  />
-        <text name="task_Weeding"       text="Weeding"          />
-        <text name="task_LivestockTransport" text="Livestock transport" />
+        <text name="task_Weeding"       text="Weeding"          /> <!-- need translation -->
+        <text name="task_LivestockTransport" text="Livestock transport" /> <!-- need translation -->
 
         <text name="config_error"       text="'Glance' hatte ein Problem mit dem Laden der Glance_Config.XML.
 Bitte kontrolliere die Konsole im Spiel, die LOG.TXT für Details oder lösche die Glance_Config.XML." />
@@ -82,8 +82,7 @@ Bitte kontrolliere die Konsole im Spiel, die LOG.TXT für Details oder lösche d
         <text name="input_GLANCE_MORE"  text="Glance: Mehr anzeigen"    />
         <text name="input_GLANCE_LESS"  text="Glance: Weniger anzeigen" />
 
-        <text name="GlanceMore"         text="Glance: More (level %d)"   /> <!-- need translation -->
-        <text name="GlanceLess"         text="Glance: Less (level %d)"   /> <!-- need translation -->
+        <text name="GlanceLevel"        text="Glance (level %d)"   /> <!-- need translation -->
         
         <text name="GlanceMinLevel"     text="Anzeigelevel: %d" />
     </texts>

@@ -1,15 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<modDesc descVersion="32">
+<modDesc descVersion="34">
     <author>Decker_MMIV</author>
     <author_contact>fs-uk.com, modcentral.co.uk, forum.farming-simulator.com</author_contact>
 
 <!--
     NOTE: For contributing translations, DO NOT edit this ModDesc.XML.
           Only modify the corresponding ModDesc_l10n_*.XML file.
--->    
+-->
     <contributors>SchorschiBW, ja_pizgam, Gonimy_Vetrom, JakobT, pokers, gighen, SicFR57, Alfredo Prieto</contributors>
-    
-    <version>1.0.0.18</version>
+
+    <version>1.0.0.19</version>
 
     <title>
         <en>Glance</en>
@@ -27,32 +27,26 @@
 <![CDATA[A notification-and-status utility that can be configured to show only what you need to see
 ]]>
         </en>
-        
-        <de> 
+        <de>
 <![CDATA[Ein Mitteilungs- und Status-Tool das so konfiguriert werden kann dass man  nur das sieht was man braucht.
 ]]>
         </de>
-        
-        <pl> 
-<![CDATA[Użyteczne narzędzie powiadamiania i statusu, które może być skonfigurowane tak, aby pokazywać to, co chcesz zobaczyć. 
+        <pl>
+<![CDATA[Użyteczne narzędzie powiadamiania i statusu, które może być skonfigurowane tak, aby pokazywać to, co chcesz zobaczyć.
 ]]>
-        </pl>         
-        
-        <ru> 
-<![CDATA[Утилита для отображения уведомлений/статуса техники и животных. Может работать в соответствии с настройками, чтобы показывать только то, что Вы хотите видеть. 
+        </pl>
+        <ru>
+<![CDATA[Утилита для отображения уведомлений/статуса техники и животных. Может работать в соответствии с настройками, чтобы показывать только то, что Вы хотите видеть.
 ]]>
         </ru>
-        
         <hu>
 <![CDATA[Egy állapot- és tevékenység kijelző mód, amiben te magad választhatod meg mit szeretnél látni.
 ]]>
         </hu>
-        
         <it>
-<![CDATA[Un servizio di notifica e stato che può essere configurato per mostrare solo quello che hai bisogno di vedere 
+<![CDATA[Un servizio di notifica e stato che può essere configurato per mostrare solo quello che hai bisogno di vedere
 ]]>
         </it>
-        
         <fr>
 <![CDATA[Un utilitaire de notification et statut qui peut être configuré pour afficher ce que vous voulez.
 ]]>
@@ -71,7 +65,7 @@
     <extraSourceFiles>
         <sourceFile filename="Glance.lua" />
     </extraSourceFiles>
-    
+
     <inputBindings>
         <input visible="true" name="GLANCE_MORE" category="ONFOOT VEHICLE" key1="KEY_lalt KEY_m" />
         <input visible="true" name="GLANCE_LESS" category="ONFOOT VEHICLE" key1="KEY_lalt KEY_l" />

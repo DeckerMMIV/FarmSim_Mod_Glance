@@ -74,8 +74,8 @@ mit szeretnél látni.
         <text name="task_StumpCutting"  text="Tönkvágás"/>
         <text name="task_WoodCrushing"  text="Faaprítás"/>
         <text name="task_TreePlanting"  text="Faültetés"/>
-        <text name="task_Weeding"       text="Weeding"          />
-        <text name="task_LivestockTransport" text="Livestock transport" />
+        <text name="task_Weeding"       text="Weeding"          /> <!-- need translation -->
+        <text name="task_LivestockTransport" text="Livestock transport" /> <!-- need translation -->
 
         <text name="config_error"       text="'Glance' nem tudja betölteni a Glance_Config.XML fájlt.
 További információért ellenőrizd a játékban a Glance konzolt vagy a LOG.TXT-t.
@@ -84,8 +84,7 @@ Vagy egyszerűen csak töröld a Glance_Config.XML fájlt." />
         <text name="input_GLANCE_MORE"  text="Glance: Több adat"/>
         <text name="input_GLANCE_LESS"  text="Glance: Kevesebb adat"/>
 
-        <text name="GlanceMore"         text="Glance: More (level %d)"   /> <!-- need translation -->
-        <text name="GlanceLess"         text="Glance: Less (level %d)"   /> <!-- need translation -->
+        <text name="GlanceLevel"        text="Glance (level %d)"   /> <!-- need translation -->
         
         <text name="GlanceMinLevel"     text="Beállított minimum adatszint: %d"/>
     </texts>

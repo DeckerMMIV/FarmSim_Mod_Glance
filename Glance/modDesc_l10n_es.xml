@@ -71,8 +71,8 @@ Muestra notificaciones sobre el estado de las tareas y puede configurarse para m
         <text name="task_StumpCutting"  text="Quitando tocones"    />
         <text name="task_WoodCrushing"  text="Haciendo chips"    />
         <text name="task_TreePlanting"  text="Plantando árboles"    />
-        <text name="task_Weeding"       text="Weeding"          />
-        <text name="task_LivestockTransport" text="Livestock transport" />
+        <text name="task_Weeding"       text="Weeding"          /> <!-- need translation -->
+        <text name="task_LivestockTransport" text="Livestock transport" /> <!-- need translation -->
 
         <text name="config_error"       text="'Glance' tiene problemas para cargar el archivo Glance_Config.XML.
 Por favor, revise el LOG.TXT o la consola de In_Game para más detalles.
@@ -81,8 +81,7 @@ O directamente elimine el archivo Glance_Config.XML para que se regenere." />
         <text name="input_GLANCE_MORE"  text="Glance: Más Información"   />
         <text name="input_GLANCE_LESS"  text="Glance: Menos Información"   />
 
-        <text name="GlanceMore"         text="Glance: More (level %d)"   /> <!-- need translation -->
-        <text name="GlanceLess"         text="Glance: Less (level %d)"   /> <!-- need translation -->
+        <text name="GlanceLevel"        text="Glance (level %d)"   /> <!-- need translation -->
         
         <text name="GlanceMinLevel"     text="El nivel mínimo de notificación esta fijado en: %d" />
     </texts>

@@ -81,8 +81,7 @@ Or just remove the Glance_Config.XML file." />
         <text name="input_GLANCE_MORE"  text="Glance: More notify"   />
         <text name="input_GLANCE_LESS"  text="Glance: Less notify"   />
 
-        <text name="GlanceMore"         text="Glance: More (level %d)"   /> <!-- need translation -->
-        <text name="GlanceLess"         text="Glance: Less (level %d)"   /> <!-- need translation -->
+        <text name="GlanceLevel"        text="Glance (level %d)"   />
         
         <text name="GlanceMinLevel"     text="Minimum notification level is set to: %d" />
     </texts>
