@@ -1,20 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <l10n>
+    <!-- Add your own name or nickname here, when you contribute to this file's translation, so I know who to put into the credits. -->
+    <translationContributors>
+        SchorschiBW
+        JakobT
+        mngrazy
+    </translationContributors>
+
     <!-- Note that 'description' is only here for easier translations. It needs to be manually copied to ModDesc.XML later. -->
     <description>
-<![CDATA[Ein Mitteilungs- und Status-Tool das so konfiguriert werden kann dass man 
-nur das sieht was man braucht.
-
-
-Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
+Ein Mitteilungs- und Status-Tool das so konfiguriert werden kann dass man nur das sieht was man braucht.
     </description>
 
     <texts>
         <text name="hired"              text="(Helfer aktiv)"  />
-        <text name="dismissed"          text="(fertig!)"       />
-        <text name="courseplay"         text="(courseplay)"    />
-        <text name="followme"           text="(followme)"      />
-        <text name="broken"             text="(defekt!)"       />
+        <text name="dismissed"          text="(Fertig!)"       />
+        <text name="courseplay"         text="(Courseplay)"    />
+        <text name="followme"           text="(FollowMe)"      />
+        <text name="broken"             text="(Defekt!)"       />
 
         <text name="north"              text="N"  />
         <text name="northeast"          text="NO" />
@@ -28,6 +31,10 @@ Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
 
         <text name="closestfield"       text="F%d" />
 
+        <text name="fieldsWithBales"    text="Ballen auf Feld:"   />
+        <text name="fieldNumAndBales"   text=" Feld %d [x%d]" />
+        <text name="balesElsewhere"     text="Ballen irgendwo [x%d]" />
+        
         <text name="fuellow"            text="Tank leer (%s%%)" />
         <text name="engineon"           text="Motor ist AN!"    />
         <text name="collision"          text="Blockiert"        />
@@ -41,11 +48,11 @@ Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
         <text name="bales"              text="Ballen"          />
 
         <text name="task_Harvesting"    text="Ernten"          />
-        <text name="task_Defoliator"    text="Entblätter"      /> <!-- JT 27 Dec 2014: changed from "Krautschläger" -->
+        <text name="task_Defoliator"    text="Entblättern"      /> <!-- JT 27 Dec 2014: changed from "Krautschläger" --> <!-- fixed from "Entblätter" to "Entblättern" [22.08.2015]-->
         <text name="task_Loading_bales" text="Ballen laden"    />
         <text name="task_Wrapping_bale" text="Ballen wickeln"  />
         <text name="task_Baling"        text="Ballen pressen"  />
-        <text name="task_Foraging"      text="Füttern"         />
+        <text name="task_Foraging"      text="Sammeln"         /> <!-- changed from "Füttern" to "Sammeln" [22.08.2015]-->
         <text name="task_Tedding"       text="Wenden"          />
         <text name="task_Swathing"      text="Schwaden"        />
         <text name="task_Mowing"        text="Mähen"           />

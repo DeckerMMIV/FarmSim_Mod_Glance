@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+    <!-- Add your own name or nickname here, when you contribute to this file's translation, so I know who to put into the credits. -->
+    <translationContributors>
+        SicFR57
+    </translationContributors>
+
+    <!-- Note that 'description' is only here for easier translations. It needs to be manually copied to ModDesc.XML later. -->
+    <description>
+Un utilitaire de notification et statut qui peut être configuré pour afficher ce que vous voulez.
+    </description>
+ 
+    <texts>
+        <text name="hired"              text="(Ouvrier)"      />
+        <text name="dismissed"          text="(Terminé!)"  />
+        <text name="courseplay"         text="(courseplay)" />
+        <text name="followme"           text="(followme)"   />
+        <text name="broken"             text="(En panne!)"    />
+ 
+        <text name="north"              text="N"    />
+        <text name="northeast"          text="NE"   />
+        <text name="east"               text="E"    />
+        <text name="southeast"          text="SE"   />
+        <text name="south"              text="S"    />
+        <text name="southwest"          text="SO"   />
+        <text name="west"               text="O"    />
+        <text name="northwest"          text="NO"   />
+        <text name="center"             text="C"    />
+ 
+        <text name="closestfield"       text="F%d"  />
+ 
+        <text name="fieldsWithBales"    text="Champs avec bottes:"   />
+        <text name="fieldNumAndBales"   text=" F%d(x%d)"            />
+        <text name="balesElsewhere"     text="Bottes ailleurs(x%d)" />
+ 
+        <text name="fuellow"            text="Jauge basse (%s%%)"  />
+        <text name="engineon"           text="Moteur allumé!"    />
+        <text name="collision"          text="Bloqué"          />
+ 
+        <text name="speed+Unit"         text="%.1f %s"  />
+        <text name="speedSlow"          text="Haut régime" />
+        <text name="speedIdle"          text="Au neutre"     />
+        <text name="cp_waiting"         text="En Attente"  />
+ 
+        <text name="unknownFillType"    text="(inconnu)"    />
+        <text name="bales"              text="Bottes"        />
+ 
+        <text name="task_Harvesting"    text="Récolte"       />
+        <text name="task_Defoliator"    text="Enlève les fanes"      />
+        <text name="task_Loading_bales" text="Charge des bottes"    />
+        <text name="task_Wrapping_bale" text="Enrubanne"    />
+        <text name="task_Baling"        text="Presse"           />
+        <text name="task_Foraging"      text="Autocharge"         />
+        <text name="task_Tedding"       text="Fane"          />
+        <text name="task_Swathing"      text="Andaine"         />
+        <text name="task_Mowing"        text="Fauche"           />
+        <text name="task_Spraying"      text="Pulvérise"         />
+        <text name="task_Seeding"       text="Sème"          />
+        <text name="task_Bedding"       text="Paille"          />
+        <text name="task_Feeding"       text="Fourage"          />
+        <text name="task_Cutting"       text="Moissonne"          />
+        <text name="task_Cultivating"   text="Cultive"      />
+        <text name="task_Ploughing"     text="Laboure"        />
+        <text name="task_Unloading"     text="Décharge"        />
+        <text name="task_Transporting"  text="Transporte"     />
+        <text name="task_StumpCutting"  text="Coupe les souches"    />
+        <text name="task_WoodCrushing"  text="Broie du bois"    />
+        <text name="task_TreePlanting"  text="Plante des arbres"    />
+ 
+        <text name="config_error"       text="'Glance' a un problème avec le chargement du fichier Glance_Config.XML.
+Veuillez vérifier la console dans le jeu ou le fichier LOG.TXT pour de plus de détails.
+Ou supprimez le fichier Glance_Config.XML." />
+ 
+        <text name="GlanceMore"         text="Glance:Plus de détails"   />
+        <text name="GlanceLess"         text="Glance:Moins de détails"   />
+ 
+        <text name="GlanceMinLevel"     text="Niveau minimum de notification est à: %d" />
+    </texts>
+</l10n>

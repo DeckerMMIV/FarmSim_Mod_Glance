@@ -1,12 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <l10n>
+    <!-- Add your own name or nickname here, when you contribute to this file's translation, so I know who to put into the credits. -->
+    <translationContributors>
+        Gonimy-Vetrom
+    </translationContributors>
+
     <!-- Note that 'description' is only here for easier translations. It needs to be manually copied to ModDesc.XML later. -->
     <description>
-<![CDATA[Утилита для отображения уведомлений/статуса техники и животных. Может работать в соответствии
+Утилита для отображения уведомлений/статуса техники и животных. Может работать в соответствии
 с настройками, чтобы показывать только то, что Вы хотите видеть. 
-
-
-Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
     </description>
 
     <texts>
@@ -28,6 +30,10 @@ Decker_MMIV - fs-uk.com, forum.farming-simulator.com, modhoster.com]]>
 
         <text name="closestfield"       text="П%d" />
 
+        <text name="fieldsWithBales"    text="Поля с тюками:"   />
+        <text name="fieldNumAndBales"   text=" П%d(x%d)"            />
+        <text name="balesElsewhere"     text="Тюков не на полях (x%d)" />
+        
         <text name="fuellow"            text="Мало топлива (%s%%)"  />
         <text name="engineon"           text="Двигатель запущен!"   />
         <text name="collision"          text="Застрял"              />
