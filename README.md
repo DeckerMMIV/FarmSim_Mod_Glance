@@ -8,6 +8,7 @@ To read more about this mod, find it on;
 
 0.0.0.1
 - Translation files only, before preparing for release.
+- The mod WILL NOT WORK at this version!
 
 
 ## FS15 - Change-log
