@@ -405,6 +405,7 @@ function Glance:getDefaultConfig()
 ,'        <notification  enabled="true"  type="controlledByHiredWorker"   level="'..dnl( 0)..'"   color="blue" />'
 ,'        <notification  enabled="true"  type="controlledByCourseplay"    level="'..dnl( 0)..'"   color="blue" />'
 ,'        <notification  enabled="true"  type="controlledByFollowMe"      level="'..dnl( 0)..'"   color="blue" />'
+,'        <notification  enabled="true"  type="controlledByAutoDrive"     level="'..dnl( 0)..'"   color="blue" />'
 ,''
 ,'        <notification  enabled="true"  type="hiredWorkerFinished"       level="'..dnl( 3)..'"   color="orange" />'
 ,''
@@ -2137,6 +2138,22 @@ function Glance:static_controllerAndMovement(dt, _, veh, implements, cells, noti
         vehIsControlled = true
         vehIsControlledByComputer = true
     end
+    --
+    if g_currentMission.AutoDrive ~= nil and veh.ad ~= nil and veh.bActive == true then
+        local ntfy = Glance.notifications["controlledByAutoDrive"]
+        if ntfy ~= nil and ntfy.enabled == true then
+            notifyLevel = math.max(notifyLevel, ntfy.level)
+            notifyLineColor = Glance.lineColorVehicleControlledByComputer
+            table.insert(cells["VehicleController"], { getNotificationColor(Glance.lineColorVehicleControlledByComputer), g_i18n:getText("autodrive") } );
+        end
+        vehIsControlled = true
+        vehIsControlledByComputer = true
+    end
+    --
+    if veh.ld ~= nil and veh.ld.active == true then
+        vehIsControlled = true
+        vehIsControlledByComputer = true
+    end
 
     ---
 
@@ -2144,8 +2161,7 @@ function Glance:static_controllerAndMovement(dt, _, veh, implements, cells, noti
     cells["Collision"] = {}
 
     if vehIsControlled and veh.isMotorStarted then
-        local speedKmh = 0
-        speedKmh = veh.lastSpeed * 3600
+        local speedKmh = veh:getLastSpeed()
         --
         local waiting = nil;
         if g_currentMission:getIsServer() then
@@ -2200,7 +2216,7 @@ function Glance:static_controllerAndMovement(dt, _, veh, implements, cells, noti
                                     end;
                                 end;
                             end
-                            if math.abs(veh.lastSpeedAcceleration) > 0.0 then
+                            if veh.lastSpeedAcceleration ~= nil and math.abs(veh.lastSpeedAcceleration) > 0.0 then
                                 -- Begin timeout
                                 notifyBlockedMS = g_currentMission.time + ntfyCollision.aboveThreshold
                             end
