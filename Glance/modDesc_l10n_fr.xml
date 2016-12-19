@@ -8,6 +8,7 @@
     <!-- Add your own name or nickname here, when you contribute to this file's translation, so I know who to put into the credits. -->
     <translationContributors>
         SicFR57
+        translate.google.com
     </translationContributors>
 
     <!-- Note that 'description' is only here for easier translations. It needs to be manually copied to ModDesc.XML later. -->
@@ -20,6 +21,7 @@ Un utilitaire de notification et statut qui peut être configuré pour afficher 
         <text name="dismissed"          text="(Terminé!)"  />
         <text name="courseplay"         text="(courseplay)" />
         <text name="followme"           text="(followme)"   />
+        <text name="autodrive"          text="(autodrive)"  />
         <text name="broken"             text="(En panne!)"    />
  
         <text name="north"              text="N"    />
@@ -71,8 +73,8 @@ Un utilitaire de notification et statut qui peut être configuré pour afficher 
         <text name="task_StumpCutting"  text="Coupe les souches"    />
         <text name="task_WoodCrushing"  text="Broie du bois"    />
         <text name="task_TreePlanting"  text="Plante des arbres"    />
-        <text name="task_Weeding"       text="Weeding"          /> <!-- need translation -->
-        <text name="task_LivestockTransport" text="Livestock transport" /> <!-- need translation -->
+        <text name="task_Weeding"       text="Désherbage"          /> <!-- need translation -->
+        <text name="task_LivestockTransport" text="Transport de bétail" /> <!-- need translation -->
 
         <text name="config_error"       text="'Glance' a un problème avec le chargement du fichier Glance_Config.XML.
 Veuillez vérifier la console dans le jeu ou le fichier LOG.TXT pour de plus de détails.

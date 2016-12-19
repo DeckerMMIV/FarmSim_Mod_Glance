@@ -186,7 +186,7 @@ function Glance:loadMap(name)
     --    Glance.c_SpeedUnit = g_i18n:getText("speedometer")  -- FS2013
     --end
 
-    Glance.c_KeysMoreLess = ("[%s] / [%s]"):format(
+    Glance.c_KeysMoreLess = ("%s / %s"):format(
         table.concat(InputBinding.getRawKeyNamesOfDigitalAction(InputBinding.GLANCE_MORE), ' '),
         table.concat(InputBinding.getRawKeyNamesOfDigitalAction(InputBinding.GLANCE_LESS), ' ')
     )
@@ -2033,6 +2033,8 @@ function Glance:notify_engineOnButNotControlled(dt, notifyParms, veh)
         or veh.isHired
         or (veh.getIsCourseplayDriving ~= nil and veh:getIsCourseplayDriving())
         or (veh.getIsFollowMeActive ~= nil and veh:getIsFollowMeActive())
+        or (g_currentMission.AutoDrive ~= nil and veh.ad ~= nil and veh.bActive == true) -- AutoDrive
+        or (veh.ld ~= nil and veh.ld.active == true) -- LocoDrive
         then
             -- do nothing
         else

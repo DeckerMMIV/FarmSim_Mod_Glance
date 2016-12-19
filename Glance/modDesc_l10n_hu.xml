@@ -8,6 +8,7 @@
     <!-- Add your own name or nickname here, when you contribute to this file's translation, so I know who to put into the credits. -->
     <translationContributors>
         pokers
+        translate.google.com
     </translationContributors>
 
     <!-- Note that 'description' is only here for easier translations. It needs to be manually copied to ModDesc.XML later. -->
@@ -21,6 +22,7 @@ mit szeretnél látni.
         <text name="dismissed"          text="(befejezve!)"/>
         <text name="courseplay"         text="(courseplay)"/>
         <text name="followme"           text="(followme)"/>
+        <text name="autodrive"          text="(autodrive)"  />
         <text name="broken"             text="(meghibásodott!)"/>
 
         <text name="north"              text="É"/>
@@ -74,8 +76,8 @@ mit szeretnél látni.
         <text name="task_StumpCutting"  text="Tönkvágás"/>
         <text name="task_WoodCrushing"  text="Faaprítás"/>
         <text name="task_TreePlanting"  text="Faültetés"/>
-        <text name="task_Weeding"       text="Weeding"          /> <!-- need translation -->
-        <text name="task_LivestockTransport" text="Livestock transport" /> <!-- need translation -->
+        <text name="task_Weeding"       text="Gyomlálás"          /> <!-- need translation -->
+        <text name="task_LivestockTransport" text="Élőállat szállítás" /> <!-- need translation -->
 
         <text name="config_error"       text="'Glance' nem tudja betölteni a Glance_Config.XML fájlt.
 További információért ellenőrizd a játékban a Glance konzolt vagy a LOG.TXT-t.

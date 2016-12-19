@@ -8,6 +8,7 @@
     <!-- Add your own name or nickname here, when you contribute to this file's translation, so I know who to put into the credits. -->
     <translationContributors>
         gighen
+        translate.google.com
     </translationContributors>
 
     <!-- Note that 'description' is only here for easier translations. It needs to be manually copied to ModDesc.XML later. -->
@@ -21,6 +22,7 @@ solo quello che hai bisogno di vedere
         <text name="dismissed"          text="(Finito!)"  />
         <text name="courseplay"         text="(courseplay)" />
         <text name="followme"           text="(followme)"   />
+        <text name="autodrive"          text="(autodrive)"  />
         <text name="broken"             text="(Rotto!)"    />
 
         <text name="north"              text="N"    />
@@ -72,8 +74,8 @@ solo quello che hai bisogno di vedere
         <text name="task_StumpCutting"  text="Taglio tronchi"    />
         <text name="task_WoodCrushing"  text="Cippatura"    />
         <text name="task_TreePlanting"  text="Pianta Alberi"    />
-        <text name="task_Weeding"       text="Weeding"          /> <!-- need translation -->
-        <text name="task_LivestockTransport" text="Livestock transport" /> <!-- need translation -->
+        <text name="task_Weeding"       text="Diserbo"          /> <!-- need translation -->
+        <text name="task_LivestockTransport" text="Trasporto di bestiame" /> <!-- need translation -->
 
         <text name="config_error"       text="'Glance'  ha un problema quando cerca di caricare il file Glance_Config.XML.
 Perfavore controlla la console o il file LOG.TXT
