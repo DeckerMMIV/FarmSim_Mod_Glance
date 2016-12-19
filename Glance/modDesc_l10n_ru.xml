@@ -21,6 +21,7 @@
         <text name="dismissed"          text="(закончил!)"   />
         <text name="courseplay"         text="(courseplay)"  />
         <text name="followme"           text="(FollowMe)"      />
+        <text name="autodrive"          text="(autodrive)"  />
         <text name="broken"             text="(сломался!)"   />
 
         <text name="north"              text="С"  />

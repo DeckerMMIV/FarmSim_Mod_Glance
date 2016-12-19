@@ -21,6 +21,7 @@ Muestra notificaciones sobre el estado de las tareas y puede configurarse para m
         <text name="dismissed"          text="(Terminado!)"  />
         <text name="courseplay"         text="(Courseplay)" />
         <text name="followme"           text="(FollowMe)"   />
+        <text name="autodrive"          text="(AutoDrive)"  />
         <text name="broken"             text="(Averiado!)"    />
 
         <text name="north"              text="N"    />

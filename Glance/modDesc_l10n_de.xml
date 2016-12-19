@@ -10,6 +10,7 @@
         SchorschiBW
         JakobT
         mngrazy
+        translate.google.com
     </translationContributors>
 
     <!-- Note that 'description' is only here for easier translations. It needs to be manually copied to ModDesc.XML later. -->
@@ -22,6 +23,7 @@ Ein Mitteilungs- und Status-Tool das so konfiguriert werden kann dass man nur da
         <text name="dismissed"          text="(Fertig!)"       />
         <text name="courseplay"         text="(Courseplay)"    />
         <text name="followme"           text="(FollowMe)"      />
+        <text name="autodrive"          text="(AutoDrive)"  />
         <text name="broken"             text="(Defekt!)"       />
 
         <text name="north"              text="N"  />
@@ -73,8 +75,8 @@ Ein Mitteilungs- und Status-Tool das so konfiguriert werden kann dass man nur da
         <text name="task_StumpCutting"  text="Stumps fräsen"   />
         <text name="task_WoodCrushing"  text="Holz häckseln"   />
         <text name="task_TreePlanting"  text="Bäume pflanzen"  />
-        <text name="task_Weeding"       text="Weeding"          /> <!-- need translation -->
-        <text name="task_LivestockTransport" text="Livestock transport" /> <!-- need translation -->
+        <text name="task_Weeding"       text="Jäten"           /> <!-- need translation -->
+        <text name="task_LivestockTransport" text="Tiertransporte" /> <!-- need translation -->
 
         <text name="config_error"       text="'Glance' hatte ein Problem mit dem Laden der Glance_Config.XML.
 Bitte kontrolliere die Konsole im Spiel, die LOG.TXT für Details oder lösche die Glance_Config.XML." />

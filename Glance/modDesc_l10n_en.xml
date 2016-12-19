@@ -20,6 +20,7 @@ A notification-and-status utility that can be configured to show only what you n
         <text name="dismissed"          text="(finished!)"  />
         <text name="courseplay"         text="(courseplay)" />
         <text name="followme"           text="(followme)"   />
+        <text name="autodrive"          text="(autodrive)"  />
         <text name="broken"             text="(broken!)"    />
 
         <text name="north"              text="N"    />

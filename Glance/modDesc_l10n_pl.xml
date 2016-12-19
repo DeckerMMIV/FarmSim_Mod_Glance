@@ -22,6 +22,7 @@ tak, aby pokazywać to, co chcesz zobaczyć.
         <text name="dismissed"          text="(gotowe!)" />
         <text name="courseplay"         text="(courseplay)" />
         <text name="followme"           text="(followme)" />
+        <text name="autodrive"          text="(autodrive)"  />
         <text name="broken"             text="(uszkodzony!)" />
 
         <text name="north"              text="Pn" />
