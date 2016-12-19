@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+    <!-- 
+        Please contribute any other translations at 
+        https://github.com/DeckerMMIV/FarmSim_Mod_Glance
+    -->
+
+    <!-- Add your own name or nickname here, when you contribute to this file's translation, so I know who to put into the credits. -->
+    <translationContributors>
+        shermy
+    </translationContributors>
+
+    <!-- Note that 'description' is only here for easier translations. It needs to be manually copied to ModDesc.XML later. -->
+    <description>
+Een notificatie en status tool welke geconfigureerd kan worden zodat je alleen ziet wat je nodig bent.
+    </description>
+
+    <texts>
+        <text name="hired"              text="(gehuurd)"    />
+        <text name="dismissed"          text="(klaar!)"     />
+        <text name="courseplay"         text="(courseplay)" />
+        <text name="followme"           text="(followme)"   />
+        <text name="autodrive"          text="(autodrive)"  />
+        <text name="broken"             text="(kapot!)"     />
+
+        <text name="north"              text="N"    />
+        <text name="northeast"          text="NO"   />
+        <text name="east"               text="O"    />
+        <text name="southeast"          text="ZO"   />
+        <text name="south"              text="Z"    />
+        <text name="southwest"          text="ZW"   />
+        <text name="west"               text="W"    />
+        <text name="northwest"          text="NW"   />
+        <text name="center"             text="C"    />
+
+        <text name="closestfield"       text="F%d"  />
+
+        <text name="fieldsWithBales"    text="Velden met balen:"   />
+        <text name="fieldNumAndBales"   text=" F%d(x%d)"            />
+        <text name="balesElsewhere"     text="Overige Balen(x%d)" />
+
+        <text name="fuellow"            text="Brandstof Laag (%s%%)"  />
+        <text name="engineon"           text="Motor is AAN!"    />
+        <text name="collision"          text="Geblokeerd"          />
+
+        <text name="speed+Unit"         text="%.1f %s"  />
+        <text name="speedSlow"          text="Hoge toeren" />
+        <text name="speedIdle"          text="Stationair"     />
+        <text name="cp_waiting"         text="Wachten"  />
+
+        <text name="unknownFillType"    text="(onbekend graantype)"    />
+        <text name="bales"              text="Balen"        />
+
+        <text name="task_Harvesting"    text="Oogsten"       />
+        <text name="task_Defoliator"    text="Toppen"      />
+        <text name="task_Loading_bales" text="Balen laden"    />
+        <text name="task_Wrapping_bale" text="Balen wikkelen"    />
+        <text name="task_Baling"        text="Balen"           />
+        <text name="task_Foraging"      text="Hakselen"         />
+        <text name="task_Tedding"       text="Schudden"          />
+        <text name="task_Swathing"      text="Zwillen"         />
+        <text name="task_Mowing"        text="Maaien"           />
+        <text name="task_Spraying"      text="Sproeien"         />
+        <text name="task_Seeding"       text="Zaaien"          />
+        <text name="task_Bedding"       text="Substraat"          />
+        <text name="task_Feeding"       text="Voeren"          />
+        <text name="task_Cutting"       text="Zagen"          />
+        <text name="task_Cultivating"   text="Cultiveren"      />
+        <text name="task_Ploughing"     text="Ploegen"        />
+        <text name="task_Unloading"     text="Uitladen"        />
+        <text name="task_Transporting"  text="Transporteren"     />
+        <text name="task_StumpCutting"  text="Stomp versnijden"    />
+        <text name="task_WoodCrushing"  text="Hout versnipperen"    />
+        <text name="task_TreePlanting"  text="Bomen planten"    />
+        <text name="task_Weeding"       text="Schoffelen"          />
+        <text name="task_LivestockTransport" text="Dieren transport" />
+
+        <text name="config_error"       text="'Glance' had een probleem tijdens het laden van de Glance_Config.XML.
+Kijk A.U.B. in je log of console voor verdere details.
+Of verwijder het bestand: Glance_Config.XML." />
+
+        <text name="input_GLANCE_MORE"  text="Glance: Meer Info"   />
+        <text name="input_GLANCE_LESS"  text="Glance: Minder Info"   />
+
+        <text name="GlanceLevel"        text="Glance (level %d)"   />
+        
+        <text name="GlanceMinLevel"     text="Minimum info level is op %d gezet" />
+    </texts>
+</l10n>

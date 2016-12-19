@@ -9,10 +9,10 @@
 -->
     <contributors>
         SchorschiBW, ja_pizgam, Gonimy_Vetrom, JakobT, pokers, gighen, SicFR57, Alfredo Prieto,
-        Vanquish081, Dzi4d3k
+        Vanquish081, Dzi4d3k, shermy
     </contributors>
 
-    <version>1.0.0.22</version>
+    <version>1.0.0.23</version>
 
     <title>
         <en>Glance</en>
@@ -23,6 +23,7 @@
         <it>Glance</it>
         <fr>Glance</fr>
         <es>Glance</es>
+        <nl>Glance</nl>
     </title>
 
     <description>
@@ -58,6 +59,10 @@
 <![CDATA[Muestra notificaciones sobre el estado de las tareas y puede configurarse para mostrar solo aquello que se necesite
 ]]>
         </es>
+        <nl>
+<![CDATA[Een notificatie en status tool welke geconfigureerd kan worden zodat je alleen ziet wat je nodig bent.
+]]>
+        </nl>
     </description>
 
     <iconFilename>store_Glance.dds</iconFilename>

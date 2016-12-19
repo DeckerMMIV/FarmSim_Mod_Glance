@@ -444,6 +444,9 @@ function Glance:getDefaultConfig()
 ,'        <notification  enabled="false" type="balesOutsideFields"            level="'..dnl(-2)..'"   whenBelow=""  whenAbove="0"  color="yellow" /> <!-- threshold unit is "units" -->'
 --]]
 ,''
+,'        <!-- Show bunker silo fill-level, but only when being inside the silo area -->'
+,'        <notification  enabled="true"  type="bunkerSilo"                level="'..dnl(2)..'"  />'
+,''
 ,'        <!-- Animal husbandry - Animals (amount), Productivity, Wool pallet, Eggs (pickup objects), Cleanliness -->'
 ,'        <!--                                "husbandry[:<animalTypeName>]:(Animals|PickupObjects|Pallet|Productivity|Cleanliness)"  -->'
 ,'        <notification  enabled="true"  type="husbandry:PickupObjects"       level="'..dnl(-2)..'"   whenBelow=""     whenAbove="99.99"  color="yellow" /> <!-- threshold unit is "percentage" -->'
@@ -1368,6 +1371,62 @@ function Glance:makePlaceablesLine(dt, notifyList)
         end
     end
 --]]
+
+    --
+    if Glance.bunkerSiloObj ~= nil then
+        local ntfyBunkerSilo = Glance.notifications['bunkerSilo']
+        if isNotifyEnabled(ntfyBunkerSilo) then
+            local txt = Glance.getBunkerSiloInfo(Glance.bunkerSiloObj)
+            if txt ~= nil then
+                table.insert(notifyList, { getNotificationColor(nil), txt });
+            end
+        end
+        Glance.bunkerSiloObj = nil
+    end
+end
+
+-----
+
+function Glance.setBunkerSilo(bunkerSiloObj)
+    Glance.bunkerSiloObj = bunkerSiloObj
+end
+
+function getBunkerSiloFillTypeName(siloObj,useOutput)
+    local fillType = siloObj.inputFillType;
+    --if siloObj.state == BunkerSilo.STATE_CLOSED or siloObj.state == BunkerSilo.STATE_FERMENTED or siloObj.state == BunkerSilo.STATE_DRAIN then
+    if useOutput then
+        fillType = siloObj.outputFillType;
+    end
+    local fillTypeName = "";
+    if FillUtil.fillTypeIndexToDesc[fillType] ~= nil then
+        fillTypeName = FillUtil.fillTypeIndexToDesc[fillType].nameI18N;
+    end
+    return fillTypeName
+end
+
+function Glance.getBunkerSiloInfo(siloObj)
+    --local fillType = siloObj.inputFillType;
+    --if siloObj.state == BunkerSilo.STATE_CLOSED or siloObj.state == BunkerSilo.STATE_FERMENTED or siloObj.state == BunkerSilo.STATE_DRAIN then
+    --    fillType = siloObj.outputFillType;
+    --end
+    --local fillTypeName = "";
+    --if FillUtil.fillTypeIndexToDesc[fillType] ~= nil then
+    --    fillTypeName = FillUtil.fillTypeIndexToDesc[fillType].nameI18N;
+    --end
+    local txt = nil
+    if siloObj.state == BunkerSilo.STATE_FILL then
+        --g_currentMission:addExtraPrintText(g_i18n:getText("info_fillLevel")..string.format(" %s: %d", fillTypeName, siloObj.fillLevel));
+        --g_currentMission:addExtraPrintText(g_i18n:getText("info_compacting")..string.format(" %d%%", siloObj.compactedPercent));
+        txt = g_i18n:getText("info_fillLevel")..string.format(" %s: %d", getBunkerSiloFillTypeName(siloObj), siloObj.fillLevel)
+        txt = txt .. ", " .. g_i18n:getText("info_compacting")..string.format(" %d%%", siloObj.compactedPercent)
+    elseif siloObj.state == BunkerSilo.STATE_CLOSED or siloObj.state == BunkerSilo.STATE_FERMENTED then
+        --g_currentMission:addExtraPrintText(g_i18n:getText("info_fermenting")..string.format(" %s: %d%%", fillTypeName, siloObj.fermentingPercent));
+        txt = g_i18n:getText("info_fermenting")..string.format(" %s: %d%%", getBunkerSiloFillTypeName(siloObj,true), siloObj.fermentingPercent)
+    elseif siloObj.state == BunkerSilo.STATE_DRAIN then
+        --g_currentMission:addExtraPrintText(g_i18n:getText("info_fillLevel")..string.format(" %s: %d", fillTypeName, siloObj.fillLevel));
+        txt = g_i18n:getText("info_fillLevel")..string.format(" %s: %d", getBunkerSiloFillTypeName(siloObj,true), siloObj.fillLevel)
+    end;
+    return txt
 end
 
 -----
@@ -2729,5 +2788,20 @@ function GlanceEvent.sendEvent(noEventSend)
     end;
 end;
 
+--
+--
+--
+
+BunkerSilo.getCanInteract = Utils.overwrittenFunction(BunkerSilo.getCanInteract, 
+    function(self, superFunc, showInformationOnly)
+        local res = superFunc(self, showInformationOnly)
+
+        if showInformationOnly and true == res then
+            Glance.setBunkerSilo(self)
+        end
+
+        return res
+    end
+)
 
 print(string.format("Script loaded: Glance.lua (v%s)", Glance.version));
