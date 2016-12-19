@@ -7,9 +7,12 @@
     NOTE: For contributing translations, DO NOT edit this ModDesc.XML.
           Only modify the corresponding ModDesc_l10n_*.XML file.
 -->
-    <contributors>SchorschiBW, ja_pizgam, Gonimy_Vetrom, JakobT, pokers, gighen, SicFR57, Alfredo Prieto</contributors>
+    <contributors>
+        SchorschiBW, ja_pizgam, Gonimy_Vetrom, JakobT, pokers, gighen, SicFR57, Alfredo Prieto,
+        Vanquish081, Dzi4d3k
+    </contributors>
 
-    <version>1.0.0.21</version>
+    <version>1.0.0.22</version>
 
     <title>
         <en>Glance</en>

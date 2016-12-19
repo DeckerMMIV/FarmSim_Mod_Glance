@@ -7,7 +7,7 @@
 
     <!-- Add your own name or nickname here, when you contribute to this file's translation, so I know who to put into the credits. -->
     <translationContributors>
-        Gonimy-Vetrom
+        Gonimy_Vetrom
     </translationContributors>
 
     <!-- Note that 'description' is only here for easier translations. It needs to be manually copied to ModDesc.XML later. -->
@@ -21,6 +21,7 @@
         <text name="dismissed"          text="(закончил!)"   />
         <text name="courseplay"         text="(courseplay)"  />
         <text name="followme"           text="(FollowMe)"      />
+        <text name="autodrive"          text="(autodrive)"  />
         <text name="broken"             text="(сломался!)"   />
 
         <text name="north"              text="С"  />
@@ -64,7 +65,7 @@
         <text name="task_Seeding"       text="Посев"                />
         <text name="task_Bedding"       text="Подстилка"            />
         <text name="task_Feeding"       text="Кормление"            />
-        <text name="task_Cutting"       text="Косит/Cutting"        />
+        <text name="task_Cutting"       text="Валит лес"        />
         <text name="task_Cultivating"   text="Культивация"          />
         <text name="task_Ploughing"     text="Вспашка"              />
         <text name="task_Unloading"     text="Разгрузка"            />
@@ -72,8 +73,8 @@
         <text name="task_StumpCutting"  text="Корчевание пней"      />
         <text name="task_WoodCrushing"  text="Дробление древесины"  />
         <text name="task_TreePlanting"  text="Посадка деревьев"     />
-        <text name="task_Weeding"       text="Weeding"          /> <!-- need translation -->
-        <text name="task_LivestockTransport" text="Livestock transport" /> <!-- need translation -->
+        <text name="task_Weeding"       text="Прополка"          />
+        <text name="task_LivestockTransport" text="Перевозка животных" />
 
         <text name="config_error"       text="'Glance' не может загрузить файл Glance_Config.XML.
 Пожалуйста, проверьте в игре консоль или LOG.TXT для уточнения деталей.
@@ -82,7 +83,7 @@
         <text name="input_GLANCE_MORE"  text="Glance: Больше уведомлений"  />
         <text name="input_GLANCE_LESS"  text="Glance: Меньше уведомлений"  />
 
-        <text name="GlanceLevel"        text="Glance (level %d)"   /> <!-- need translation -->
+        <text name="GlanceLevel"        text="Glance (уровень %d)"   />
         
         <text name="GlanceMinLevel"     text="Минимальный уровень уведомление установлен на: %d" />
     </texts>

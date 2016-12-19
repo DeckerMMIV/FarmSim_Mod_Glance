@@ -22,6 +22,7 @@ tak, aby pokazywać to, co chcesz zobaczyć.
         <text name="dismissed"          text="(gotowe!)" />
         <text name="courseplay"         text="(courseplay)" />
         <text name="followme"           text="(followme)" />
+        <text name="autodrive"          text="(autodrive)"  />
         <text name="broken"             text="(uszkodzony!)" />
 
         <text name="north"              text="Pn" />
@@ -73,8 +74,8 @@ tak, aby pokazywać to, co chcesz zobaczyć.
         <text name="task_StumpCutting"  text="Niszczenie pni" />
         <text name="task_WoodCrushing"  text="Rąbanie drewna" />
         <text name="task_TreePlanting"  text="Sadzonki drzew" />
-        <text name="task_Weeding"       text="Weeding"          /> <!-- need translation -->
-        <text name="task_LivestockTransport" text="Livestock transport" /> <!-- need translation -->
+        <text name="task_Weeding"       text="Odchwaszczanie" />
+        <text name="task_LivestockTransport" text="Transport zwierząt" />
 
         <text name="config_error"       text="'Glance' ma problem z załadowaniem pliku 'Glance_Config.XML'.
 Proszę sprawdzić w kolnsoli w grze lub w 'LOG.TXT' szczegóły lub po prostu usunąć 'Glance_Config.XML'." />
@@ -82,7 +83,7 @@ Proszę sprawdzić w kolnsoli w grze lub w 'LOG.TXT' szczegóły lub po prostu u
         <text name="input_GLANCE_MORE"  text="Glance: Wiecej info." />
         <text name="input_GLANCE_LESS"  text="Glance: Mniej info." />
 
-        <text name="GlanceLevel"        text="Glance (level %d)"   /> <!-- need translation -->
+        <text name="GlanceLevel"        text="Glance (poziom %d)"   />
         
         <text name="GlanceMinLevel"     text="Poziom powiadomień: %d" />
     </texts>

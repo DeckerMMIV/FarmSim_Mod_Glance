@@ -75,8 +75,8 @@ Ein Mitteilungs- und Status-Tool das so konfiguriert werden kann dass man nur da
         <text name="task_StumpCutting"  text="Stumps fräsen"   />
         <text name="task_WoodCrushing"  text="Holz häckseln"   />
         <text name="task_TreePlanting"  text="Bäume pflanzen"  />
-        <text name="task_Weeding"       text="Jäten"           /> <!-- need translation -->
-        <text name="task_LivestockTransport" text="Tiertransporte" /> <!-- need translation -->
+        <text name="task_Weeding"       text="Unkraut entfernen"    /> <!-- need translation -->
+        <text name="task_LivestockTransport" text="Tier transporte" /> <!-- need translation -->
 
         <text name="config_error"       text="'Glance' hatte ein Problem mit dem Laden der Glance_Config.XML.
 Bitte kontrolliere die Konsole im Spiel, die LOG.TXT für Details oder lösche die Glance_Config.XML." />

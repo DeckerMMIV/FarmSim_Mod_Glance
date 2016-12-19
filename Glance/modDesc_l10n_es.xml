@@ -8,6 +8,7 @@
     <!-- Add your own name or nickname here, when you contribute to this file's translation, so I know who to put into the credits. -->
     <translationContributors>
         Alfredo Prieto
+        Vanquish081
     </translationContributors>
 
     <!-- Note that 'description' is only here for easier translations. It needs to be manually copied to ModDesc.XML later. -->
@@ -16,11 +17,12 @@ Muestra notificaciones sobre el estado de las tareas y puede configurarse para m
     </description>
 
     <texts>
-        <text name="hired"              text="(contratado)"      />
-        <text name="dismissed"          text="(terminado!)"  />
-        <text name="courseplay"         text="(courseplay)" />
-        <text name="followme"           text="(followme)"   />
-        <text name="broken"             text="(averiado!)"    />
+        <text name="hired"              text="(Contratado)"      />
+        <text name="dismissed"          text="(Terminado!)"  />
+        <text name="courseplay"         text="(Courseplay)" />
+        <text name="followme"           text="(FollowMe)"   />
+        <text name="autodrive"          text="(AutoDrive)"  />
+        <text name="broken"             text="(Averiado!)"    />
 
         <text name="north"              text="N"    />
         <text name="northeast"          text="NE"   />
@@ -36,18 +38,18 @@ Muestra notificaciones sobre el estado de las tareas y puede configurarse para m
 
         <text name="fieldsWithBales"    text="Campos con pacas:"   />
         <text name="fieldNumAndBales"   text=" F%d(x%d)"            />
-        <text name="balesElsewhere"     text="Pacas sueltas(x%d)" />
+        <text name="balesElsewhere"     text="Pacas Sueltas(x%d)" />
 
-        <text name="fuellow"            text="Combustible bajo (%s%%)"  />
+        <text name="fuellow"            text="Combustible Bajo (%s%%)"  />
         <text name="engineon"           text="Motor en marcha!"    />
         <text name="collision"          text="Bloqueado"          />
 
         <text name="speed+Unit"         text="%.1f %s"  />
-        <text name="speedSlow"          text="High RPM" />
-        <text name="speedIdle"          text="Idle"     />
-        <text name="cp_waiting"         text="CP en esperaWaiting"  />
+        <text name="speedSlow"          text="Velocidad lenta" />
+        <text name="speedIdle"          text="Velocidad fija"     />
+        <text name="cp_waiting"         text="CP en espera"  />
 
-        <text name="unknownFillType"    text="(desconocido)"    />
+        <text name="unknownFillType"    text="(Carga No Reconocida)"    />
         <text name="bales"              text="Pacas"        />
 
         <text name="task_Harvesting"    text="Cosechando"       />
@@ -56,7 +58,7 @@ Muestra notificaciones sobre el estado de las tareas y puede configurarse para m
         <text name="task_Wrapping_bale" text="Envolviendo pacas"    />
         <text name="task_Baling"        text="Empacando"           />
         <text name="task_Foraging"      text="Forrajeros"         />
-        <text name="task_Tedding"       text="Extendiendo"          />
+        <text name="task_Tedding"       text="Henificando"          />
         <text name="task_Swathing"      text="Hilerando"         />
         <text name="task_Mowing"        text="Segando"           />
         <text name="task_Spraying"      text="Pulverizando"         />
@@ -69,10 +71,10 @@ Muestra notificaciones sobre el estado de las tareas y puede configurarse para m
         <text name="task_Unloading"     text="Descargando"        />
         <text name="task_Transporting"  text="Transportando"     />
         <text name="task_StumpCutting"  text="Quitando tocones"    />
-        <text name="task_WoodCrushing"  text="Haciendo chips"    />
+        <text name="task_WoodCrushing"  text="Triturando troncos"    />
         <text name="task_TreePlanting"  text="Plantando árboles"    />
-        <text name="task_Weeding"       text="Weeding"          /> <!-- need translation -->
-        <text name="task_LivestockTransport" text="Livestock transport" /> <!-- need translation -->
+        <text name="task_Weeding"       text="Pasando escardadora"          />
+        <text name="task_LivestockTransport" text="Transportando Ganado" />
 
         <text name="config_error"       text="'Glance' tiene problemas para cargar el archivo Glance_Config.XML.
 Por favor, revise el LOG.TXT o la consola de In_Game para más detalles.
@@ -81,7 +83,7 @@ O directamente elimine el archivo Glance_Config.XML para que se regenere." />
         <text name="input_GLANCE_MORE"  text="Glance: Más Información"   />
         <text name="input_GLANCE_LESS"  text="Glance: Menos Información"   />
 
-        <text name="GlanceLevel"        text="Glance (level %d)"   /> <!-- need translation -->
+        <text name="GlanceLevel"        text="Glance (Nivel %d)"   />
         
         <text name="GlanceMinLevel"     text="El nivel mínimo de notificación esta fijado en: %d" />
     </texts>
