@@ -1257,9 +1257,18 @@ end
 
 -----
 
-function Glance.setBunkerSilo(bunkerSiloObj)
-    Glance.bunkerSiloObj = bunkerSiloObj
-end
+BunkerSilo.getCanInteract = Utils.overwrittenFunction(
+    BunkerSilo.getCanInteract,
+    function(self, superFunc, showInformationOnly)
+        local res = superFunc(self, showInformationOnly)
+
+        if showInformationOnly and true == res and g_client ~= nil then
+            Glance.bunkerSiloObj = self
+        end
+
+        return res
+    end
+)
 
 function getBunkerSiloFillTypeName(siloObj,useOutput)
     local fillType = siloObj.inputFillType;
@@ -2486,20 +2495,5 @@ function GlanceEvent.sendEvent(noEventSend)
     end;
 end;
 
---
---
---
-
-BunkerSilo.getCanInteract = Utils.overwrittenFunction(BunkerSilo.getCanInteract, 
-    function(self, superFunc, showInformationOnly)
-        local res = superFunc(self, showInformationOnly)
-
-        if showInformationOnly and true == res then
-            Glance.setBunkerSilo(self)
-        end
-
-        return res
-    end
-)
-
+---
 print(string.format("Script loaded: Glance.lua (v%s)", Glance.version));
