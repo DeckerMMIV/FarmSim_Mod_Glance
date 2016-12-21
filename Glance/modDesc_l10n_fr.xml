@@ -19,9 +19,9 @@ Un utilitaire de notification et statut qui peut être configuré pour afficher 
     <texts>
         <text name="hired"              text="(Ouvrier)"      />
         <text name="dismissed"          text="(Terminé!)"  />
-        <text name="courseplay"         text="(courseplay)" />
-        <text name="followme"           text="(followme)"   />
-        <text name="autodrive"          text="(autodrive)"  />
+        <text name="courseplay"         text="(Courseplay)" />
+        <text name="followme"           text="(FollowMe)"   />
+        <text name="autodrive"          text="(AutoDrive)"  />
         <text name="broken"             text="(En panne!)"    />
  
         <text name="north"              text="N"    />

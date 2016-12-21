@@ -16,12 +16,12 @@ A notification-and-status utility that can be configured to show only what you n
     </description>
 
     <texts>
-        <text name="hired"              text="(hired)"      />
-        <text name="dismissed"          text="(finished!)"  />
-        <text name="courseplay"         text="(courseplay)" />
-        <text name="followme"           text="(followme)"   />
-        <text name="autodrive"          text="(autodrive)"  />
-        <text name="broken"             text="(broken!)"    />
+        <text name="hired"              text="(Hired)"      />
+        <text name="dismissed"          text="(Finished!)"  />
+        <text name="courseplay"         text="(Courseplay)" />
+        <text name="followme"           text="(FollowMe)"   />
+        <text name="autodrive"          text="(AutoDrive)"  />
+        <text name="broken"             text="(Broken!)"    />
 
         <text name="north"              text="N"    />
         <text name="northeast"          text="NE"   />
