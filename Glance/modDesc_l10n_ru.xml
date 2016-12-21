@@ -19,9 +19,9 @@
     <texts>
         <text name="hired"              text="(работник)"    />
         <text name="dismissed"          text="(закончил!)"   />
-        <text name="courseplay"         text="(courseplay)"  />
+        <text name="courseplay"         text="(Courseplay)"  />
         <text name="followme"           text="(FollowMe)"      />
-        <text name="autodrive"          text="(autodrive)"  />
+        <text name="autodrive"          text="(AutoDrive)"  />
         <text name="broken"             text="(сломался!)"   />
 
         <text name="north"              text="С"  />

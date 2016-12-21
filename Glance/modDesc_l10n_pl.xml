@@ -19,11 +19,11 @@ tak, aby pokazywać to, co chcesz zobaczyć.
 
     <texts>
         <text name="hired"              text="(Pracownik)" />
-        <text name="dismissed"          text="(gotowe!)" />
-        <text name="courseplay"         text="(courseplay)" />
-        <text name="followme"           text="(followme)" />
-        <text name="autodrive"          text="(autodrive)"  />
-        <text name="broken"             text="(uszkodzony!)" />
+        <text name="dismissed"          text="(Gotowe!)" />
+        <text name="courseplay"         text="(Courseplay)" />
+        <text name="followme"           text="(FollowMe)" />
+        <text name="autodrive"          text="(AutoDrive)"  />
+        <text name="broken"             text="(Uszkodzony!)" />
 
         <text name="north"              text="Pn" />
         <text name="northeast"          text="Pn-Wsch" />

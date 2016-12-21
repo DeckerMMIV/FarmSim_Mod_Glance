@@ -20,9 +20,9 @@ solo quello che hai bisogno di vedere
     <texts>
         <text name="hired"              text="(operaio)"      />
         <text name="dismissed"          text="(Finito!)"  />
-        <text name="courseplay"         text="(courseplay)" />
-        <text name="followme"           text="(followme)"   />
-        <text name="autodrive"          text="(autodrive)"  />
+        <text name="courseplay"         text="(Courseplay)" />
+        <text name="followme"           text="(FollowMe)"   />
+        <text name="autodrive"          text="(AutoDrive)"  />
         <text name="broken"             text="(Rotto!)"    />
 
         <text name="north"              text="N"    />

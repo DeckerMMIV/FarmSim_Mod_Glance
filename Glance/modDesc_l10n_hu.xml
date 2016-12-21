@@ -20,9 +20,9 @@ mit szeretnél látni.
     <texts>
         <text name="hired"              text="(bérelt munkás)"/>
         <text name="dismissed"          text="(befejezve!)"/>
-        <text name="courseplay"         text="(courseplay)"/>
-        <text name="followme"           text="(followme)"/>
-        <text name="autodrive"          text="(autodrive)"  />
+        <text name="courseplay"         text="(Courseplay)"/>
+        <text name="followme"           text="(FollowMe)"/>
+        <text name="autodrive"          text="(AutoDrive)"  />
         <text name="broken"             text="(meghibásodott!)"/>
 
         <text name="north"              text="É"/>
