@@ -16,12 +16,12 @@ Een notificatie en status tool welke geconfigureerd kan worden zodat je alleen z
     </description>
 
     <texts>
-        <text name="hired"              text="(gehuurd)"    />
-        <text name="dismissed"          text="(klaar!)"     />
-        <text name="courseplay"         text="(courseplay)" />
-        <text name="followme"           text="(followme)"   />
-        <text name="autodrive"          text="(autodrive)"  />
-        <text name="broken"             text="(kapot!)"     />
+        <text name="hired"              text="(Gehuurd)"    />
+        <text name="dismissed"          text="(Klaar!)"     />
+        <text name="courseplay"         text="(Courseplay)" />
+        <text name="followme"           text="(FollowMe)"   />
+        <text name="autodrive"          text="(AutoDrive)"  />
+        <text name="broken"             text="(Kapot!)"     />
 
         <text name="north"              text="N"    />
         <text name="northeast"          text="NO"   />
