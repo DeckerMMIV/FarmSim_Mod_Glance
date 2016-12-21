@@ -18,12 +18,12 @@ mit szeretnél látni.
     </description>
 
     <texts>
-        <text name="hired"              text="(bérelt munkás)"/>
-        <text name="dismissed"          text="(befejezve!)"/>
+        <text name="hired"              text="(Bérelt munkás)"/>
+        <text name="dismissed"          text="(Befejezve!)"/>
         <text name="courseplay"         text="(Courseplay)"/>
         <text name="followme"           text="(FollowMe)"/>
         <text name="autodrive"          text="(AutoDrive)"  />
-        <text name="broken"             text="(meghibásodott!)"/>
+        <text name="broken"             text="(Meghibásodott!)"/>
 
         <text name="north"              text="É"/>
         <text name="northeast"          text="ÉK"/>
