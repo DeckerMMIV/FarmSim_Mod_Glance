@@ -28,11 +28,15 @@
 
     <description>
         <en>
-<![CDATA[A notification-and-status utility that can be configured to show only what you need to see
+<![CDATA[A notification-and-status utility that can be configured to show only what you need to see.
+
+Note: Only visible when the F1-helpbox is off!
 ]]>
         </en>
         <de>
 <![CDATA[Ein Mitteilungs- und Status-Tool das so konfiguriert werden kann dass man  nur das sieht was man braucht.
+
+Hinweis: Nur sichtbar, wenn die F1-Hilfebox deaktiviert ist!
 ]]>
         </de>
         <pl>
@@ -53,6 +57,8 @@
         </it>
         <fr>
 <![CDATA[Un utilitaire de notification et statut qui peut être configuré pour afficher ce que vous voulez.
+
+Remarque: visible uniquement lorsque la F1-helpbox est désactivée!
 ]]>
         </fr>
         <es>

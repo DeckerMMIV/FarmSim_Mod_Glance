@@ -1,10 +1,10 @@
-[b]Glance (v2.5.x)[/b]
+[b]Glance[/b]
 
 [i]Remember to check the support topic for any additional information regarding this mod[/i]
 
 [b][u]Changelog[/u][/b]
-2.5.2
-- Support for 'backporting' to FS2013.
+1.0.1.x
+- Updated to FS17
 
 
 [b][u]Mod description[/u][/b]
@@ -21,8 +21,8 @@ The features of 'Glance' are:
 -- ... how and which columns should be displayed in sequence
 - Will show when a hired-worker has finished
 - Displays the vehicle's location in the world and when within a map designated field-boundary
-- Speed of the vehicle, and if it is being blocked by something (like a tree, fence or car)
-- Animal husbandry; low productivity, full pallet, eggs available and more...
+- Speed of the vehicle, and if it is being blocked (i.e. still not moving after some time)
+- Animal husbandry; low productivity, wool pallet, eggs available and more...
 - Greenhouse placeables; low fill levels.
 
 
@@ -32,9 +32,9 @@ First you must [u]turn off[/u] the Helpbox (default key: F1), to be able to see 
 
 The first time you ever run Glance, it will create a default configuration-file called [b]Glance_Config.XML[/b] in the MODS folder.
 
-Due to the modifiable configuration - which maybe for some seem complex and confusing - there will in the support-topic for this mod, later be given instructions and examples on how/what to modify.
+Due to the modifiable configuration - which maybe for some seem complex and confusing - there will later be given instructions and examples on how/what to modify, in a support-topic for this mod.
 
-The configuration-file will be (re)loaded every time you leave the in-game menu (a.k.a. ESC-menu, ESC-screen.) So it is possible to pause the game, ALT-TAB out of FS15, then edit Glance_Config.XML, ALT-TAB back into FS15 to continue playing and see if the changes for Glance are acceptable.
+The configuration-file can be reloaded, via a work-around by going into the in-game ESC-screen for the 'Help & Support' and change the "help category" just once. So it is possible to pause the game, ALT-TAB out of FS17, edit Glance_Config.XML, ALT-TAB back into FS17, change the in-game "help category" and see if the changes for Glance are acceptable.
 
 [u]Switching it on/off[/u]
 
@@ -58,7 +58,7 @@ And just to clarify once again:
 
 [b][u]Restrictions[/u][/b]
 
-This mod's script files MAY NOT, SHALL NOT and MUST NOT be embedded in any other mod nor any map-mod! - However it is accepted if this mod is packed into a mod-pack archive, when this mod's original ZIP-file and hash-value is kept intact.
+This mod's script files MAY NOT, SHALL NOT and MUST NOT be embedded in any other mod nor any map-mod!
 
 Please do NOT upload this mod to any other hosting site - I can do that myself, when needed!
 
@@ -67,16 +67,11 @@ Keep the original download link!
 
 [b][u]Problems or bugs?[/u][/b]
 
-If you encounter problems or bugs using this mod, please use the support-thread at http://fs-uk.com - Find the mod (and correct version) in the mods section, in category 'Other - Game Scripts'.
-
-Known bugs/problems:
-- Detection of Marhu/TMT's SchweineZucht mod is not 100% accurate, if there are more than one map-mod in the MODS folder which have it embedded.
-- Have not been extensively tested in multiplayer.
-
+If you encounter problems or bugs using this mod, please use the support-thread.
 
 Credits:
-Script: Decker_MMIV
-Hungarian translations by: pokers
-Russian translations by: Gonimy_Vetrom
-German translations by: SchorschiBW & JakobT
-Some Polish translations by: ja_pizgam    
+Script:
+- Decker_MMIV
+Contributors/Translations:
+- Gonimy_Vetrom, JakobT, pokers, gighen, SicFR57, SchorschiBW, ja_pizgam,
+- Vanquish081, Dzi4d3k, shermy, mngrazy, Alfredo Prieto
