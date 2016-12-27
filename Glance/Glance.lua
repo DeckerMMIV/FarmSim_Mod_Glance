@@ -370,7 +370,11 @@ function Glance:getDefaultConfig()
 ,''
 --]]
 ,'        <!-- Show bunker silo fill-level, but only when being inside the silo area -->'
-,'        <notification  enabled="true"  type="bunkerSilo"                level="'..dnl(0)..'"  />'
+,'        <notification  enabled="true"  type="proximity:bunkerSilo"                level="'..dnl(0)..'"  />'
+,'        <!-- Show greenhouse fill-level, but only when being near the greenhouse -->'
+,'        <notification  enabled="true"  type="proximity:greenhouse"                level="'..dnl(0)..'"  />'
+,'        <!-- Show slurry fill-level, but only when being near the fill-trigger -->'
+,'        <notification  enabled="true"  type="proximity:liquidManureFillTrigger"   level="'..dnl(0)..'"  />'
 ,''
 ,'        <!-- Animal husbandry - Animals (amount), Productivity, Wool pallet, Eggs (pickup objects), Cleanliness -->'
 ,'        <!--                                "husbandry[:<animalTypeName>]:(Animals|PickupObjects|Pallet|Productivity|Cleanliness)"  -->'
@@ -387,25 +391,25 @@ function Glance:getDefaultConfig()
 ,'        <notification  enabled="true"  type="husbandry:sheep:Productivity"  level="'..dnl( 0)..'"   whenBelow="90"   whenAbove="0"      color="yellow" /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="true"  type="husbandry:Cleanliness"         level="'..dnl( 0)..'" > <!-- threshold unit is "percentage" -->'
 ,'              <threshold  level="'..dnl( 1)..'"  whenBelow="5"  whenAbove="0"    color="red"     />'
-,'              <threshold  level="'..dnl( 0)..'"  whenBelow="25" whenAbove="0"    color="yellow"  />'
+,'              <threshold  level="'..dnl( 0)..'"  whenBelow="10" whenAbove="0"    color="yellow"  />'
 ,'        </notification>'
-,'        <notification  enabled="true"  type="husbandry:sheep:Animals"  level="'..dnl( 0)..'"   whenBelow=""   whenAbove="200"      color="yellow" /> <!-- threshold unit is "units" -->'
-,'        <notification  enabled="true"  type="husbandry:pig:Animals"    level="'..dnl( 0)..'"   whenBelow=""   whenAbove="200"      color="yellow" /> <!-- threshold unit is "units" -->'
-,'        <notification  enabled="true"  type="husbandry:cow:Animals"    level="'..dnl( 0)..'"   whenBelow=""   whenAbove="200"      color="yellow" /> <!-- threshold unit is "units" -->'
+,'        <notification  enabled="true"  type="husbandry:sheep:Animals"  level="'..dnl( 0)..'"   whenBelow=""   whenAbove="99"      color="yellow" /> <!-- threshold unit is "units" -->'
+,'        <notification  enabled="true"  type="husbandry:pig:Animals"    level="'..dnl( 0)..'"   whenBelow=""   whenAbove="99"      color="yellow" /> <!-- threshold unit is "units" -->'
+,'        <notification  enabled="true"  type="husbandry:cow:Animals"    level="'..dnl( 0)..'"   whenBelow=""   whenAbove="99"      color="yellow" /> <!-- threshold unit is "units" -->'
 ,''
 ,'        <!-- Animal husbandry - Fill-level -->'
 ,'        <!--                                "husbandry[:<animalTypeName>]:<fillTypeName>"  -->'
 ,'        <notification  enabled="true"  type="husbandry:water"               level="'..dnl( 1)..'"   whenBelow="1000"  whenAbove="0"       color="yellow"                 /> <!-- threshold unit is "units" -->'
 ,'        <notification  enabled="true"  type="husbandry:cow:manure"          level="'..dnl(-2)..'"   whenBelow=""      whenAbove="100000"  color="yellow"                 /> <!-- threshold unit is "units" -->'
 ,'        <notification  enabled="true"  type="husbandry:pig:manure"          level="'..dnl(-2)..'"   whenBelow=""      whenAbove="10000"   color="yellow"                 /> <!-- threshold unit is "units" -->'
-,'        <notification  enabled="true"  type="husbandry:liquidManure"        level="'..dnl(-2)..'"   whenBelow=""      whenAbove="80"      color="yellow"                 /> <!-- threshold unit is "percentage" -->'
+,'        <notification  enabled="true"  type="husbandry:liquidManure"        level="'..dnl(-2)..'"   whenBelow=""      whenAbove="90"      color="yellow"                 /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="true"  type="husbandry:milk"                level="'..dnl(-1)..'"   whenBelow=""      whenAbove="20000"   color="yellow"                 /> <!-- threshold unit is "units" -->'
 ,''
 ,'        <!-- Placeable - Fill-level -->'
 ,'        <!--                                "placeable:Greenhouse[:<fillTypeName>]"  -->'
-,'        <notification  enabled="true"  type="placeable:Greenhouse:water"    level="'..dnl(-1)..'"   whenBelow="10"  whenAbove=""  color="yellow" /> <!-- threshold unit is "percentage" -->'
-,'        <notification  enabled="true"  type="placeable:Greenhouse:manure"   level="'..dnl(-1)..'"   whenBelow="10"  whenAbove=""  color="yellow" /> <!-- threshold unit is "percentage" -->'
-,'        <notification  enabled="false" type="placeable:Greenhouse"          level="'..dnl(-1)..'"   whenBelow="10"  whenAbove=""  color="yellow" /> <!-- threshold unit is "percentage" -->'
+,'        <notification  enabled="true"  type="placeable:Greenhouse:water"    level="'..dnl(0)..'"   whenBelow="5"  color="yellow" /> <!-- threshold unit is "percentage" -->'
+,'        <notification  enabled="true"  type="placeable:Greenhouse:manure"   level="'..dnl(0)..'"   whenBelow="5"  color="yellow" /> <!-- threshold unit is "percentage" -->'
+,'        <notification  enabled="false" type="placeable:Greenhouse"          level="'..dnl(0)..'"   whenBelow="5"  color="yellow" /> <!-- threshold unit is "percentage" -->'
 --[[
 ,'        <!-- mod support -->'
 ,'        <notification  enabled="false" type="placeable:MischStation:wheat_windrow"    level="'..dnl(-1)..'"   whenBelow="1"   whenAbove=""  color="yellow"  text="Straw"  /> <!-- threshold unit is "percentage" -->'
@@ -504,8 +508,8 @@ end
 function Glance:createNewConfig(fileName)
     local fHndl = io.open(fileName, "w");
     if fHndl == nil then
-        print("** Glance could not create a new configuration file!")
-        print("** Please check that the file is not locked or read-only; " .. fileName);
+        print("## Glance: Could not create a new configuration file!")
+        print("## Glance: Please check that the file is not locked or read-only; " .. fileName);
     else
         fHndl:write(self:getDefaultConfig())
         fHndl:close()
@@ -517,17 +521,22 @@ function Glance:loadConfig()
     Glance.notifications = {}
     Glance.columnOrder = {}
 
-    local fileName = g_modsDirectory .. "/" .. "Glance_Config.XML";
+    -- Attempt (possibly futile) at somehow making a 'standard folder' for setting-/config-files for mods.
+    local folder = getUserProfileAppPath() .. "modsSettings";
+    
+    --
+    local fileName = folder .. "/" .. "Glance_Config.XML";
     local tag = "glanceConfig"
 
     local xmlFile = nil
     if g_dedicatedServerInfo ~= nil then
-        print("** Glance seems to be running on a dedicated-server. So default built-in configuration values will be used.");
+        print("## Glance: Seems to be running on a dedicated-server. So default built-in configuration values will be used.");
         xmlFile = loadXMLFileFromMemory(tag, self:getDefaultConfig(), true)
     elseif fileExists(fileName) then
         xmlFile = loadXMLFile(tag, fileName)
     else
-        print("** Glance will now try to create a new default configuration file; " .. fileName);
+        print("## Glance: Trying to create a new default configuration file; " .. fileName);
+        createFolder(folder)
         self:createNewConfig(fileName)
         xmlFile = loadXMLFile(tag, fileName)
     end;
@@ -535,20 +544,16 @@ function Glance:loadConfig()
     --
     local version = getXMLInt(xmlFile, "glanceConfig#version")
     if xmlFile == nil or version == nil then
-        print("** Looks like an error may have occurred, when Glance tried to load its configuration file.");
-        print("** This could be due to a corrupted XML structure, or otherwise problematic file-handling.");
-        print("!! Please quit the game and fix the XML or delete the file to let Glance create a new one; " .. fileName);
+        print("## Glance: Looks like an error may have occurred, when Glance tried to load its configuration file.");
+        print("## Glance: This could be due to a corrupted XML structure, or otherwise problematic file-handling.");
+        print("!! Glance: Please quit the game and fix the XML or delete the file to let Glance create a new one; " .. fileName);
         Glance.failedConfigLoad = g_currentMission.time + 10000;
         return;
     end
     if version ~= Glance.cCfgVersion then
-        print("!! The existing Glance_Config.XML file is of a not supported version '"..tostring(version).."', and will NOT be loaded.")
+        print("!! Glance: The existing Glance_Config.XML file is of a not supported version '"..tostring(version).."', and will NOT be loaded.")
         Glance.failedConfigLoad = g_currentMission.time + 10000;
         return;
-    end
-    if Glance.failedConfigLoad ~= nil then
-        Glance.failedConfigLoad = nil;
-        print("** Glance could now again load its configuration file; " .. fileName);
     end
 
     --
@@ -566,7 +571,7 @@ function Glance:loadConfig()
         if table.getn(Glance.colors[colorName]) ~= 4 then
             -- Error in color setting!
             Glance.colors[colorName] = nil
-            print("!! Glance_Config.XML has invalid color setting, for color name: "..tostring(colorName));
+            print("!! Glance: Glance_Config.XML has invalid color setting, for color name: "..tostring(colorName));
         end
     end
     --
@@ -576,7 +581,7 @@ function Glance:loadConfig()
             if Glance.colors[colorName] ~= nil then
                 return colorName
             end
-            print("!! Glance_Config.XML has invalid color-name '"..tostring(colorName).."', in: "..tostring(tag));
+            print("!! Glance: Glance_Config.XML has invalid color-name '"..tostring(colorName).."', in: "..tostring(tag));
         end
         return defaultColorName
     end
@@ -680,6 +685,11 @@ function Glance:loadConfig()
     end
     --
     delete(xmlFile)
+
+    Glance.failedConfigLoad = nil;
+    if g_dedicatedServerInfo == nil then
+        print("## Glance: (Re)Loaded settings from: "..fileName)
+    end
 end
 
 -----
@@ -1243,19 +1253,61 @@ function Glance:makePlaceablesLine(dt, notifyList)
     end
 
     --
-    if Glance.bunkerSiloObj ~= nil then
-        local ntfyBunkerSilo = Glance.notifications['bunkerSilo']
-        if isNotifyEnabled(ntfyBunkerSilo) then
-            local txt = Glance.getBunkerSiloInfo(Glance.bunkerSiloObj)
+    if Glance.proximityObj ~= nil and Glance.proximityObj.type ~= nil then
+        local ntfyProximity = Glance.notifications["proximity:" .. Glance.proximityObj.type]
+        local func,obj = Glance.proximityObj.func, Glance.proximityObj.obj
+        Glance.proximityObj = nil
+        if isNotifyEnabled(ntfyProximity) and func ~= nil and obj ~= nil then
+            local txt = func(obj)
             if txt ~= nil then
                 table.insert(notifyList, { getNotificationColor(nil), txt });
             end
         end
-        Glance.bunkerSiloObj = nil
     end
 end
 
 -----
+
+GreenhousePlaceable.getShowInfo = Utils.overwrittenFunction(
+    GreenhousePlaceable.getShowInfo,
+    function(self, superFunc)
+        local res = superFunc(self)
+        
+        if true == res and g_client ~= nil then
+            Glance.proximityObj = {obj=self, type="greenhouse", func=Glance.getGreenhouseInfo}
+        end
+        
+        return res
+    end
+)
+
+function Glance.getGreenhouseInfo(greenhouseObj)
+    local txt =    g_i18n:getText("info_waterFillLevel").." "..math.floor(greenhouseObj.waterTankFillLevel).." ("..math.floor(100*greenhouseObj.waterTankFillLevel/greenhouseObj.waterTankCapacity).."%)"
+        .. ", " .. g_i18n:getText("info_manureFillLevel").." "..math.floor(greenhouseObj.manureFillLevel).." ("..math.floor(100*greenhouseObj.manureFillLevel/greenhouseObj.manureCapacity).."%)"
+    return txt
+end
+
+---
+
+LiquidManureFillTrigger.getShowInfo = Utils.overwrittenFunction(
+    LiquidManureFillTrigger.getShowInfo,
+    function(self, superFunc)
+        local res = superFunc(self)
+        
+        if true == res and g_client ~= nil then
+            Glance.proximityObj = {obj=self, type="liquidManureFillTrigger", func=Glance.getLiquidManureFillTriggerInfo}
+        end
+        
+        return res
+    end
+)
+    
+function Glance.getLiquidManureFillTriggerInfo(fillTrigger)
+    local txt = FillUtil.fillTypeIndexToDesc[fillTrigger.fillType].nameI18N .. " " ..g_i18n:getText("info_fillLevel").." "..math.floor(fillTrigger.fillLevel).." ("..math.floor(100*fillTrigger.fillLevel/fillTrigger.capacity).."%)"
+    return txt
+end
+
+---
 
 BunkerSilo.getCanInteract = Utils.overwrittenFunction(
     BunkerSilo.getCanInteract,
@@ -1263,7 +1315,8 @@ BunkerSilo.getCanInteract = Utils.overwrittenFunction(
         local res = superFunc(self, showInformationOnly)
 
         if showInformationOnly and true == res and g_client ~= nil then
-            Glance.bunkerSiloObj = self
+            --Glance.bunkerSiloObj = self
+            Glance.proximityObj = {obj=self, type="bunkerSilo", func=Glance.getBunkerSiloInfo}
         end
 
         return res
