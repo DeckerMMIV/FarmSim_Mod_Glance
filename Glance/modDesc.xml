@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="34">
-    <author>Decker_MMIV</author>
+    <author>Decker_MMIV (DCK)</author>
     <author_contact>fs-uk.com, modcentral.co.uk, forum.farming-simulator.com</author_contact>
 
 <!--
@@ -9,10 +9,10 @@
 -->
     <contributors>
         SchorschiBW, ja_pizgam, Gonimy_Vetrom, JakobT, pokers, gighen, SicFR57, Alfredo Prieto,
-        Vanquish081, Dzi4d3k, shermy
+        Vanquish081, Dzi4d3k, shermy, mngrazy
     </contributors>
 
-    <version>1.0.0.26</version>
+    <version>1.0.0.27</version>
 
     <title>
         <en>Glance</en>
