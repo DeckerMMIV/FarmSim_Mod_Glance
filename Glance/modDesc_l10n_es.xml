@@ -40,6 +40,7 @@ Muestra notificaciones sobre el estado de las tareas y puede configurarse para m
         <text name="fieldNumAndBales"   text=" F%d(x%d)"            />
         <text name="balesElsewhere"     text="Pacas Sueltas(x%d)" />
 
+        <text name="dirtamount"         text="Dirty (%s%%)"         /> <!-- needs translation -->
         <text name="fuellow"            text="Combustible Bajo (%s%%)"  />
         <text name="engineon"           text="Motor en marcha!"    />
         <text name="collision"          text="Bloqueado"          />

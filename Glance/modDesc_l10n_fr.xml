@@ -40,6 +40,7 @@ Un utilitaire de notification et statut qui peut être configuré pour afficher 
         <text name="fieldNumAndBales"   text=" F%d(x%d)"            />
         <text name="balesElsewhere"     text="Bottes ailleurs(x%d)" />
  
+        <text name="dirtamount"         text="Dirty (%s%%)"         /> <!-- needs translation -->
         <text name="fuellow"            text="Jauge basse (%s%%)"  />
         <text name="engineon"           text="Moteur allumé!"    />
         <text name="collision"          text="Bloqué"          />

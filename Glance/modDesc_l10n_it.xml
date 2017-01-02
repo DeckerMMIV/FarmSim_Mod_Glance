@@ -41,6 +41,7 @@ solo quello che hai bisogno di vedere
         <text name="fieldNumAndBales"   text=" F%d(x%d)"            />
         <text name="balesElsewhere"     text="Balle altrove(x%d)" />
 
+        <text name="dirtamount"         text="Dirty (%s%%)"         /> <!-- needs translation -->
         <text name="fuellow"            text="Riserva Carb (%s%%)"  />
         <text name="engineon"           text="Motore acceso!"    />
         <text name="collision"          text="Bloccato"          />

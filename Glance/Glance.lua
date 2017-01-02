@@ -181,13 +181,15 @@ end;
 function Glance:keyEvent(unicode, sym, modifier, isDown)
 end;
 
+local logError = true
 local function safeGetValue(...)
     local obj = _G
     for idx = 1,select("#", ...) do
         local elem = select(idx, ...)
         obj = obj[elem]
-        if obj == nil then
+        if obj == nil and logError then
             log("Failed at: ",elem)
+            logError = false
             return nil
         end
     end
@@ -332,18 +334,19 @@ function Glance:getDefaultConfig()
 ,'        <notification  enabled="true"  type="controlledByAutoDrive"     level="'..dnl( 0)..'"   color="blue" />'
 ,''
 ,'        <notification  enabled="true"  type="hiredWorkerFinished"       level="'..dnl( 3)..'"   color="orange" />'
-,''
+,'        <notification  enabled="true"  type="engineOnButNotControlled"  level="'..dnl( 0)..'"   color="yellow"/>'
 ,'        <notification  enabled="true"  type="vehicleBroken"             level="'..dnl( 0)..'"   color="red" />'
+,''
 ,'        <notification  enabled="true"  type="vehicleCollision"          level="'..dnl( 3)..'"   whenBelow=""      whenAbove="10000"  color="red" /> <!-- threshold unit is "milliseconds" -->'
 ,'        <notification  enabled="true"  type="vehicleIdleMovement"       level="'..dnl(-2)..'"   whenBelow="0.5"   whenAbove=""                   /> <!-- threshold unit is "km/h" -->'
 ,'        <notification  enabled="true"  type="vehicleFuelLow"            level="'..dnl( 0)..'"   whenBelow="5"     whenAbove=""       color="red" /> <!-- threshold unit is "percentage" -->'
-,'        <notification  enabled="true"  type="engineOnButNotControlled"  level="'..dnl( 0)..'"   color="yellow"/>'
+,''
+,'        <notification  enabled="false" type="vehicleDirtAmount"         level="'..dnl(-2)..'"   whenBelow=""      whenAbove="90"     color="yellow" /> <!-- threshold unit is "percentage" -->'
 ,''
 ,'        <!-- Vehicle fill-level -->'
 ,'        <notification  enabled="true"  type="grainTankFull"             level="'..dnl( 2)..'"     > <!-- threshold unit is "percentage" -->'
 ,'              <threshold level="'..dnl( 2)..'" whenBelow="" whenAbove="99" color="red"    blinkIcon="true" />'
 ,'              <threshold level="'..dnl( 0)..'" whenBelow="" whenAbove="80" color="yellow" blinkIcon="true" />'
-,'              <!--threshold level="'..dnl(-1)..'" whenBelow="" whenAbove="50"                                 /-->'
 ,'        </notification>'
 ,'        <notification  enabled="true"  type="forageWagonFull"           level="'..dnl( 0)..'"   whenBelow=""  whenAbove="99"  color="yellow" /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="true"  type="baleLoaderFull"            level="'..dnl( 1)..'"   whenBelow=""  whenAbove="99"  color="yellow" /> <!-- threshold unit is "percentage" -->'
@@ -355,11 +358,9 @@ function Glance:getDefaultConfig()
 ,'              <threshold level="'..dnl( 0)..'" whenBelow="5" whenAbove="0"  color="red" />'
 ,'        </notification>'
 ,'        <notification  enabled="true"  type="sprayerLow"                level="'..dnl( 0)..'"   color="gray" > <!-- threshold unit is "percentage" -->'
-,'              <!-- threshold level="'..dnl(-1)..'" whenBelow="5" whenAbove="0"   color="yellow" /-->'
 ,'              <threshold level="'..dnl( 0)..'" whenBelow="2" whenAbove="-1"  color="red" />'
 ,'        </notification>'
 ,'        <notification  enabled="true"  type="seederLow"                 level="'..dnl( 0)..'"   color="gray" > <!-- threshold unit is "percentage" -->'
-,'              <!--threshold level="'..dnl(-1)..'" whenBelow="5" whenAbove="0"   color="yellow" /-->'
 ,'              <threshold level="'..dnl( 0)..'" whenBelow="2" whenAbove="-1"  color="red"   />'
 ,'        </notification>'
 ,''
@@ -371,8 +372,10 @@ function Glance:getDefaultConfig()
 --]]
 ,'        <!-- Show bunker silo fill-level, but only when being inside the silo area -->'
 ,'        <notification  enabled="true"  type="proximity:bunkerSilo"                level="'..dnl(0)..'"  />'
+,''
 ,'        <!-- Show greenhouse fill-level, but only when being near the greenhouse -->'
 ,'        <notification  enabled="true"  type="proximity:greenhouse"                level="'..dnl(0)..'"  />'
+,''
 ,'        <!-- Show slurry fill-level, but only when being near the fill-trigger -->'
 ,'        <notification  enabled="true"  type="proximity:liquidManureFillTrigger"   level="'..dnl(0)..'"  />'
 ,''
@@ -380,30 +383,44 @@ function Glance:getDefaultConfig()
 ,'        <!--                                "husbandry[:<animalTypeName>]:(Animals|PickupObjects|Pallet|Productivity|Cleanliness)"  -->'
 ,'        <notification  enabled="true"  type="husbandry:PickupObjects"       level="'..dnl(-2)..'"   whenBelow=""     whenAbove="99.99"  color="yellow" /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="true"  type="husbandry:Pallet"              level="'..dnl( 0)..'"  > <!-- threshold unit is "percentage" -->'
-,'              <threshold  level="'..dnl( 1)..'"  whenBelow=""     whenAbove="99.99" color="red"       />'
-,'              <threshold  level="'..dnl( 0)..'"  whenBelow=""     whenAbove="95"    color="yellow"    />'
+,'              <threshold  level="'..dnl( 1)..'"  whenBelow=""    whenAbove="99.99"  color="red"       />'
+,'              <threshold  level="'..dnl( 0)..'"  whenBelow=""    whenAbove="95"     color="yellow"    />'
 ,'        </notification>'
+,''
 ,'        <notification  enabled="true"  type="husbandry:Productivity"        level="'..dnl( 0)..'"     > <!-- threshold unit is "percentage" -->'
-,'              <threshold  level="'..dnl( 2)..'"  whenBelow="75" whenAbove="0"    color="red"     />'
-,'              <threshold  level="'..dnl( 1)..'"  whenBelow="85" whenAbove="0"    color="orange"  />'
-,'              <threshold  level="'..dnl( 0)..'"  whenBelow="95" whenAbove="0"    color="yellow"  />'
+,'              <threshold  level="'..dnl( 2)..'"  whenBelow="75"  whenAbove=""  color="red"     />'
+,'              <threshold  level="'..dnl( 1)..'"  whenBelow="85"  whenAbove=""  color="orange"  />'
+,'              <threshold  level="'..dnl( 0)..'"  whenBelow="95"  whenAbove=""  color="yellow"  />'
 ,'        </notification>'
-,'        <notification  enabled="true"  type="husbandry:sheep:Productivity"  level="'..dnl( 0)..'"   whenBelow="90"   whenAbove="0"      color="yellow" /> <!-- threshold unit is "percentage" -->'
+,'        <notification  enabled="true"  type="husbandry:sheep:Productivity"  level="'..dnl( 0)..'"   whenBelow="90"   whenAbove=""  color="yellow" /> <!-- threshold unit is "percentage" -->'
+,''
 ,'        <notification  enabled="true"  type="husbandry:Cleanliness"         level="'..dnl( 0)..'" > <!-- threshold unit is "percentage" -->'
-,'              <threshold  level="'..dnl( 1)..'"  whenBelow="5"  whenAbove="0"    color="red"     />'
-,'              <threshold  level="'..dnl( 0)..'"  whenBelow="10" whenAbove="0"    color="yellow"  />'
+,'              <threshold  level="'..dnl( 1)..'"  whenBelow="5"   whenAbove="-1"   color="red"     />'
+,'              <threshold  level="'..dnl( 0)..'"  whenBelow="10"  whenAbove="-1"   color="yellow"  />'
 ,'        </notification>'
-,'        <notification  enabled="true"  type="husbandry:sheep:Animals"  level="'..dnl( 0)..'"   whenBelow=""   whenAbove="99"      color="yellow" /> <!-- threshold unit is "units" -->'
-,'        <notification  enabled="true"  type="husbandry:pig:Animals"    level="'..dnl( 0)..'"   whenBelow=""   whenAbove="99"      color="yellow" /> <!-- threshold unit is "units" -->'
-,'        <notification  enabled="true"  type="husbandry:cow:Animals"    level="'..dnl( 0)..'"   whenBelow=""   whenAbove="99"      color="yellow" /> <!-- threshold unit is "units" -->'
+,''
+,'        <notification  enabled="true"  type="husbandry:sheep:Animals"  level="'..dnl( 0)..'"   whenBelow=""   whenAbove="99"  color="yellow" /> <!-- threshold unit is "units" -->'
+,'        <notification  enabled="true"  type="husbandry:pig:Animals"    level="'..dnl( 0)..'"   whenBelow=""   whenAbove="99"  color="yellow" /> <!-- threshold unit is "units" -->'
+,'        <notification  enabled="true"  type="husbandry:cow:Animals"    level="'..dnl( 0)..'"   whenBelow=""   whenAbove="99"  color="yellow" /> <!-- threshold unit is "units" -->'
 ,''
 ,'        <!-- Animal husbandry - Fill-level -->'
 ,'        <!--                                "husbandry[:<animalTypeName>]:<fillTypeName>"  -->'
-,'        <notification  enabled="true"  type="husbandry:water"               level="'..dnl( 1)..'"   whenBelow="1000"  whenAbove="0"       color="yellow"                 /> <!-- threshold unit is "units" -->'
-,'        <notification  enabled="true"  type="husbandry:cow:manure"          level="'..dnl(-2)..'"   whenBelow=""      whenAbove="100000"  color="yellow"                 /> <!-- threshold unit is "units" -->'
-,'        <notification  enabled="true"  type="husbandry:pig:manure"          level="'..dnl(-2)..'"   whenBelow=""      whenAbove="10000"   color="yellow"                 /> <!-- threshold unit is "units" -->'
-,'        <notification  enabled="true"  type="husbandry:liquidManure"        level="'..dnl(-2)..'"   whenBelow=""      whenAbove="90"      color="yellow"                 /> <!-- threshold unit is "percentage" -->'
-,'        <notification  enabled="true"  type="husbandry:milk"                level="'..dnl(-1)..'"   whenBelow=""      whenAbove="20000"   color="yellow"                 /> <!-- threshold unit is "units" -->'
+,'        <notification  enabled="true"  type="husbandry:cow:manure"     level="'..dnl(-2)..'"   whenBelow=""     whenAbove="100000"  color="yellow" /> <!-- threshold unit is "units" -->'
+,'        <notification  enabled="true"  type="husbandry:pig:manure"     level="'..dnl(-2)..'"   whenBelow=""     whenAbove="100000"  color="yellow" /> <!-- threshold unit is "units" -->'
+,'        <notification  enabled="true"  type="husbandry:milk"           level="'..dnl(-1)..'"   whenBelow=""     whenAbove="10000"   color="yellow" /> <!-- threshold unit is "units" -->'
+,'        <notification  enabled="true"  type="husbandry:liquidManure"   level="'..dnl(-2)..'"   whenBelow=""     whenAbove="90"      color="yellow" /> <!-- threshold unit is "percentage" -->'
+,'        <notification  enabled="true"  type="husbandry:water"          level="'..dnl( 1)..'"   whenBelow="25"   whenAbove=""        color="yellow" /> <!-- threshold unit is "percentage" -->'
+,''
+,'        <!-- Animal husbandry - Food group fill-level -->'
+,'        <!--                                "husbandry[:<animalTypeName>]:foodGroup[:<foodGroupName>]"  -->'
+,'        <notification  enabled="true"  type="husbandry:sheep:foodGroup:grass"   level="'..dnl( 1)..'"   whenBelow="25"  whenAbove=""  color="yellow" /> <!-- threshold unit is "percentage" -->'
+,'        <notification  enabled="true"  type="husbandry:cow:foodGroup:grass"     level="'..dnl( 1)..'"   whenBelow="25"  whenAbove=""  color="yellow" /> <!-- threshold unit is "percentage" -->'
+,'        <notification  enabled="true"  type="husbandry:cow:foodGroup:bulk"      level="'..dnl( 1)..'"   whenBelow="25"  whenAbove=""  color="yellow" /> <!-- threshold unit is "percentage" -->'
+,'        <notification  enabled="true"  type="husbandry:cow:foodGroup:power"     level="'..dnl( 1)..'"   whenBelow="25"  whenAbove=""  color="yellow" /> <!-- threshold unit is "percentage" -->'
+,'        <notification  enabled="true"  type="husbandry:pig:foodGroup:base"      level="'..dnl( 1)..'"   whenBelow="25"  whenAbove=""  color="yellow" /> <!-- threshold unit is "percentage" -->'
+,'        <notification  enabled="true"  type="husbandry:pig:foodGroup:grain"     level="'..dnl( 1)..'"   whenBelow="25"  whenAbove=""  color="yellow" /> <!-- threshold unit is "percentage" -->'
+,'        <notification  enabled="true"  type="husbandry:pig:foodGroup:protein"   level="'..dnl( 1)..'"   whenBelow="25"  whenAbove=""  color="yellow" /> <!-- threshold unit is "percentage" -->'
+,'        <notification  enabled="true"  type="husbandry:pig:foodGroup:earth"     level="'..dnl( 1)..'"   whenBelow="25"  whenAbove=""  color="yellow" /> <!-- threshold unit is "percentage" -->'
 ,''
 ,'        <!-- Placeable - Fill-level -->'
 ,'        <!--                                "placeable:Greenhouse[:<fillTypeName>]"  -->'
@@ -484,7 +501,7 @@ function Glance:getDefaultConfig()
 ,'        <column  enabled="true"  contains="VehicleAtWorldCorner"                                 align="center"  minWidthText="MN"                />'
 ,'        <column  enabled="true"  contains="VehicleAtFieldNumber"                                 align="left"    minWidthText=""                  />'
 ,'        <column  enabled="true"  contains="ColumnDelim"                  color="gray"            align="center"  minWidthText=""                  text="'..Glance.cColumnDelimChar..'" />'
-,'        <column  enabled="true"  contains="VehicleName;FuelLow"                                  align="left"    minWidthText=""  maxTextLen="20" />'
+,'        <column  enabled="true"  contains="VehicleName;FuelLow;DirtAmount"                       align="left"    minWidthText=""  maxTextLen="20" />'
 ,'        <column  enabled="false" contains="FuelLevel;FuelLevelPct"                               align="left"    minWidthText=""                  />'
 ,'        <column  enabled="true"  contains="ColumnDelim"                  color="gray"            align="center"  minWidthText=""                  text="'..Glance.cColumnDelimChar..'" />'
 ,'        <column  enabled="true"  contains="FillLevel"                                            align="right"   minWidthText=""                  />'
@@ -964,7 +981,7 @@ function Glance:makePlaceablesLine(dt, notifyList)
         end
     end
 
-    --for plcXmlFilename,plcTable in pairs(g_currentMission.placeables) do
+    --
     for _,oi in pairs(g_currentMission.ownedItems) do
       if  nil ~= oi.storeItem
       and "placeables" == oi.storeItem.category
@@ -1216,15 +1233,6 @@ function Glance:makePlaceablesLine(dt, notifyList)
         if nil ~= fillDesc and nil ~= fillDesc.nameI18N then
             return fillDesc.nameI18N
         end
-        --if fillType == Glance.FILLTYPE_BOARDWOOD then
-        --    return "BoardWood" -- TODO g_i18n:getText()
-        --end
-        --if fillType == Glance.FILLTYPE_LOGS then
-        --    return "Logs" -- TODO g_i18n:getText()
-        --end
-        --if fillType == Glance.FILLTYPE_LETTUCE then
-        --    return "Lettuce" -- TODO g_i18n:getText()
-        --end
         return ("(unknown:%s)"):format(tostring(fillType))
     end
     
@@ -1315,7 +1323,6 @@ BunkerSilo.getCanInteract = Utils.overwrittenFunction(
         local res = superFunc(self, showInformationOnly)
 
         if showInformationOnly and true == res and g_client ~= nil then
-            --Glance.bunkerSiloObj = self
             Glance.proximityObj = {obj=self, type="bunkerSilo", func=Glance.getBunkerSiloInfo}
         end
 
@@ -1370,7 +1377,6 @@ end
 
 function Glance:makeHusbandriesLine(dt, notifyList)
     if g_currentMission.husbandries ~= nil then
-    
         --
         local function getNotification(animalType,subElement)
             for _,key in pairs({"husbandry:"..animalType..":"..subElement, "husbandry:"..subElement}) do
@@ -1466,26 +1472,41 @@ function Glance:makeHusbandriesLine(dt, notifyList)
                     end
                 end
             end
-            
+
+            -- Fill-levels for food groups
+            local ntfyFoodGroups = {}
+            if  mainHusbandry.animalDesc ~= nil
+            and mainHusbandry.animalDesc.index ~= nil
+            and FillUtil.foodGroups[mainHusbandry.animalDesc.index] ~= nil
+            then
+                for _,foodGroup in pairs(FillUtil.foodGroups[mainHusbandry.animalDesc.index]) do
+                    local ntfy = getNotification(animalType, ("foodGroup:%s"):format(foodGroup.groupName))
+                    if ntfy ~= nil then
+                        ntfyFoodGroups[foodGroup] = ntfy
+                    end
+                end
+            end
+
             --
             for _,husbandry in pairs(husbandries) do
+              -- Only check husbandries which actually contains animals
+              local livestockAmount = husbandry.totalNumAnimals
+              if hasNumberValue(livestockAmount,0) then
+              
                 -- Livestock
                 if ntfyLivestock ~= nil then
-                    local amount = husbandry.totalNumAnimals
-                    if amount ~= nil then
-                        local fillName = getFillName(ntfyLivestock, "ui_statisticViewAnimals", nil)
-                        local res = isBreakingThresholds(ntfyLivestock, amount, getInfoValue(fillName))
-                        if res then
-                            updateColor(res.threshold)
-                            updateInfoValue(fillName, 1, res.value, "")
-                        end
+                    local fillName = getFillName(ntfyLivestock, "ui_statisticViewAnimals", nil)
+                    local res = isBreakingThresholds(ntfyLivestock, livestockAmount, getInfoValue(fillName))
+                    if res then
+                        updateColor(res.threshold)
+                        updateInfoValue(fillName, 1, res.value, "")
                     end
                 end
 
                 -- Productivity
                 if ntfyProductivity ~= nil then
                     local productivity = husbandry.productivity
-                    if productivity ~= nil then
+                    if hasNumberValue(productivity) then
                         local pct = math.floor(productivity * 100);
                         local fillName = getFillName(ntfyProductivity, "statistic_productivity", nil)
                         local res = isBreakingThresholds(ntfyProductivity, pct, getInfoValue(fillName))
@@ -1495,22 +1516,6 @@ function Glance:makeHusbandriesLine(dt, notifyList)
                         end
                     end
                 end
-                
-                --[[
-                husbandry.cleanlinessFactor  (0.0 - 1.0)
-                
-                husbandry.totalNumAnimals
-                
-                husbandry.tipTriggersFillLevels[fillType][<triggers>].fillLevel
-                
-                husbandry.liquidManureTrigger.capacity / .fillLevel
-                
-                husbandry.manureFillLevel
-                
-                husbandry.fillLevelMilk
-                husbandry.automaticallySellMilk
-                --]]
-                
                 
                 -- Pallet (Wool)
                 if ntfyPallet ~= nil then
@@ -1529,15 +1534,18 @@ function Glance:makeHusbandriesLine(dt, notifyList)
                 
                 -- PickupObjects (Eggs)
                 if ntfyPickupObjects ~= nil then
-                    if husbandry.pickupObjectsToActivate ~= nil and husbandry.numActivePickupObjects ~= nil 
+                    if  husbandry.pickupObjectsToActivate ~= nil
+                    and husbandry.numActivePickupObjects ~= nil 
                     then
                         local capacity = table.getn(husbandry.pickupObjectsToActivate) + husbandry.numActivePickupObjects;
-                        local pct = math.floor((husbandry.numActivePickupObjects * 100) / capacity);
-                        local fillName = getFillName(ntfyPickupObjects, nil, husbandry.pickupObjectsFillType)
-                        local res = isBreakingThresholds(ntfyPickupObjects, pct, getInfoValue(fillName))
-                        if res then
-                            updateColor(res.threshold)
-                            updateInfoValue(fillName, 1, res.value, "%")
+                        if capacity > 0 then
+                            local pct = math.floor((husbandry.numActivePickupObjects * 100) / capacity);
+                            local fillName = getFillName(ntfyPickupObjects, nil, husbandry.pickupObjectsFillType)
+                            local res = isBreakingThresholds(ntfyPickupObjects, pct, getInfoValue(fillName))
+                            if res then
+                                updateColor(res.threshold)
+                                updateInfoValue(fillName, 1, res.value, "%")
+                            end
                         end
                     end;
                 end
@@ -1545,7 +1553,7 @@ function Glance:makeHusbandriesLine(dt, notifyList)
                 -- Cleanliness
                 if ntfyCleanliness ~= nil then
                     local factor = husbandry.cleanlinessFactor
-                    if factor ~= nil then
+                    if hasNumberValue(factor) then
                         local pct = math.floor(factor * 100);
                         local fillName = getFillName(ntfyCleanliness, "statistic_cleanliness", nil)
                         local res = isBreakingThresholds(ntfyCleanliness, pct, getInfoValue(fillName))
@@ -1592,31 +1600,38 @@ function Glance:makeHusbandriesLine(dt, notifyList)
                                 updateInfoValue(fillName, 1, res.value, "%");
                             end
                         end
-                    --[[
-                    elseif husbandry.tipTriggersFillLevels ~= nil 
-                       and husbandry.tipTriggersFillLevels[fillType] ~= nil
-                    then
-                        local lvl = 0
-                        for _,fillObj in pairs(husbandry.tipTriggersFillLevels[fillType]) do
-                            lvl = lvl + Utils.getNoNil(fillObj.fillLevel, 0)
-                        end
-                        local fillName = getFillName(ntfy, nil, fillType)
-                        local res = isBreakingThresholds(ntfy, lvl, getInfoValue(fillName))
-                        if res then
-                            updateColor(res.threshold)
-                            updateInfoValue(fillName, 1, res.value, "");
-                        end
-                    --]]
-                    elseif fillType <= FillUtil.NUM_FILLTYPES and husbandry.getFillLevel ~= nil then
-                        local lvl = math.floor(husbandry:getFillLevel(fillType))
-                        local fillName = getFillName(ntfy, nil, fillType)
-                        local res = isBreakingThresholds(ntfy, lvl, getInfoValue(fillName))
-                        if res then
-                            updateColor(res.threshold)
-                            updateInfoValue(fillName, 1, res.value, "");
+                    elseif fillType <= FillUtil.NUM_FILLTYPES and husbandry.getFillLevel ~= nil and husbandry.getCapacity ~= nil then
+                        local capacity = husbandry:getCapacity(fillType, nil)
+                        if hasNumberValue(capacity,0) then
+                            local pct = math.floor(100 * husbandry:getFillLevel(fillType) / capacity)
+                            local fillName = getFillName(ntfy, nil, fillType)
+                            local res = isBreakingThresholds(ntfy, pct, getInfoValue(fillName))
+                            if res then
+                                updateColor(res.threshold)
+                                updateInfoValue(fillName, 1, res.value, "%");
+                            end
                         end
                     end
                 end
+                
+                -- Food groups
+                if  husbandry.getAvailableAmountOfFillTypes ~= nil
+                and husbandry.getCapacity ~= nil
+                then
+                    for foodGroup,ntfy in pairs(ntfyFoodGroups) do
+                        local capacity = husbandry:getCapacity(nil, foodGroup)
+                        if hasNumberValue(capacity, 0) then
+                            local pct = math.floor(100 * husbandry:getAvailableAmountOfFillTypes(foodGroup.fillTypes) / capacity)
+                            local fillName = getFillName(ntfy, foodGroup.nameI18N, nil)
+                            local res = isBreakingThresholds(ntfy, pct, getInfoValue(fillName))
+                            if res then
+                                updateColor(res.threshold)
+                                updateInfoValue(fillName, 1, res.value, "%");
+                            end
+                        end
+                    end
+                end
+              end
             end
 
             --
@@ -1862,6 +1877,9 @@ function Glance:getCellData_FuelLevelPct(dt, lineColor, colParms, cells, veh)
         return { { getNotificationColor(lineColor), ("Fuel:%.0f%%"):format((100 * veh.fuelFillLevel) / veh.fuelCapacity) } }
     end
 end
+function Glance:getCellData_DirtAmount(dt, lineColor, colParms, cells, veh)
+    return cells["DirtAmount"]
+end
 function Glance:getCellData_Collision(dt, lineColor, colParms, cells, veh)
     return cells["Collision"]
 end
@@ -1908,11 +1926,25 @@ end
 --end
 
 function Glance:notify_vehicleFuelLow(dt, notifyParms, veh)
-    if veh.fuelCapacity ~= nil and veh.fuelCapacity > 0 then
-        local fuelPct = math.floor(veh.fuelFillLevel / veh.fuelCapacity * 100);
+    if  hasNumberValue(veh.fuelCapacity, 0)
+    and hasNumberValue(veh.fuelFillLevel)
+    then
+        local fuelPct = math.floor(100 * veh.fuelFillLevel / veh.fuelCapacity);
         local res = isBreakingThresholds(notifyParms, fuelPct)
         if res then
             return { "FuelLow", string.format(g_i18n:getText("fuellow"), tostring(res.value)) }
+        end
+    end;
+end
+
+function Glance:notify_vehicleDirtAmount(dt, notifyParms, veh)
+    if veh.getDirtAmount ~= nil then
+        local dirtAmount = veh:getDirtAmount()
+        if hasNumberValue(dirtAmount) then
+            local res = isBreakingThresholds(notifyParms, math.floor(dirtAmount * 100))
+            if res then
+                return { "DirtAmount", string.format(g_i18n:getText("dirtamount"), tostring(res.value)) }
+            end
         end
     end;
 end
@@ -2251,14 +2283,14 @@ function Glance:static_fillTypeLevelPct(dt, staticParms, veh, implements, cells,
                     if res then
                         fillClr = Utils.getNoNil(res.threshold.color, fillClr)
                         notifyLevel = math.max(notifyLevel, res.threshold.level)
-                        ---- For combines, when hired and grain-tank full, blink the icon.
-                        --if veh.mapAIHotspot ~= nil then
-                        --    veh.mapAIHotspot:setBlinking(true == res.threshold.blinkIcon)
-                        --end
-                    --else
-                    --    if veh.mapAIHotspot ~= nil then
-                    --        veh.mapAIHotspot:setBlinking(false)
-                    --    end
+                        -- For combines, when hired and grain-tank full, blink the icon.
+                        if veh.mapAIHotspot ~= nil then
+                            veh.mapAIHotspot:setBlinking(true == res.threshold.blinkIcon)
+                        end
+                    else
+                        if veh.mapAIHotspot ~= nil then
+                            veh.mapAIHotspot:setBlinking(false)
+                        end
                     end
                 elseif SpecializationUtil.hasSpecialization(BaleLoader, obj.specializations) then
                     local res = isBreakingThresholds(Glance.notifications["baleLoaderFull"], fillPct)
@@ -2318,7 +2350,6 @@ end
 Glance.staticCells = {}
 Glance.staticCells["activeTask"]         = { enabled=true }
 Glance.staticCells["fillTypeLevelPct"]   = { enabled=true }
-Glance.staticCells["balerNetWraps"]      = { enabled=true }
 
 function Glance:getNotificationsForSteerable(dt, cells, veh)
     -- Get attached-implements, and their attached-implements etc., up to 5 max.

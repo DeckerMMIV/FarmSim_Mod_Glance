@@ -41,6 +41,7 @@ tak, aby pokazywać to, co chcesz zobaczyć.
         <text name="fieldNumAndBales"   text="Pole %d(x%d)" />
         <text name="balesElsewhere"     text="Bele gdzie indziej(x%d)" />
         
+        <text name="dirtamount"         text="Dirty (%s%%)"         /> <!-- needs translation -->
         <text name="fuellow"            text="Koniec paliwa (%s%%)" />
         <text name="engineon"           text="Silnik włączony!" />
         <text name="collision"          text="Zablokowany" />
