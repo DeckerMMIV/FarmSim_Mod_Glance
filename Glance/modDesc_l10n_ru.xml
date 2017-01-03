@@ -40,6 +40,8 @@
         <text name="fieldNumAndBales"   text=" П%d(x%d)"            />
         <text name="balesElsewhere"     text="Тюков не на полях (x%d)" />
         
+        <text name="locomotive"         text="Поезд"                />
+        <text name="dirtamount"         text="Dirt (%s%%)"          /> <!-- needs translation -->
         <text name="fuellow"            text="Мало топлива (%s%%)"  />
         <text name="engineon"           text="Двигатель запущен!"   />
         <text name="collision"          text="Застрял"              />

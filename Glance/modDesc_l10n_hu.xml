@@ -41,6 +41,8 @@ mit szeretnél látni.
         <text name="fieldNumAndBales"   text=" F%d(x%d)"            />  <!-- needs translation -->
         <text name="balesElsewhere"     text="Bales elsewhere(x%d)" />  <!-- needs translation -->
         
+        <text name="locomotive"         text="Vonat"             />
+        <text name="dirtamount"         text="Dirt (%s%%)"         /> <!-- needs translation -->
         <text name="fuellow"            text="Alacsony üzemanyagszint (%s%%)"/>
         <text name="engineon"           text="Járó motor!"/>
         <text name="collision"          text="Útakadály"/>

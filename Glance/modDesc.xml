@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="34">
-    <author>Decker_MMIV</author>
+    <author>Decker_MMIV (DCK)</author>
     <author_contact>fs-uk.com, modcentral.co.uk, forum.farming-simulator.com</author_contact>
 
 <!--
@@ -12,7 +12,7 @@
         Vanquish081, Dzi4d3k, shermy, mngrazy
     </contributors>
 
-    <version>0.0.0.5</version>
+    <version>0.0.0.6</version>
 
     <title>
         <en>Glance</en>
@@ -23,41 +23,73 @@
         <it>Glance</it>
         <fr>Glance</fr>
         <es>Glance</es>
+        <nl>Glance</nl>
     </title>
 
     <description>
         <en>
-<![CDATA[A notification-and-status utility that can be configured to show only what you need to see
+<![CDATA[A notification-and-status utility that can be configured to show only what you need to see.
+
+Note: Visible when the F1-helpbox is off!
+Note: Requires game patch 1.3.1.0 or higher!
 ]]>
         </en>
         <de>
 <![CDATA[Ein Mitteilungs- und Status-Tool das so konfiguriert werden kann dass man  nur das sieht was man braucht.
+
+Hinweis: Sichtbar, wenn die F1-Hilfebox deaktiviert ist!
+Hinweis: Benötigt Gamepatch 1.3.1.0 oder höher!
 ]]>
         </de>
         <pl>
 <![CDATA[Użyteczne narzędzie powiadamiania i statusu, które może być skonfigurowane tak, aby pokazywać to, co chcesz zobaczyć.
+
+Uwaga: Widoczne kiedy F1-helpbox jest wyłączony!
+Uwaga: Wymaga gry Patch 1.3.1.0 lub wyższej!
 ]]>
         </pl>
         <ru>
 <![CDATA[Утилита для отображения уведомлений/статуса техники и животных. Может работать в соответствии с настройками, чтобы показывать только то, что Вы хотите видеть.
+
+Примечание: Видимая, когда F1-HelpBox выключен!
+Примечание: Требуется игра патч 1.3.1.0 или выше!
 ]]>
         </ru>
         <hu>
 <![CDATA[Egy állapot- és tevékenység kijelző mód, amiben te magad választhatod meg mit szeretnél látni.
+
+Megjegyzés: Látható, ha az F1-helpbox ki van kapcsolva!
+Megjegyzés: Szükség játék folt 1.3.1.0 vagy magasabb!
 ]]>
         </hu>
         <it>
 <![CDATA[Un servizio di notifica e stato che può essere configurato per mostrare solo quello che hai bisogno di vedere
+
+Nota: visibile quando la F1-HelpBox è spento!
+Nota: Richiede patch di gioco 1.3.1.0 o superiore!
 ]]>
         </it>
         <fr>
 <![CDATA[Un utilitaire de notification et statut qui peut être configuré pour afficher ce que vous voulez.
+
+Remarque: visible lorsque la F1-helpbox est désactivée!
+Note: Nécessite un patch de jeu 1.3.1.0 ou supérieur!
 ]]>
         </fr>
         <es>
 <![CDATA[Muestra notificaciones sobre el estado de las tareas y puede configurarse para mostrar solo aquello que se necesite
+
+Nota: ¡Visible cuando la F1-ayuda está apagada!
+Nota: Requiere el parche 1.3.1.0 o superior!
 ]]>
         </es>
+        <nl>
+<![CDATA[Een notificatie en status tool welke geconfigureerd kan worden zodat je alleen ziet wat je nodig bent.
+
+Let op: Zichtbaar wanneer de F1-HelpBox is uitgeschakeld!
+Opmerking: Vereist spel patch 1.3.1.0 of hoger!
+]]>
+        </nl>
     </description>
 
     <iconFilename>store_Glance.dds</iconFilename>
