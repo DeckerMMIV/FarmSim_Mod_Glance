@@ -115,7 +115,11 @@ if RailroadVehicle.getVehicleName == nil then
         if self.modVeGS and self.modVeGS.vehicleName then
             return self.modVeGS.vehicleName
         end;
-        return "Locomotive"
+        --return "Locomotive"
+        if g_i18n:hasText("locomotive") then
+            return g_i18n:getText("locomotive")
+        end
+        return g_i18n:getText("helpTitle_59") -- contains 'Train'
     end
 end
 
@@ -519,7 +523,7 @@ function Glance:getDefaultConfig()
 ,'        <column  enabled="true"  contains="VehicleAtWorldCorner"                                 align="center"  minWidthText="MN"                />'
 ,'        <column  enabled="true"  contains="VehicleAtFieldNumber"                                 align="left"    minWidthText=""                  />'
 ,'        <column  enabled="true"  contains="ColumnDelim"                  color="gray"            align="center"  minWidthText=""                  text="'..Glance.cColumnDelimChar..'" />'
-,'        <column  enabled="true"  contains="VehicleName;FuelLow;DirtAmount"                       align="left"    minWidthText=""  maxTextLen="20" />'
+,'        <column  enabled="true"  contains="VehicleName;FuelLow"                                  align="left"    minWidthText=""  maxTextLen="20" />'
 ,'        <column  enabled="false" contains="FuelLevel;FuelLevelPct"                               align="left"    minWidthText=""                  />'
 ,'        <column  enabled="true"  contains="ColumnDelim"                  color="gray"            align="center"  minWidthText=""                  text="'..Glance.cColumnDelimChar..'" />'
 ,'        <column  enabled="true"  contains="FillLevel"                                            align="right"   minWidthText=""                  />'
@@ -528,7 +532,7 @@ function Glance:getDefaultConfig()
 ,'        <column  enabled="true"  contains="ColumnDelim"                                          align="left"    minWidthText="I"                 text="" />'
 ,'        <column  enabled="true"  contains="FillTypeName"                                         align="left"    minWidthText=""  maxTextLen="12" />'
 ,'        <column  enabled="true"  contains="ColumnDelim"                  color="gray"            align="center"  minWidthText=""                  text="'..Glance.cColumnDelimChar..'" />'
-,'        <column  enabled="true"  contains="ActiveTask;EngineOn"                                  align="left"    minWidthText=""                  />'
+,'        <column  enabled="true"  contains="ActiveTask;EngineOn;DirtAmount"                       align="left"    minWidthText=""                  />'
 ,'    </vehiclesColumnOrder>'
 ,'</glanceConfig>'
     }

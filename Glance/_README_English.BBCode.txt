@@ -9,7 +9,7 @@
 
 [b][u]Mod description[/u][/b]
 
-'Glance' is an attempt at making a more configurable and less screen occupying 'notification-and-status utility', similar to the mods; 'Inspector' and 'LoadStatus'.
+'Glance' is an attempt at making a more configurable and less screen occupying 'notification-and-status utility', similar to the 'Inspector' mod.
 
 The features of 'Glance' are:
 
@@ -22,7 +22,7 @@ The features of 'Glance' are:
 - Will show when a hired-worker has finished
 - Displays the vehicle's location in the world and when within a map designated field-boundary
 - Speed of the vehicle, and if it is being blocked (i.e. still not moving after some time)
-- Animal husbandry; low productivity, wool pallet, eggs available and more...
+- Animal husbandry; cleanliness, low productivity, wool pallet, eggs available and more...
 - Greenhouse placeables; low fill levels.
 
 
@@ -30,11 +30,11 @@ The features of 'Glance' are:
 
 First you must [u]turn off[/u] the Helpbox (default key: F1), to be able to see the Glance notifications.
 
-The first time you ever run Glance, it will create a default configuration-file called [b]Glance_Config.XML[/b] in the MODS folder.
+The first time you ever run Glance, it will create a default configuration-file called [b]Glance_Config.XML[/b] in a 'modsSettings' folder.
 
-Due to the modifiable configuration - which maybe for some seem complex and confusing - there will later be given instructions and examples on how/what to modify, in a support-topic for this mod.
+Due to the modifiable configuration - which maybe for some seem complex and confusing - please ask for instructions and examples in a support-topic for this mod.
 
-The configuration-file can be reloaded, via a work-around by going into the in-game ESC-screen for the 'Help & Support' and change the "help category" just once. So it is possible to pause the game, ALT-TAB out of FS17, edit Glance_Config.XML, ALT-TAB back into FS17, change the in-game "help category" and see if the changes for Glance are acceptable.
+The configuration-file can be reloaded while in-game, via a work-around by going into the in-game ESC-screen for the 'Help & Support' and change the "help category" just once. So it is possible to pause the game, ALT-TAB out of FS17, edit Glance_Config.XML, ALT-TAB back into FS17, change the in-game "help category" and see if the changes for Glance are acceptable.
 
 [u]Switching it on/off[/u]
 
