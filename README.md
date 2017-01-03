@@ -7,7 +7,7 @@ To read more about this mod, find it on;
 
 ## FS17 - Change-log
 
-1.0.1.x
+1.0.0.x
 - Updated to FS17
 
 0.0.0.1

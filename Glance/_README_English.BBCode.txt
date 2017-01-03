@@ -3,7 +3,7 @@
 [i]Remember to check the support topic for any additional information regarding this mod[/i]
 
 [b][u]Changelog[/u][/b]
-1.0.1.x
+1.0.0.x
 - Updated to FS17
 
 
