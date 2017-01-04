@@ -7,8 +7,12 @@ To read more about this mod, find it on;
 
 ## FS17 - Change-log
 
-1.0.0.x
-- Updated to FS17
+1.0.0.32
+- Updated to FS17 and new elements added
+- Development-branch moved to master branch
+
+0.0.0.6
+- Contributions of translated files put into hidden development-branch.
 
 0.0.0.1
 - Translation files only, before preparing for release.
