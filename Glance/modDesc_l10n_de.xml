@@ -43,7 +43,7 @@ Ein Mitteilungs- und Status-Tool das so konfiguriert werden kann dass man nur da
         <text name="balesElsewhere"     text="Ballen irgendwo [x%d]" />
         
         <text name="locomotive"         text="Zug"              />
-        <text name="dirtamount"         text="Dirt (%s%%)"      /> <!-- needs translation -->
+        <text name="dirtamount"         text="Verschmutzung (%s%%)"      /> <!-- done  -->
         <text name="fuellow"            text="Tank leer (%s%%)" />
         <text name="engineon"           text="Motor ist AN!"    />
         <text name="collision"          text="Blockiert"        />
