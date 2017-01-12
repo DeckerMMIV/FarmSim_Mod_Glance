@@ -7,7 +7,6 @@
 
     <!-- Add your own name or nickname here, when you contribute to this file's translation, so I know who to put into the credits. -->
     <translationContributors>
-        ja_pizgam
         Ziuta
     </translationContributors>
 
@@ -41,8 +40,8 @@ tak, aby pokazywać to, co chcesz zobaczyć.
         <text name="fieldNumAndBales"   text="Pole %d(x%d)" />
         <text name="balesElsewhere"     text="Bele gdzie indziej(x%d)" />
         
-        <text name="locomotive"         text="Pociąg"               />
-        <text name="dirtamount"         text="Dirt (%s%%)"          /> <!-- needs translation -->
+        <text name="locomotive"         text="Pociąg" />
+        <text name="dirtamount"         text="Zabrudzenie (%s%%)" />
         <text name="fuellow"            text="Koniec paliwa (%s%%)" />
         <text name="engineon"           text="Silnik włączony!" />
         <text name="collision"          text="Zablokowany" />
@@ -75,7 +74,7 @@ tak, aby pokazywać to, co chcesz zobaczyć.
         <text name="task_Transporting"  text="Transport" />
         <text name="task_StumpCutting"  text="Niszczenie pni" />
         <text name="task_WoodCrushing"  text="Rąbanie drewna" />
-        <text name="task_TreePlanting"  text="Sadzonki drzew" />
+        <text name="task_TreePlanting"  text="Sadzenie drzew" />
         <text name="task_Weeding"       text="Odchwaszczanie" />
         <text name="task_LivestockTransport" text="Transport zwierząt" />
 
@@ -85,7 +84,7 @@ Proszę sprawdzić w kolnsoli w grze lub w 'LOG.TXT' szczegóły lub po prostu u
         <text name="input_GLANCE_MORE"  text="Glance: Wiecej info." />
         <text name="input_GLANCE_LESS"  text="Glance: Mniej info." />
 
-        <text name="GlanceLevel"        text="Glance (poziom %d)"   />
+        <text name="GlanceLevel"        text="Glance (poziom %d)" />
         
         <text name="GlanceMinLevel"     text="Poziom powiadomień: %d" />
     </texts>
