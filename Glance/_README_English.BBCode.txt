@@ -2,10 +2,11 @@
 
 [i]Remember to check the support topic for any additional information regarding this mod[/i]
 
+[color=red]Note: Requires FS17 game patch 1.3.1.0 or higher[/color]
+
 [b][u]Changelog[/u][/b]
 1.0.0.32
 - Updated to FS17 and new elements added
-
 
 
 [b][u]Mod description[/u][/b]
@@ -75,4 +76,4 @@ Script:
 - Decker_MMIV
 Contributors/Translations:
 - Gonimy_Vetrom, JakobT, pokers, gighen, SicFR57, SchorschiBW, ja_pizgam,
-- Vanquish081, Dzi4d3k, shermy, mngrazy, Alfredo Prieto
+- Vanquish081, Dzi4d3k, shermy, mngrazy, Alfredo Prieto, Ziuta
