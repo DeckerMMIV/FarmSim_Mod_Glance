@@ -36,12 +36,12 @@
 
         <text name="closestfield"       text="П%d" />
 
-        <text name="fieldsWithBales"    text="Поля с тюками:"   />
-        <text name="fieldNumAndBales"   text=" П%d(x%d)"            />
+        <text name="fieldsWithBales"    text="Поля с тюками:"      />
+        <text name="fieldNumAndBales"   text=" П%d(x%d)"           />
         <text name="balesElsewhere"     text="Тюков не на полях (x%d)" />
         
         <text name="locomotive"         text="Поезд"                />
-        <text name="dirtamount"         text="Dirt (%s%%)"          /> <!-- needs translation -->
+        <text name="dirtamount"         text="Грязь (%s%%)"         />
         <text name="fuellow"            text="Мало топлива (%s%%)"  />
         <text name="engineon"           text="Двигатель запущен!"   />
         <text name="collision"          text="Застрял"              />
@@ -63,11 +63,11 @@
         <text name="task_Tedding"       text="Ворошение сена"       />
         <text name="task_Swathing"      text="Валкование"           />
         <text name="task_Mowing"        text="Сенокос"              />
-        <text name="task_Spraying"      text="Опрыскивание"         />
+        <text name="task_Spraying"      text="Удобрение"            />
         <text name="task_Seeding"       text="Посев"                />
         <text name="task_Bedding"       text="Подстилка"            />
         <text name="task_Feeding"       text="Кормление"            />
-        <text name="task_Cutting"       text="Валит лес"        />
+        <text name="task_Cutting"       text="Валит лес"            />
         <text name="task_Cultivating"   text="Культивация"          />
         <text name="task_Ploughing"     text="Вспашка"              />
         <text name="task_Unloading"     text="Разгрузка"            />
@@ -75,7 +75,7 @@
         <text name="task_StumpCutting"  text="Корчевание пней"      />
         <text name="task_WoodCrushing"  text="Дробление древесины"  />
         <text name="task_TreePlanting"  text="Посадка деревьев"     />
-        <text name="task_Weeding"       text="Прополка"          />
+        <text name="task_Weeding"       text="Прополка"             />
         <text name="task_LivestockTransport" text="Перевозка животных" />
 
         <text name="config_error"       text="'Glance' не может загрузить файл Glance_Config.XML.
@@ -85,7 +85,7 @@
         <text name="input_GLANCE_MORE"  text="Glance: Больше уведомлений"  />
         <text name="input_GLANCE_LESS"  text="Glance: Меньше уведомлений"  />
 
-        <text name="GlanceLevel"        text="Glance (уровень %d)"   />
+        <text name="GlanceLevel"        text="Glance (уровень %d)"         />
         
         <text name="GlanceMinLevel"     text="Минимальный уровень уведомление установлен на: %d" />
     </texts>
