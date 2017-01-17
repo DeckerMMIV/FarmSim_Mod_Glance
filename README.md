@@ -7,8 +7,13 @@ To read more about this mod, find it on;
 
 ## FS17 - Change-log
 
+1.0.1.35
+- Now actually reads the 'minimumLevel' from config-file
+- Possible fix for 'huge negative fill percentage value' (not tested yet)
+- Added new 'AllFillLvls' and 'AllFillPcts' (suggestion by juf.de)
+
 1.0.0.33
-- ...
+- Translation updates
 
 1.0.0.32
 - Updated to FS17 and new elements added

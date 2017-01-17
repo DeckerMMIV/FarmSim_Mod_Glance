@@ -49,6 +49,11 @@ Glance.cLineSpacing     = Glance.cFontSize * 0.9;
 Glance.nonVehiclesSeparator         = "  //  ";
 Glance.nonVehiclesFillLevelFormat   = "%s %s %s";
 
+Glance.allFillLvlsSeparator = ","
+Glance.allFillLvlsFormat    = "%s%s(%s)"
+Glance.allFillPctsSeparator = ","
+Glance.allFillPctsFormat    = "%s%s@%s"
+
 Glance.cColumnDelimChar = " "
 Glance.columnSpacingTxt = "I";
 Glance.columnSpacing    = 0.001;
@@ -511,6 +516,10 @@ function Glance:getDefaultConfig()
 ,'                  "Sheep:Grass@230 * Cows:TMR@998,Manure@100% * Greenhouse(x4):Water@9%"             -->'
 ,'    <nonVehicles  separator="  //  "  fillLevelFormat="%s %s %s" />'
 ,''
+,'    <!-- -->'
+,'    <allFillLvls  separator=","  fillLevelFormat="%s%s(%s)" />'
+,'    <allFillPcts  separator=","  fillLevelFormat="%s%s@%s" />'
+,''
 ,'    <vehiclesColumnOrder columnSpacing="0.0020">'
 ,'        <!-- Set  enabled="false"  to disable a column.'
 ,'             It is possible to reorder columns. -->'
@@ -533,6 +542,8 @@ function Glance:getDefaultConfig()
 ,'        <column  enabled="true"  contains="FillTypeName"                                         align="left"    minWidthText=""  maxTextLen="12" />'
 ,'        <column  enabled="true"  contains="ColumnDelim"                  color="gray"            align="center"  minWidthText=""                  text="'..Glance.cColumnDelimChar..'" />'
 ,'        <column  enabled="true"  contains="ActiveTask;EngineOn;DirtAmount"                       align="left"    minWidthText=""                  />'
+,'        <column  enabled="false" contains="ColumnDelim"                  color="gray"            align="center"  minWidthText=""                  text="'..Glance.cColumnDelimChar..'" />'
+,'        <column  enabled="false" contains="AllFillLvls;AllFillPcts"                              align="left"    minWidthText=""                  />'
 ,'    </vehiclesColumnOrder>'
 ,'</glanceConfig>'
     }
@@ -639,9 +650,10 @@ function Glance:loadConfig()
     Glance.cStartLineY      = Utils.getNoNil(tonumber(posY), Glance.cStartLineY)
     --
     local tag = "glanceConfig.general.notification"
-    if Glance.minNotifyLevel == nil then
-        Glance.minNotifyLevel = Utils.getNoNil(getXMLInt(xmlFile, tag.."#minimumLevel"), 2)
-    end
+    
+    Glance.minNotifyLevel = Utils.getNoNil(getXMLInt(xmlFile, tag.."#minimumLevel"), 4)
+    Glance.textMinLevelTimeout = g_currentMission.time + 2000
+    
     Glance.updateIntervalMS = Utils.clamp(Utils.getNoNil(getXMLInt(xmlFile, tag.."#updateIntervalMs"), Glance.updateIntervalMS), 500, 60000)
     Glance.ignoreHelpboxVisibility = Utils.getNoNil(getXMLBool(xmlFile, tag.."#ignoreHelpboxVisibility"), Glance.ignoreHelpboxVisibility)
     --
@@ -698,6 +710,11 @@ function Glance:loadConfig()
     Glance.nonVehiclesSeparator = Utils.getNoNil(getXMLString(xmlFile, "glanceConfig.nonVehicles#separator"), Glance.nonVehiclesSeparator);
     Glance.nonVehiclesFillLevelFormat = Utils.getNoNil(getXMLString(xmlFile, "glanceConfig.nonVehicles#fillLevelFormat"), Glance.nonVehiclesFillLevelFormat);
 
+    Glance.allFillLvlsSeparator = Utils.getNoNil(getXMLString(xmlFile, "glanceConfig.allFillLvls#separator"), Glance.allFillLvlsSeparator);
+    Glance.allFillLvlsFormat    = Utils.getNoNil(getXMLString(xmlFile, "glanceConfig.allFillLvls#fillLevelFormat"), Glance.allFillLvlsFormat);
+    Glance.allFillPctsSeparator = Utils.getNoNil(getXMLString(xmlFile, "glanceConfig.allFillPcts#separator"), Glance.allFillPctsSeparator);
+    Glance.allFillPctsFormat    = Utils.getNoNil(getXMLString(xmlFile, "glanceConfig.allFillPcts#fillLevelFormat"), Glance.allFillPctsFormat);
+    
     --
     Glance.columnSpacingTxt = Utils.getNoNil(getXMLString(xmlFile, "glanceConfig.vehiclesColumnOrder#columnSpacing"), Glance.columnSpacingTxt);
     Glance.columnSpacing = tonumber(Glance.columnSpacingTxt)
@@ -1922,6 +1939,12 @@ end
 function Glance:getCellData_FillTypeName(dt, lineColor, colParms, cells, veh)
     return cells["FillType"]
 end
+function Glance:getCellData_AllFillPcts(dt, lineColor, colParms, cells, veh)
+    return cells["AllFillPcts"]
+end
+function Glance:getCellData_AllFillLvls(dt, lineColor, colParms, cells, veh)
+    return cells["AllFillLvls"]
+end
 function Glance:getCellData_ActiveTask(dt, lineColor, colParms, cells, veh)
     return cells["ActiveTask"]
 end
@@ -2256,10 +2279,12 @@ function Glance:static_fillTypeLevelPct(dt, staticParms, veh, implements, cells,
         end
     end
     --
+    local highestNotifyLevel = -1
+    local highestNotifyColor = nil
     for _,obj in pairs(implements) do
-        local fillClr = notify_lineColor;
         if obj.getCurrentFillTypes ~= nil and obj.getFillLevel ~= nil and obj.getCapacity ~= nil then
             for _,fillTpe in pairs(obj:getCurrentFillTypes()) do
+                local fillClr = notify_lineColor;
                 local fillLvl = obj:getFillLevel(fillTpe);
                 local fillCap = obj:getCapacity(fillTpe)
                 local fillPct = math.floor(fillLvl / fillCap * 100);
@@ -2323,6 +2348,11 @@ function Glance:static_fillTypeLevelPct(dt, staticParms, veh, implements, cells,
                 end
                 --
                 updateFill(fillTpe, fillCap, fillLvl, fillClr)
+                --
+                if notifyLevel > highestNotifyLevel then
+                    highestNotifyLevel = notifyLevel
+                    highestNotifyColor = fillClr
+                end
             end;
         end;
     end;
@@ -2330,6 +2360,10 @@ function Glance:static_fillTypeLevelPct(dt, staticParms, veh, implements, cells,
     cells["FillLevel"] = {}
     cells["FillPct"]   = {}
     cells["FillType"]  = {}
+    local allFillLvls = ""
+    local allFillPcts = ""
+    local delimLvls = ""
+    local delimPcts = ""
     --
     local freeCapacity = self.fillTypesCapacityLevelColor["n/a"]
     self.fillTypesCapacityLevelColor["n/a"] = nil
@@ -2342,7 +2376,10 @@ function Glance:static_fillTypeLevelPct(dt, staticParms, veh, implements, cells,
             fillCap = fillCap + freeCapacity.capacity
             freeCapacity = nil
         end
-        local fillPct = math.floor(fillLvl / fillCap * 100);
+        local fillPct = 0
+        if fillCap > 0 then
+            fillPct = math.floor(fillLvl * 100 / fillCap);
+        end
         --
         local fillDesc = nil
         local fillNme = nil
@@ -2363,7 +2400,14 @@ function Glance:static_fillTypeLevelPct(dt, staticParms, veh, implements, cells,
         table.insert(cells["FillLevel"], { fillClr, string.format("%d", fillLvl)        } );
         table.insert(cells["FillPct"],   { fillClr, string.format("(%d%%)", fillPct)    } );
         table.insert(cells["FillType"],  { fillClr, fillNme } );
+        --
+        allFillLvls = allFillLvls .. Glance.allFillLvlsFormat:format(delimLvls, fillNme, tostring(math.floor(fillLvl)))
+        allFillPcts = allFillPcts .. Glance.allFillPctsFormat:format(delimPcts, fillNme, string.format("%d%%", fillPct))
+        delimLvls = Glance.allFillLvlsSeparator        
+        delimPcts = Glance.allFillPctsSeparator        
     end
+    cells["AllFillLvls"] = { { getNotificationColor(highestNotifyColor), allFillLvls } }
+    cells["AllFillPcts"] = { { getNotificationColor(highestNotifyColor), allFillPcts } }
     --
     return notifyLevel
 end
