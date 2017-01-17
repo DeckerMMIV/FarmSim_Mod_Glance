@@ -337,12 +337,12 @@ function Glance:getDefaultConfig()
 ,'             Set  level="<number>"  to change the level of a notification. -->'
 ,''
 ,'        <!-- Controller notifications/colors -->'
-,'        <notification  enabled="true"  type="controlledByMe"            level="'..dnl( 0)..'"   color="green" />'
-,'        <notification  enabled="true"  type="controlledByPlayer"        level="'..dnl( 0)..'"   color="white" />'
-,'        <notification  enabled="true"  type="controlledByHiredWorker"   level="'..dnl( 0)..'"   color="blue" />'
-,'        <notification  enabled="true"  type="controlledByCourseplay"    level="'..dnl( 0)..'"   color="blue" />'
-,'        <notification  enabled="true"  type="controlledByFollowMe"      level="'..dnl( 0)..'"   color="blue" />'
-,'        <notification  enabled="true"  type="controlledByAutoDrive"     level="'..dnl( 0)..'"   color="blue" />'
+,'        <notification  enabled="true"  type="controlledByMe"            level="'..dnl( 1)..'"   color="green" />'
+,'        <notification  enabled="true"  type="controlledByPlayer"        level="'..dnl( 1)..'"   color="white" />'
+,'        <notification  enabled="true"  type="controlledByHiredWorker"   level="'..dnl( 1)..'"   color="blue" />'
+,'        <notification  enabled="true"  type="controlledByCourseplay"    level="'..dnl( 1)..'"   color="blue" />'
+,'        <notification  enabled="true"  type="controlledByFollowMe"      level="'..dnl( 1)..'"   color="blue" />'
+,'        <notification  enabled="true"  type="controlledByAutoDrive"     level="'..dnl( 1)..'"   color="blue" />'
 ,''
 ,'        <notification  enabled="true"  type="hiredWorkerFinished"       level="'..dnl( 3)..'"   color="orange" />'
 ,'        <notification  enabled="true"  type="engineOnButNotControlled"  level="'..dnl( 0)..'"   color="yellow"/>'
@@ -2267,14 +2267,16 @@ function Glance:static_fillTypeLevelPct(dt, staticParms, veh, implements, cells,
     
     -- Examine each implement for fillable parts.
     self.fillTypesCapacityLevelColor = {}
-    local function updateFill(fillType,capacity,level,color)
+    local function updateFill(fillType,capacity,fillLevel,color,notifyLevel)
         if self.fillTypesCapacityLevelColor[fillType] == nil then
-            self.fillTypesCapacityLevelColor[fillType] = {capacity=capacity, level=level, color=color}
+            self.fillTypesCapacityLevelColor[fillType] = {capacity=capacity, fillLevel=fillLevel, color=color, notifyLevel=notifyLevel}
         else
-            self.fillTypesCapacityLevelColor[fillType].capacity = self.fillTypesCapacityLevelColor[fillType].capacity + capacity
-            self.fillTypesCapacityLevelColor[fillType].level    = self.fillTypesCapacityLevelColor[fillType].level    + level
-            if self.fillTypesCapacityLevelColor[fillType].color == nil then
-                self.fillTypesCapacityLevelColor[fillType].color = color
+            local elem = self.fillTypesCapacityLevelColor[fillType]
+            elem.capacity   = elem.capacity  + capacity
+            elem.fillLevel  = elem.fillLevel + fillLevel
+            if elem.notifyLevel <= notifyLevel then
+                elem.notifyLevel = notifyLevel
+                elem.color = color
             end
         end
     end
@@ -2282,51 +2284,78 @@ function Glance:static_fillTypeLevelPct(dt, staticParms, veh, implements, cells,
     local highestNotifyLevel = -1
     local highestNotifyColor = nil
     for _,obj in pairs(implements) do
-        if obj.getCurrentFillTypes ~= nil and obj.getFillLevel ~= nil and obj.getCapacity ~= nil then
-            for _,fillTpe in pairs(obj:getCurrentFillTypes()) do
-                local fillClr = notify_lineColor;
-                local fillLvl = obj:getFillLevel(fillTpe);
-                local fillCap = obj:getCapacity(fillTpe)
-                local fillPct = math.floor(fillLvl / fillCap * 100);
+        if obj.fillUnits ~= nil then
+            local impType = nil
+            for _,fillUnit in pairs(obj.fillUnits) do
+              local fillCap = fillUnit.capacity
+              local fillLvl = fillUnit.fillLevel
+              local fillTpe = fillUnit.currentFillType
+              
+              if  hasNumberValue(fillCap, 0)
+              and hasNumberValue(fillLvl)
+              and fillTpe ~= nil and fillTpe ~= FillUtil.FILLTYPE_UNKNOWN
+              then
+                if impType == nil then
+                    impType = {}
+                    for _,spec in pairs(obj.specializations) do
+                            if spec == SowingMachine then impType.isSowingMachine = true
+                        elseif spec == Sprayer       then impType.isSprayer       = true
+                        elseif spec == WaterTrailer
+                            or spec == FuelTrailer   then impType.isLiquidTrailer = true
+                        elseif spec == ForageWagon   then impType.isForageWagon   = true
+                        elseif spec == Trailer       then impType.isTrailer       = true
+                        elseif spec == Combine       then impType.isCombine       = true
+                        elseif spec == BaleLoader    then impType.isBaleLoader    = true
+                        end
+                    end
+                end
+
+                local fillPct = math.floor(fillLvl * 100 / fillCap)
+                local fillClr = notify_lineColor
+                local res = nil
                 --
-                if SpecializationUtil.hasSpecialization(SowingMachine, obj.specializations) then
+                if impType.isSowingMachine then
                     -- For sowingmachine, show the selected seed type.
                     if fillTpe == FillUtil.FILLTYPE_SEEDS then
                         fillTpe = FruitUtil.fruitTypeToFillType[obj.seeds[obj.currentSeed]];
-                        local res = isBreakingThresholds(Glance.notifications["seederLow"], fillPct)
+                        res = isBreakingThresholds(Glance.notifications["seederLow"], fillPct)
+                        if res then
+                            fillClr = Utils.getNoNil(res.threshold.color, fillClr)
+                            notifyLevel = math.max(notifyLevel, res.threshold.level)
+                        end
+                    elseif impType.isSprayer then -- TODO check for fill-type is allowed in sprayer
+                        res = isBreakingThresholds(Glance.notifications["sprayerLow"], fillPct)
                         if res then
                             fillClr = Utils.getNoNil(res.threshold.color, fillClr)
                             notifyLevel = math.max(notifyLevel, res.threshold.level)
                         end
                     end
-                elseif SpecializationUtil.hasSpecialization(Sprayer, obj.specializations) then
-                    local res = isBreakingThresholds(Glance.notifications["sprayerLow"], fillPct)
+                elseif impType.isSprayer then
+                    res = isBreakingThresholds(Glance.notifications["sprayerLow"], fillPct)
                     if res then
                         fillClr = Utils.getNoNil(res.threshold.color, fillClr)
                         notifyLevel = math.max(notifyLevel, res.threshold.level)
                     end
-                elseif SpecializationUtil.hasSpecialization(WaterTrailer, obj.specializations)
-                    or SpecializationUtil.hasSpecialization(FuelTrailer, obj.specializations)
-                then
-                    local res = isBreakingThresholds(Glance.notifications["liquidsLow"], fillPct)
+                elseif impType.isLiquidTrailer then
+                    res = isBreakingThresholds(Glance.notifications["liquidsLow"], fillPct)
                     if res then
                         fillClr = Utils.getNoNil(res.threshold.color, fillClr)
                         notifyLevel = math.max(notifyLevel, res.threshold.level)
                     end
-                elseif SpecializationUtil.hasSpecialization(ForageWagon, obj.specializations) then
-                    local res = isBreakingThresholds(Glance.notifications["forageWagonFull"], fillPct)
+                elseif impType.isForageWagon then
+                    res = isBreakingThresholds(Glance.notifications["forageWagonFull"], fillPct)
                     if res then
                         fillClr = Utils.getNoNil(res.threshold.color, fillClr)
                         notifyLevel = math.max(notifyLevel, res.threshold.level)
                     end
-                elseif SpecializationUtil.hasSpecialization(Trailer, obj.specializations) then
-                    local res = isBreakingThresholds(Glance.notifications["trailerFull"], fillPct)
+                elseif impType.isTrailer then
+                    res = isBreakingThresholds(Glance.notifications["trailerFull"], fillPct)
                     if res then
                         fillClr = Utils.getNoNil(res.threshold.color, fillClr)
                         notifyLevel = math.max(notifyLevel, res.threshold.level)
                     end
-                elseif SpecializationUtil.hasSpecialization(Combine, obj.specializations) then
-                    local res = isBreakingThresholds(Glance.notifications["grainTankFull"], fillPct)
+                elseif impType.isCombine then
+                    res = isBreakingThresholds(Glance.notifications["grainTankFull"], fillPct)
                     if res then
                         fillClr = Utils.getNoNil(res.threshold.color, fillClr)
                         notifyLevel = math.max(notifyLevel, res.threshold.level)
@@ -2339,23 +2368,24 @@ function Glance:static_fillTypeLevelPct(dt, staticParms, veh, implements, cells,
                             veh.mapAIHotspot:setBlinking(false)
                         end
                     end
-                elseif SpecializationUtil.hasSpecialization(BaleLoader, obj.specializations) then
-                    local res = isBreakingThresholds(Glance.notifications["baleLoaderFull"], fillPct)
+                elseif impType.isBaleLoader then
+                    res = isBreakingThresholds(Glance.notifications["baleLoaderFull"], fillPct)
                     if res then
                         fillClr = Utils.getNoNil(res.threshold.color, fillClr)
                         notifyLevel = math.max(notifyLevel, res.threshold.level)
                     end                
                 end
                 --
-                updateFill(fillTpe, fillCap, fillLvl, fillClr)
+                updateFill(fillTpe, fillCap, fillLvl, fillClr, res~=nil and res.threshold.level or 0)
                 --
                 if notifyLevel > highestNotifyLevel then
                     highestNotifyLevel = notifyLevel
                     highestNotifyColor = fillClr
                 end
-            end;
-        end;
-    end;
+              end
+            end
+        end
+    end
     --
     cells["FillLevel"] = {}
     cells["FillPct"]   = {}
@@ -2365,17 +2395,17 @@ function Glance:static_fillTypeLevelPct(dt, staticParms, veh, implements, cells,
     local delimLvls = ""
     local delimPcts = ""
     --
-    local freeCapacity = self.fillTypesCapacityLevelColor["n/a"]
-    self.fillTypesCapacityLevelColor["n/a"] = nil
+    --local freeCapacity = self.fillTypesCapacityLevelColor["n/a"]
+    --self.fillTypesCapacityLevelColor["n/a"] = nil
     for fillTpe,v in pairs(self.fillTypesCapacityLevelColor) do
         local fillClr = getNotificationColor(v.color)
-        local fillLvl = v.level
+        local fillLvl = v.fillLevel
         local fillCap = v.capacity
         --
-        if freeCapacity ~= nil then
-            fillCap = fillCap + freeCapacity.capacity
-            freeCapacity = nil
-        end
+        --if freeCapacity ~= nil then
+        --    fillCap = fillCap + freeCapacity.capacity
+        --    freeCapacity = nil
+        --end
         local fillPct = 0
         if fillCap > 0 then
             fillPct = math.floor(fillLvl * 100 / fillCap);
