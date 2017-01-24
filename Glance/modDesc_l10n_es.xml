@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <l10n>
     <!-- 
         Please contribute any other translations at 
@@ -7,7 +7,7 @@
 
     <!-- Add your own name or nickname here, when you contribute to this file's translation, so I know who to put into the credits. -->
     <translationContributors>
-        Alfredo Prieto
+        Promgames
         Vanquish081
     </translationContributors>
 
@@ -34,10 +34,10 @@ Muestra notificaciones sobre el estado de las tareas y puede configurarse para m
         <text name="northwest"          text="NO"   />
         <text name="center"             text="C"    />
 
-        <text name="closestfield"       text="F%d"  />
+        <text name="closestfield"       text="C%d"  />
 
         <text name="fieldsWithBales"    text="Campos con pacas:"   />
-        <text name="fieldNumAndBales"   text=" F%d(x%d)"            />
+        <text name="fieldNumAndBales"   text=" C%d(x%d)"            />
         <text name="balesElsewhere"     text="Pacas Sueltas(x%d)" />
 
         <text name="locomotive"         text="Tren"             />
@@ -55,7 +55,7 @@ Muestra notificaciones sobre el estado de las tareas y puede configurarse para m
         <text name="bales"              text="Pacas"        />
 
         <text name="task_Harvesting"    text="Cosechando"       />
-        <text name="task_Defoliator"    text="Defoliation"      />
+        <text name="task_Defoliator"    text="Desfoliando"      />
         <text name="task_Loading_bales" text="Cargando pacas"    />
         <text name="task_Wrapping_bale" text="Envolviendo pacas"    />
         <text name="task_Baling"        text="Empacando"           />
@@ -65,7 +65,7 @@ Muestra notificaciones sobre el estado de las tareas y puede configurarse para m
         <text name="task_Mowing"        text="Segando"           />
         <text name="task_Spraying"      text="Pulverizando"         />
         <text name="task_Seeding"       text="Sembrando"          />
-        <text name="task_Bedding"       text="Cama de paja"          />
+        <text name="task_Bedding"       text="Vertiendo paja a animales"          />
         <text name="task_Feeding"       text="Alimentando"          />
         <text name="task_Cutting"       text="Cortando"          />
         <text name="task_Cultivating"   text="Cultivando"      />
