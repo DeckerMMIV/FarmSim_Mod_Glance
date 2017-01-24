@@ -7,10 +7,11 @@ To read more about this mod, find it on;
 
 ## FS17 - Change-log
 
-1.0.1.35
+1.0.1.37
+- Added new 'AllFillLvls' and 'AllFillPcts' (suggestion by juf.de). Needs a new Glance_Config.XML to be generated, before becoming editable
 - Now actually reads the 'minimumLevel' from config-file
 - Possible fix for 'huge negative fill percentage value' (not tested yet)
-- Added new 'AllFillLvls' and 'AllFillPcts' (suggestion by juf.de)
+- Translation updates
 
 1.0.0.33
 - Translation updates

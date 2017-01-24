@@ -284,7 +284,8 @@ function Glance:update(dt)
     end
 end;
 
-Glance.cCfgVersion = 10
+Glance.cCfgVersion = 11
+Glance.cCfgVersionsSupported = {[10]=true,[11]=true}
 
 function Glance:getDefaultConfig()
     local function dnl(offset) -- default notification level
@@ -600,8 +601,9 @@ function Glance:loadConfig()
         Glance.failedConfigLoad = g_currentMission.time + 10000;
         return;
     end
-    if version ~= Glance.cCfgVersion then
+    if Glance.cCfgVersionsSupported[version] ~= true then
         print("!! Glance: The existing Glance_Config.XML file is of a not supported version '"..tostring(version).."', and will NOT be loaded.")
+        print("!! Glance: Please quit the game and fix the XML or delete the file to let Glance create a new one; " .. fileName);
         Glance.failedConfigLoad = g_currentMission.time + 10000;
         return;
     end

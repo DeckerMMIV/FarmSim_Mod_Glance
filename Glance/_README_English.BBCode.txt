@@ -5,6 +5,12 @@
 [color=red]Note: Requires FS17 game patch 1.3.1.0 or higher[/color]
 
 [b][u]Changelog[/u][/b]
+1.0.1.37
+- Added new column-fields 'AllFillLvls' and 'AllFillPcts' (not enabled by default). Needs a new Glance_Config.XML to be generated, before becoming editable
+- Now actually reads the 'minimumLevel' from config-file
+- Possible fix for 'huge negative fill percentage value'
+- Translation updates
+
 1.0.0.32
 - Updated to FS17 and new elements added
 
@@ -75,5 +81,5 @@ Credits:
 Script:
 - Decker_MMIV
 Contributors/Translations:
-- Gonimy_Vetrom, JakobT, pokers, gighen, SicFR57, SchorschiBW, ja_pizgam,
-- Vanquish081, Dzi4d3k, shermy, mngrazy, Alfredo Prieto, Ziuta
+- SchorschiBW, ja_pizgam, Gonimy_Vetrom, JakobT, pokers, gighen, SicFR57, Promgames,
+- Vanquish081, Dzi4d3k, shermy, mngrazy, Ziuta
