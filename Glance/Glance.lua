@@ -2285,109 +2285,136 @@ function Glance:static_fillTypeLevelPct(dt, staticParms, veh, implements, cells,
     --
     local highestNotifyLevel = -1
     local highestNotifyColor = nil
+    local sowingMachine = {seederPart=nil, seedTankPart={}} -- Due to Kuhn DLC
     for _,obj in pairs(implements) do
         if obj.fillUnits ~= nil then
-            local impType = nil
-            for _,fillUnit in pairs(obj.fillUnits) do
-              local fillCap = fillUnit.capacity
-              local fillLvl = fillUnit.fillLevel
-              local fillTpe = fillUnit.currentFillType
-              
-              if  hasNumberValue(fillCap, 0)
-              and hasNumberValue(fillLvl)
-              and fillTpe ~= nil and fillTpe ~= FillUtil.FILLTYPE_UNKNOWN
-              then
-                if impType == nil then
-                    impType = {}
-                    for _,spec in pairs(obj.specializations) do
-                            if spec == SowingMachine then impType.isSowingMachine = true
-                        elseif spec == Sprayer       then impType.isSprayer       = true
-                        elseif spec == WaterTrailer
-                            or spec == FuelTrailer   then impType.isLiquidTrailer = true
-                        elseif spec == ForageWagon   then impType.isForageWagon   = true
-                        elseif spec == Trailer       then impType.isTrailer       = true
-                        elseif spec == Combine       then impType.isCombine       = true
-                        elseif spec == BaleLoader    then impType.isBaleLoader    = true
-                        end
+            local impType = {}
+            for _,spec in pairs(obj.specializations) do
+                    if spec == SowingMachine then impType.isSowingMachine = true
+                elseif spec == Sprayer       then impType.isSprayer       = true
+                elseif spec == WaterTrailer
+                    or spec == FuelTrailer   then impType.isLiquidTrailer = true
+                elseif spec == ForageWagon   then impType.isForageWagon   = true
+                elseif spec == Trailer       then impType.isTrailer       = true
+                elseif spec == Combine       then impType.isCombine       = true
+                elseif spec == BaleLoader    then impType.isBaleLoader    = true
+                end
+            end
+
+            for fillUnitIndex,fillUnit in pairs(obj.fillUnits) do
+                local fillCap = fillUnit.capacity
+                local fillLvl = fillUnit.fillLevel
+                local fillTpe = fillUnit.currentFillType
+
+                -- Special handling of sowingMachine due to Kuhn DLC
+                local checkMore = true
+                if impType.isSowingMachine then
+                    if true == obj.isSeedTank and true ~= obj.allowsSeedChanging then
+                        sowingMachine.seedTankPart = {fillTpe, fillCap, fillLvl}
+                        checkMore = false
+                    elseif obj.sowingMachine ~= nil and fillUnitIndex == obj.sowingMachine.fillUnitIndex then
+                        -- For sowingmachine, show the selected seed type.
+                        sowingMachine.seederPart = {FruitUtil.fruitTypeToFillType[obj.seeds[obj.currentSeed]], fillCap, fillLvl}
+                        checkMore = false
                     end
                 end
-
-                local fillPct = math.floor(fillLvl * 100 / fillCap)
-                local fillClr = notify_lineColor
-                local res = nil
-                --
-                if impType.isSowingMachine then
-                    -- For sowingmachine, show the selected seed type.
-                    if fillTpe == FillUtil.FILLTYPE_SEEDS then
-                        fillTpe = FruitUtil.fruitTypeToFillType[obj.seeds[obj.currentSeed]];
-                        res = isBreakingThresholds(Glance.notifications["seederLow"], fillPct)
-                        if res then
-                            fillClr = Utils.getNoNil(res.threshold.color, fillClr)
-                            notifyLevel = math.max(notifyLevel, res.threshold.level)
+              
+                if  checkMore
+                and fillTpe ~= nil and fillTpe ~= FillUtil.FILLTYPE_UNKNOWN
+                and hasNumberValue(fillCap, 0)
+                and hasNumberValue(fillLvl)
+                then
+                    local fillPct = math.floor(fillLvl * 100 / fillCap)
+                    local fillClr = notify_lineColor
+                    local res = nil
+                    --
+                    if impType.isSowingMachine then
+                        if impType.isSprayer then -- TODO check for fill-type is allowed in sprayer
+                            res = isBreakingThresholds(Glance.notifications["sprayerLow"], fillPct)
+                            if res then
+                                fillClr = Utils.getNoNil(res.threshold.color, fillClr)
+                                notifyLevel = math.max(notifyLevel, res.threshold.level)
+                            end
                         end
-                    elseif impType.isSprayer then -- TODO check for fill-type is allowed in sprayer
+                    elseif impType.isSprayer then
                         res = isBreakingThresholds(Glance.notifications["sprayerLow"], fillPct)
                         if res then
                             fillClr = Utils.getNoNil(res.threshold.color, fillClr)
                             notifyLevel = math.max(notifyLevel, res.threshold.level)
                         end
-                    end
-                elseif impType.isSprayer then
-                    res = isBreakingThresholds(Glance.notifications["sprayerLow"], fillPct)
-                    if res then
-                        fillClr = Utils.getNoNil(res.threshold.color, fillClr)
-                        notifyLevel = math.max(notifyLevel, res.threshold.level)
-                    end
-                elseif impType.isLiquidTrailer then
-                    res = isBreakingThresholds(Glance.notifications["liquidsLow"], fillPct)
-                    if res then
-                        fillClr = Utils.getNoNil(res.threshold.color, fillClr)
-                        notifyLevel = math.max(notifyLevel, res.threshold.level)
-                    end
-                elseif impType.isForageWagon then
-                    res = isBreakingThresholds(Glance.notifications["forageWagonFull"], fillPct)
-                    if res then
-                        fillClr = Utils.getNoNil(res.threshold.color, fillClr)
-                        notifyLevel = math.max(notifyLevel, res.threshold.level)
-                    end
-                elseif impType.isTrailer then
-                    res = isBreakingThresholds(Glance.notifications["trailerFull"], fillPct)
-                    if res then
-                        fillClr = Utils.getNoNil(res.threshold.color, fillClr)
-                        notifyLevel = math.max(notifyLevel, res.threshold.level)
-                    end
-                elseif impType.isCombine then
-                    res = isBreakingThresholds(Glance.notifications["grainTankFull"], fillPct)
-                    if res then
-                        fillClr = Utils.getNoNil(res.threshold.color, fillClr)
-                        notifyLevel = math.max(notifyLevel, res.threshold.level)
-                        -- For combines, when hired and grain-tank full, blink the icon.
-                        if veh.mapAIHotspot ~= nil then
-                            veh.mapAIHotspot:setBlinking(true == res.threshold.blinkIcon)
+                    elseif impType.isLiquidTrailer then
+                        res = isBreakingThresholds(Glance.notifications["liquidsLow"], fillPct)
+                        if res then
+                            fillClr = Utils.getNoNil(res.threshold.color, fillClr)
+                            notifyLevel = math.max(notifyLevel, res.threshold.level)
                         end
-                    else
-                        if veh.mapAIHotspot ~= nil then
-                            veh.mapAIHotspot:setBlinking(false)
+                    elseif impType.isForageWagon then
+                        res = isBreakingThresholds(Glance.notifications["forageWagonFull"], fillPct)
+                        if res then
+                            fillClr = Utils.getNoNil(res.threshold.color, fillClr)
+                            notifyLevel = math.max(notifyLevel, res.threshold.level)
                         end
+                    elseif impType.isTrailer then
+                        res = isBreakingThresholds(Glance.notifications["trailerFull"], fillPct)
+                        if res then
+                            fillClr = Utils.getNoNil(res.threshold.color, fillClr)
+                            notifyLevel = math.max(notifyLevel, res.threshold.level)
+                        end
+                    elseif impType.isCombine then
+                        res = isBreakingThresholds(Glance.notifications["grainTankFull"], fillPct)
+                        if res then
+                            fillClr = Utils.getNoNil(res.threshold.color, fillClr)
+                            notifyLevel = math.max(notifyLevel, res.threshold.level)
+                            -- For combines, when hired and grain-tank full, blink the icon.
+                            if veh.mapAIHotspot ~= nil then
+                                veh.mapAIHotspot:setBlinking(true == res.threshold.blinkIcon)
+                            end
+                        else
+                            if veh.mapAIHotspot ~= nil then
+                                veh.mapAIHotspot:setBlinking(false)
+                            end
+                        end
+                    elseif impType.isBaleLoader then
+                        res = isBreakingThresholds(Glance.notifications["baleLoaderFull"], fillPct)
+                        if res then
+                            fillClr = Utils.getNoNil(res.threshold.color, fillClr)
+                            notifyLevel = math.max(notifyLevel, res.threshold.level)
+                        end                
                     end
-                elseif impType.isBaleLoader then
-                    res = isBreakingThresholds(Glance.notifications["baleLoaderFull"], fillPct)
-                    if res then
-                        fillClr = Utils.getNoNil(res.threshold.color, fillClr)
-                        notifyLevel = math.max(notifyLevel, res.threshold.level)
-                    end                
+                    --
+                    updateFill(fillTpe, fillCap, fillLvl, fillClr, res~=nil and res.threshold.level or 0)
+                    --
+                    if notifyLevel > highestNotifyLevel then
+                        highestNotifyLevel = notifyLevel
+                        highestNotifyColor = fillClr
+                    end
                 end
-                --
-                updateFill(fillTpe, fillCap, fillLvl, fillClr, res~=nil and res.threshold.level or 0)
-                --
-                if notifyLevel > highestNotifyLevel then
-                    highestNotifyLevel = notifyLevel
-                    highestNotifyColor = fillClr
-                end
-              end
             end
         end
     end
+    
+    -- Due to Kuhn DLC, containing sowingMachine with external seed-tank.
+    if nil ~= sowingMachine.seederPart then
+        local fillTpe = sowingMachine.seederPart[1]
+        local fillCap = Utils.getNoNil(sowingMachine.seedTankPart[2], sowingMachine.seederPart[2])
+        local fillLvl = Utils.getNoNil(sowingMachine.seedTankPart[3], sowingMachine.seederPart[3])
+        local fillClr = notify_lineColor
+        local fillPct = (fillCap <= 0 and 0) or math.floor(fillLvl * 100 / fillCap)
+        
+        local res = isBreakingThresholds(Glance.notifications["seederLow"], fillPct)
+        if res then
+            fillClr = Utils.getNoNil(res.threshold.color, fillClr)
+            notifyLevel = math.max(notifyLevel, res.threshold.level)
+        end
+
+        updateFill(fillTpe, fillCap, fillLvl, fillClr, res~=nil and res.threshold.level or 0)
+
+        if notifyLevel > highestNotifyLevel then
+            highestNotifyLevel = notifyLevel
+            highestNotifyColor = fillClr
+        end
+    end
+    
     --
     cells["FillLevel"] = {}
     cells["FillPct"]   = {}

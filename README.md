@@ -6,6 +6,8 @@ To read more about this mod, find it on;
 - http://modcentral.co.uk - http://modcentral.co.uk/resources/authors/decker_mmiv.18/
 
 ## FS17 - Change-log
+1.0.2.38
+- Fix for Kuhn DLC sowing-machine without internal seed-tank
 
 1.0.1.37
 - Added new 'AllFillLvls' and 'AllFillPcts' (suggestion by juf.de). Needs a new Glance_Config.XML to be generated, before becoming editable

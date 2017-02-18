@@ -12,7 +12,7 @@
         Vanquish081, Dzi4d3k, shermy, mngrazy, Ziuta
     </contributors>
 
-    <version>1.0.1.37</version>
+    <version>1.0.2.38</version>
 
     <title>
         <en>Glance</en>
@@ -27,6 +27,9 @@
     </title>
 
     <changeLog><![CDATA[
+1.0.2.38
+- Fix for Kuhn DLC sowing-machine without internal seed-tank
+    
 1.0.1.37
 - Added new column-fields 'AllFillLvls' and 'AllFillPcts' (not enabled by default). Needs a new Glance_Config.XML to be generated, before becoming editable
 - Now actually reads the 'minimumLevel' from config-file
@@ -47,12 +50,6 @@
 
 Note: Visible when the F1-helpbox is off!
 Note: Requires game patch 1.3.1.0 or higher!
-
-Changelog (1.0.1.37)
-- Added new column-fields 'AllFillLvls' and 'AllFillPcts' (not enabled by default). Needs a new Glance_Config.XML to be generated, before becoming editable
-- Now actually reads the 'minimumLevel' from config-file
-- Possible fix for 'huge negative fill percentage value'
-- Translation updates
 ]]>
         </en>
         <de>
@@ -60,12 +57,6 @@ Changelog (1.0.1.37)
 
 Hinweis: Sichtbar, wenn die F1-Hilfebox deaktiviert ist!
 Hinweis: Benötigt Gamepatch 1.3.1.0 oder höher!
-
-Changelog (1.0.1.37)
-- Added new column-fields 'AllFillLvls' and 'AllFillPcts' (not enabled by default). Needs a new Glance_Config.XML to be generated, before becoming editable
-- Now actually reads the 'minimumLevel' from config-file
-- Possible fix for 'huge negative fill percentage value'
-- Translation updates
 ]]>
         </de>
         <pl>
@@ -73,12 +64,6 @@ Changelog (1.0.1.37)
 
 Uwaga: Widoczne kiedy F1-helpbox jest wyłączony!
 Uwaga: Wymaga gry Patch 1.3.1.0 lub wyższej!
-
-Changelog (1.0.1.37)
-- Added new column-fields 'AllFillLvls' and 'AllFillPcts' (not enabled by default). Needs a new Glance_Config.XML to be generated, before becoming editable
-- Now actually reads the 'minimumLevel' from config-file
-- Possible fix for 'huge negative fill percentage value'
-- Translation updates
 ]]>
         </pl>
         <ru>
@@ -86,12 +71,6 @@ Changelog (1.0.1.37)
 
 Примечание: Видимая, когда F1-HelpBox выключен!
 Примечание: Требуется игра патч 1.3.1.0 или выше!
-
-Changelog (1.0.1.37)
-- Added new column-fields 'AllFillLvls' and 'AllFillPcts' (not enabled by default). Needs a new Glance_Config.XML to be generated, before becoming editable
-- Now actually reads the 'minimumLevel' from config-file
-- Possible fix for 'huge negative fill percentage value'
-- Translation updates
 ]]>
         </ru>
         <hu>
@@ -99,12 +78,6 @@ Changelog (1.0.1.37)
 
 Megjegyzés: Látható, ha az F1-helpbox ki van kapcsolva!
 Megjegyzés: Szükség játék folt 1.3.1.0 vagy magasabb!
-
-Changelog (1.0.1.37)
-- Added new column-fields 'AllFillLvls' and 'AllFillPcts' (not enabled by default). Needs a new Glance_Config.XML to be generated, before becoming editable
-- Now actually reads the 'minimumLevel' from config-file
-- Possible fix for 'huge negative fill percentage value'
-- Translation updates
 ]]>
         </hu>
         <it>
@@ -112,12 +85,6 @@ Changelog (1.0.1.37)
 
 Nota: visibile quando la F1-HelpBox è spento!
 Nota: Richiede patch di gioco 1.3.1.0 o superiore!
-
-Changelog (1.0.1.37)
-- Added new column-fields 'AllFillLvls' and 'AllFillPcts' (not enabled by default). Needs a new Glance_Config.XML to be generated, before becoming editable
-- Now actually reads the 'minimumLevel' from config-file
-- Possible fix for 'huge negative fill percentage value'
-- Translation updates
 ]]>
         </it>
         <fr>
@@ -125,12 +92,6 @@ Changelog (1.0.1.37)
 
 Remarque: visible lorsque la F1-helpbox est désactivée!
 Note: Nécessite un patch de jeu 1.3.1.0 ou supérieur!
-
-Changelog (1.0.1.37)
-- Added new column-fields 'AllFillLvls' and 'AllFillPcts' (not enabled by default). Needs a new Glance_Config.XML to be generated, before becoming editable
-- Now actually reads the 'minimumLevel' from config-file
-- Possible fix for 'huge negative fill percentage value'
-- Translation updates
 ]]>
         </fr>
         <es>
@@ -138,12 +99,6 @@ Changelog (1.0.1.37)
 
 Nota: ¡Visible cuando la F1-ayuda está apagada!
 Nota: Requiere el parche 1.3.1.0 o superior!
-
-Changelog (1.0.1.37)
-- Added new column-fields 'AllFillLvls' and 'AllFillPcts' (not enabled by default). Needs a new Glance_Config.XML to be generated, before becoming editable
-- Now actually reads the 'minimumLevel' from config-file
-- Possible fix for 'huge negative fill percentage value'
-- Translation updates
 ]]>
         </es>
         <nl>
@@ -151,12 +106,6 @@ Changelog (1.0.1.37)
 
 Let op: Zichtbaar wanneer de F1-HelpBox is uitgeschakeld!
 Opmerking: Vereist spel patch 1.3.1.0 of hoger!
-
-Changelog (1.0.1.37)
-- Added new column-fields 'AllFillLvls' and 'AllFillPcts' (not enabled by default). Needs a new Glance_Config.XML to be generated, before becoming editable
-- Now actually reads the 'minimumLevel' from config-file
-- Possible fix for 'huge negative fill percentage value'
-- Translation updates
 ]]>
         </nl>
     </description>
