@@ -535,15 +535,16 @@ function Glance:getDefaultConfig()
 ,'        <column  enabled="true"  contains="ColumnDelim"                  color="gray"            align="center"  minWidthText=""                  text="'..Glance.cColumnDelimChar..'" />'
 ,'        <column  enabled="true"  contains="VehicleName;FuelLow"                                  align="left"    minWidthText=""  maxTextLen="20" />'
 ,'        <column  enabled="false" contains="FuelLevel;FuelLevelPct"                               align="left"    minWidthText=""                  />'
-,'        <column  enabled="true"  contains="ColumnDelim"                  color="gray"            align="center"  minWidthText=""                  text="'..Glance.cColumnDelimChar..'" />'
-,'        <column  enabled="true"  contains="FillLevel"                                            align="right"   minWidthText=""                  />'
-,'        <column  enabled="true"  contains="ColumnDelim"                                          align="right"   minWidthText="I"                 text="" />'
-,'        <column  enabled="true"  contains="FillPercent"                                          align="center"  minWidthText=""                  />'
-,'        <column  enabled="true"  contains="ColumnDelim"                                          align="left"    minWidthText="I"                 text="" />'
-,'        <column  enabled="true"  contains="FillTypeName"                                         align="left"    minWidthText=""  maxTextLen="12" />'
+,'        <column  enabled="false" contains="ColumnDelim"                  color="gray"            align="center"  minWidthText=""                  text="'..Glance.cColumnDelimChar..'" />'
+,'        <column  enabled="false" contains="FillLevel"                                            align="right"   minWidthText=""                  />'
+,'        <column  enabled="false" contains="ColumnDelim"                                          align="right"   minWidthText="I"                 text="" />'
+,'        <column  enabled="false" contains="FillPercent"                                          align="center"  minWidthText=""                  />'
+,'        <column  enabled="false" contains="ColumnDelim"                                          align="left"    minWidthText="I"                 text="" />'
+,'        <column  enabled="false" contains="FillTypeName"                                         align="left"    minWidthText=""  maxTextLen="12" />'
 ,'        <column  enabled="true"  contains="ColumnDelim"                  color="gray"            align="center"  minWidthText=""                  text="'..Glance.cColumnDelimChar..'" />'
 ,'        <column  enabled="true"  contains="ActiveTask;EngineOn;DirtAmount"                       align="left"    minWidthText=""                  />'
-,'        <column  enabled="false" contains="ColumnDelim"                  color="gray"            align="center"  minWidthText=""                  text="'..Glance.cColumnDelimChar..'" />'
+,'        <column  enabled="true"  contains="ColumnDelim"                  color="gray"            align="center"  minWidthText=""                  text="'..Glance.cColumnDelimChar..'" />'
+,'        <column  enabled="true"  contains="AllFillPcts"                                          align="left"    minWidthText=""                  />'
 ,'        <column  enabled="false" contains="AllFillLvls;AllFillPcts"                              align="left"    minWidthText=""                  />'
 ,'    </vehiclesColumnOrder>'
 ,'</glanceConfig>'
@@ -2042,31 +2043,7 @@ function Glance:static_controllerAndMovement(dt, _, veh, implements, cells, noti
             vehIsControlled = true
         end
     end
-    -- Hired Worker
-    if veh.isHired then
-        self:setProperty(veh, "wasHired", true)
-        --
-        local ntfy = Glance.notifications["controlledByHiredWorker"]
-        if ntfy ~= nil and ntfy.enabled == true then
-            notifyLevel = math.max(notifyLevel, ntfy.level)
-            notifyLineColor = Glance.lineColorVehicleControlledByComputer
-            table.insert(cells["VehicleController"], { getNotificationColor(Glance.lineColorVehicleControlledByComputer), g_i18n:getText("hired") } );
-        end
-        vehIsControlled = true
-        vehIsControlledByComputer = true
-    else
-        local ntfy = Glance.notifications["hiredWorkerFinished"]
-        if ntfy ~= nil and ntfy.enabled == true and self:getProperty(veh, "wasHired") then
-            if veh.isControlled then
-                -- Remove reminder, when a player gets into vehicle
-                self:setProperty(veh, "wasHired", nil)
-            else
-                notifyLevel = math.max(notifyLevel, ntfy.level)
-                notifyLineColor = ntfy.color or notifyLineColor;
-                cells["HiredFinished"] = { { getNotificationColor(notifyLineColor), g_i18n:getText("dismissed") } }
-            end
-        end
-    end
+    
     -- CoursePlay
     if veh.getIsCourseplayDriving ~= nil and veh:getIsCourseplayDriving() then
         local ntfy = Glance.notifications["controlledByCourseplay"]
@@ -2104,6 +2081,34 @@ function Glance:static_controllerAndMovement(dt, _, veh, implements, cells, noti
     if veh.ld ~= nil and veh.ld.active == true then
         vehIsControlled = true
         vehIsControlledByComputer = true
+    end
+    --
+    if not vehIsControlledByComputer then
+        -- Hired Worker
+        if veh.isHired then
+            self:setProperty(veh, "wasHired", true)
+            --
+            local ntfy = Glance.notifications["controlledByHiredWorker"]
+            if ntfy ~= nil and ntfy.enabled == true then
+                notifyLevel = math.max(notifyLevel, ntfy.level)
+                notifyLineColor = Glance.lineColorVehicleControlledByComputer
+                table.insert(cells["VehicleController"], { getNotificationColor(Glance.lineColorVehicleControlledByComputer), g_i18n:getText("hired") } );
+            end
+            vehIsControlled = true
+            vehIsControlledByComputer = true
+        else
+            local ntfy = Glance.notifications["hiredWorkerFinished"]
+            if ntfy ~= nil and ntfy.enabled == true and self:getProperty(veh, "wasHired") then
+                if veh.isControlled then
+                    -- Remove reminder, when a player gets into vehicle
+                    self:setProperty(veh, "wasHired", nil)
+                else
+                    notifyLevel = math.max(notifyLevel, ntfy.level)
+                    notifyLineColor = ntfy.color or notifyLineColor;
+                    cells["HiredFinished"] = { { getNotificationColor(notifyLineColor), g_i18n:getText("dismissed") } }
+                end
+            end
+        end
     end
 
     ---
@@ -2196,10 +2201,11 @@ function Glance:static_activeTask(dt, staticParms, veh, implements, cells, notif
     local impStates = {}
     for _,imp in pairs(implements) do
         for _,spec in pairs(imp.specializations) do
-            if      Sprayer            == spec then impStates.isSprayerOn           = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
+            if Sprayer == spec or SowingMachine == spec then
+                if imp.sprayer       ~= nil then    impStates.isSprayerOn           = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn; end;
+                if imp.sowingMachine ~= nil then    impStates.isSeederOn            = imp.movingDirection > 0 and imp.sowingMachineHasGroundContact and (not imp.needsActivation or (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn); end;
             elseif  ManureSpreader     == spec then impStates.isSprayerOn           = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
             elseif  ManureBarrel       == spec then impStates.isSprayerOn           = (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn;
-            elseif  SowingMachine      == spec then impStates.isSeederOn            = (imp.movingDirection > 0 and imp.sowingMachineHasGroundContact and (not imp.needsActivation or (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn()) or imp.isTurnedOn));
             elseif  TreePlanter        == spec then impStates.isTreePlanterOn       = (imp.movingDirection > 0                                       and (not imp.needsActivation or (imp.getIsTurnedOn ~= nil and imp:getIsTurnedOn())));
             elseif  Cultivator         == spec then impStates.isCultivatorOn        = (imp.cultivatorHasGroundContact and (not imp.onlyActiveWhenLowered or imp:isLowered(false)) );
             elseif  Plough             == spec then impStates.isPloughOn            = imp.ploughHasGroundContact;

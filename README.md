@@ -6,8 +6,10 @@ To read more about this mod, find it on;
 - http://modcentral.co.uk - http://modcentral.co.uk/resources/authors/decker_mmiv.18/
 
 ## FS17 - Change-log
-1.0.2.38
-- Fix for Kuhn DLC sowing-machine without internal seed-tank
+1.0.2.39
+- Fix for TF 1500 and BTF 4000 combination, so actual selected seed-type is shown (Kuhn DLC).
+- Set so 'AllFillPcts' is the new default when recreating the Glance_Config.XML file in modsSettings folder.
+- Fixed so no more toggle between '(Hired)' and when other mod actually controls vehicle.
 
 1.0.1.37
 - Added new 'AllFillLvls' and 'AllFillPcts' (suggestion by juf.de). Needs a new Glance_Config.XML to be generated, before becoming editable
