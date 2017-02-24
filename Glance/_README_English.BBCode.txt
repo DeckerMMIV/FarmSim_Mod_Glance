@@ -5,10 +5,11 @@
 [color=red]Note: Requires FS17 game patch 1.3.1.0 or higher[/color]
 
 [b][u]Changelog[/u][/b]
-1.0.2.39
-- Fix for TF 1500 and BTF 4000 combination, so actual selected seed-type is shown (Kuhn DLC).
+1.0.3.40
 - Set so 'AllFillPcts' is the new default when recreating the Glance_Config.XML file in modsSettings folder.
-- Fixed so no more toggle between '(Hired)' and when other mod actually controls vehicle.
+- Fix for TF 1500 and BTF 4000 combination, so actual selected seed-type is shown (Kuhn DLC).
+- Fix no more showing '(Hired)' when other mod actually controls vehicle.
+- Fix for text-shadow (aspect ratio on very wide screen).
 
 1.0.1.37
 - Added new column-fields 'AllFillLvls' and 'AllFillPcts' (not enabled by default). Needs a new Glance_Config.XML to be generated, before becoming editable

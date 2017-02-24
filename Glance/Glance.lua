@@ -40,8 +40,9 @@ Glance.lineColorVehicleControlledByComputer    = "blue"
 
 Glance.cStartLineX      = 0.0
 Glance.cStartLineY      = 0.999
-Glance.cFontSize        = 0.011;
-Glance.cFontShadowOffs  = Glance.cFontSize * 0.08;
+Glance.cFontSize        = 0.013;
+Glance.cFontShadowOffsX = 1 / g_screenWidth
+Glance.cFontShadowOffsY = 1 / g_screenHeight
 Glance.cFontShadowColor = "black"
 Glance.cLineSpacing     = Glance.cFontSize * 0.9;
 
@@ -55,7 +56,6 @@ Glance.allFillPctsSeparator = ","
 Glance.allFillPctsFormat    = "%s%s@%s"
 
 Glance.cColumnDelimChar = " "
-Glance.columnSpacingTxt = "I";
 Glance.columnSpacing    = 0.001;
 
 Glance.colors = {}
@@ -307,7 +307,7 @@ function Glance:getDefaultConfig()
 ,''
 ,'        <!-- Size of the font is measured in percentage of the screen-height, which goes from 0.0000 (0%) to 1.0000 (100%)'
 ,'             Next row position is calculated from \'size + rowSpacing\', which then gives the rowHeight. -->'
-,'        <font  size="0.011"  rowSpacing="-0.001"  shadowOffset="0.00128"  shadowColor="black" />'
+,'        <font  size="'..("%.3f"):format(Glance.cFontSize)..'"  rowSpacing="-0.001"  shadowColor="black" />'
 ,''
 ,'        <!-- Left/Bottom is at 0.0000 (0%) and right/top is at 1.0000 (100%) -->'
 ,'        <placementInDisplay  positionXY="0.000 0.999" />'
@@ -521,7 +521,7 @@ function Glance:getDefaultConfig()
 ,'    <allFillLvls  separator=","  fillLevelFormat="%s%s(%s)" />'
 ,'    <allFillPcts  separator=","  fillLevelFormat="%s%s@%s" />'
 ,''
-,'    <vehiclesColumnOrder columnSpacing="0.0020">'
+,'    <vehiclesColumnOrder>'
 ,'        <!-- Set  enabled="false"  to disable a column.'
 ,'             It is possible to reorder columns. -->'
 ,'        <column  enabled="true"  contains="VehicleGroupsSwitcherNumber"  color="gray"            align="right"   minWidthText=""                  />'
@@ -641,9 +641,7 @@ function Glance:loadConfig()
     --
     local tag = "glanceConfig.general.font"
     Glance.cFontSize        = Utils.getNoNil(getXMLFloat(xmlFile, tag.."#size"), Glance.cFontSize)
-    Glance.cFontShadowOffs  = Glance.cFontSize * 0.08
     Glance.cLineSpacing     = Glance.cFontSize * 0.9
-    Glance.cFontShadowOffs  = Utils.getNoNil(getXMLFloat(xmlFile, tag.."#shadowOffset"), Glance.cFontShadowOffs)
     Glance.cFontShadowColor = getColorName(xmlFile, tag.."#shadowColor", Glance.cFontShadowColor)
     Glance.cLineSpacing     = Glance.cFontSize + Utils.getNoNil(getXMLFloat(xmlFile, tag.."#rowSpacing"), Glance.cLineSpacing - Glance.cFontSize)
     --
@@ -719,12 +717,8 @@ function Glance:loadConfig()
     Glance.allFillPctsFormat    = Utils.getNoNil(getXMLString(xmlFile, "glanceConfig.allFillPcts#fillLevelFormat"), Glance.allFillPctsFormat);
     
     --
-    Glance.columnSpacingTxt = Utils.getNoNil(getXMLString(xmlFile, "glanceConfig.vehiclesColumnOrder#columnSpacing"), Glance.columnSpacingTxt);
-    Glance.columnSpacing = tonumber(Glance.columnSpacingTxt)
-    if Glance.columnSpacing == nil then
-        Glance.columnSpacing = Utils.getNoNil(getTextWidth(Glance.cFontSize, Glance.columnSpacingTxt), 0.001)
-    end
-
+    Glance.columnSpacing = Utils.getNoNil(getTextWidth(Glance.cFontSize, "I"), 0.001)
+    
     local i=0
     while true do
         local tag = string.format("glanceConfig.vehiclesColumnOrder.column(%d)", i)
@@ -2532,11 +2526,11 @@ end
 
 ------
 
-function Glance.renderTextShaded(x,y,fontSize,txt,shadeOffset,foreColor,backColor)
+function Glance.renderTextShaded(x,y,fontSize,txt,foreColor,backColor)
     -- Back
     if backColor then
         setTextColor(unpack(backColor));
-        renderText(x+shadeOffset, y-shadeOffset, fontSize, txt);
+        renderText(x+Glance.cFontShadowOffsX, y-Glance.cFontShadowOffsY, fontSize, txt);
     end
     -- Fore
     if foreColor then
@@ -2564,7 +2558,7 @@ function Glance:draw()
     if Glance.textMinLevelTimeout ~= nil and Glance.textMinLevelTimeout > g_currentMission.time then
         setTextAlignment(RenderText.ALIGN_LEFT);
         setTextBold(true);
-        Glance.renderTextShaded(xPos, yPos, Glance.cFontSize, string.format(g_i18n:getText("GlanceMinLevel"), Glance.minNotifyLevel), Glance.cFontShadowOffs, {1,1,1,1}, Glance.colors[Glance.cFontShadowColor]);
+        Glance.renderTextShaded(xPos, yPos, Glance.cFontSize, string.format(g_i18n:getText("GlanceMinLevel"), Glance.minNotifyLevel), {1,1,1,1}, Glance.colors[Glance.cFontShadowColor]);
         yPos = yPos - Glance.cLineSpacing;
     end
 
@@ -2577,14 +2571,14 @@ function Glance:draw()
             for c=1,table.getn(lineNonVehicles) do
                 if c > 1 then
                     setTextAlignment(RenderText.ALIGN_CENTER);
-                    Glance.renderTextShaded(xPos + (delimWidth / 2),yPos,Glance.cFontSize,Glance.nonVehiclesSeparator,Glance.cFontShadowOffs, Glance.colors[Glance.lineColorDefault], Glance.colors[Glance.cFontShadowColor]);
+                    Glance.renderTextShaded(xPos + (delimWidth / 2),yPos,Glance.cFontSize,Glance.nonVehiclesSeparator, Glance.colors[Glance.lineColorDefault], Glance.colors[Glance.cFontShadowColor]);
                     xPos = xPos + delimWidth;
                 end
     
                 local elem = lineNonVehicles[c];
                 if elem then
                     setTextAlignment(RenderText.ALIGN_LEFT);
-                    Glance.renderTextShaded(xPos,yPos,Glance.cFontSize,elem[2],Glance.cFontShadowOffs,elem[1], Glance.colors[Glance.cFontShadowColor]);
+                    Glance.renderTextShaded(xPos,yPos,Glance.cFontSize,elem[2], elem[1], Glance.colors[Glance.cFontShadowColor]);
                     xPos = xPos + getTextWidth(Glance.cFontSize, elem[2])
                 end
             end;
@@ -2601,7 +2595,7 @@ function Glance:draw()
                     setTextAlignment(self.linesVehicles[1][c].alignment);
                     --
                     local e = 1 + (timeSec % numSubElems);
-                    Glance.renderTextShaded(xPos,yPos,Glance.cFontSize,self.linesVehicles[i][c][e][2],Glance.cFontShadowOffs,self.linesVehicles[i][c][e][1], Glance.colors[Glance.cFontShadowColor]);
+                    Glance.renderTextShaded(xPos,yPos,Glance.cFontSize,self.linesVehicles[i][c][e][2], self.linesVehicles[i][c][e][1], Glance.colors[Glance.cFontShadowColor]);
                 end;
             end
             yPos = yPos - Glance.cLineSpacing;

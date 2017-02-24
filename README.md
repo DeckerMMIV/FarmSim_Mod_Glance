@@ -6,10 +6,11 @@ To read more about this mod, find it on;
 - http://modcentral.co.uk - http://modcentral.co.uk/resources/authors/decker_mmiv.18/
 
 ## FS17 - Change-log
-1.0.2.39
-- Fix for TF 1500 and BTF 4000 combination, so actual selected seed-type is shown (Kuhn DLC).
+1.0.3.40
 - Set so 'AllFillPcts' is the new default when recreating the Glance_Config.XML file in modsSettings folder.
-- Fixed so no more toggle between '(Hired)' and when other mod actually controls vehicle.
+- Fix for TF 1500 and BTF 4000 combination, so actual selected seed-type is shown (Kuhn DLC).
+- Fix no more showing '(Hired)' when other mod actually controls vehicle.
+- Fix for text-shadow (aspect ratio on very wide screen).
 
 1.0.1.37
 - Added new 'AllFillLvls' and 'AllFillPcts' (suggestion by juf.de). Needs a new Glance_Config.XML to be generated, before becoming editable
