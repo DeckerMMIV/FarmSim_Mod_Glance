@@ -9,10 +9,10 @@
 -->
     <contributors>
         SchorschiBW, ja_pizgam, Gonimy_Vetrom, JakobT, pokers, gighen, SicFR57, Promgames,
-        Vanquish081, Dzi4d3k, shermy, mngrazy, Ziuta
+        Vanquish081, Dzi4d3k, shermy, mngrazy, Ziuta, Marco Elli
     </contributors>
 
-    <version>1.0.3.40</version>
+    <version>1.0.3.41</version>
 
     <title>
         <en>Glance</en>
@@ -27,6 +27,9 @@
     </title>
 
     <changeLog><![CDATA[
+1.0.3.41
+- Translation updates
+    
 1.0.3.40
 - Set so 'AllFillPcts' is the new default when recreating the Glance_Config.XML file in modsSettings folder.
 - Fix for TF 1500 and BTF 4000 combination, so actual selected seed-type is shown (Kuhn DLC).

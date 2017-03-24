@@ -5,6 +5,9 @@
 [color=red]Note: Requires FS17 game patch 1.3.1.0 or higher[/color]
 
 [b][u]Changelog[/u][/b]
+1.0.3.41
+- Translation updates
+
 1.0.3.40
 - Set so 'AllFillPcts' is the new default when recreating the Glance_Config.XML file in modsSettings folder.
 - Fix for TF 1500 and BTF 4000 combination, so actual selected seed-type is shown (Kuhn DLC).
@@ -88,4 +91,4 @@ Script:
 - Decker_MMIV
 Contributors/Translations:
 - SchorschiBW, ja_pizgam, Gonimy_Vetrom, JakobT, pokers, gighen, SicFR57, Promgames,
-- Vanquish081, Dzi4d3k, shermy, mngrazy, Ziuta
+- Vanquish081, Dzi4d3k, shermy, mngrazy, Ziuta, Marco Elli

@@ -6,6 +6,9 @@ To read more about this mod, find it on;
 - http://modcentral.co.uk - http://modcentral.co.uk/resources/authors/decker_mmiv.18/
 
 ## FS17 - Change-log
+1.0.3.41
+- Translation updates
+
 1.0.3.40
 - Set so 'AllFillPcts' is the new default when recreating the Glance_Config.XML file in modsSettings folder.
 - Fix for TF 1500 and BTF 4000 combination, so actual selected seed-type is shown (Kuhn DLC).
