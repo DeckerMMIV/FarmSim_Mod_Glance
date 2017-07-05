@@ -284,8 +284,8 @@ function Glance:update(dt)
     end
 end;
 
-Glance.cCfgVersion = 11
-Glance.cCfgVersionsSupported = {[10]=true,[11]=true}
+Glance.cCfgVersion = 12
+Glance.cCfgVersionsSupported = {[10]=true,[11]=true,[12]=true}
 
 function Glance:getDefaultConfig()
     local function dnl(offset) -- default notification level
@@ -432,7 +432,6 @@ function Glance:getDefaultConfig()
 ,'        </notification>'
 ,''
 ,'        <!-- Animal husbandry - Fill-level -->'
-,'        <!--                                "husbandry[:<animalTypeName>]:<fillTypeName>"  -->'
 ,'        <notification  enabled="true"  type="husbandry:cow:manure"     level="'..dnl( 0)..'"   whenBelow=""     whenAbove="70000"  color="yellow" /> <!-- threshold unit is "units" -->'
 ,'        <notification  enabled="true"  type="husbandry:pig:manure"     level="'..dnl( 0)..'"   whenBelow=""     whenAbove="70000"  color="yellow" /> <!-- threshold unit is "units" -->'
 ,'        <notification  enabled="true"  type="husbandry:milk"           level="'..dnl(-1)..'"   whenBelow=""     whenAbove="10000"  color="yellow" /> <!-- threshold unit is "units" -->'
@@ -440,7 +439,6 @@ function Glance:getDefaultConfig()
 ,'        <notification  enabled="true"  type="husbandry:water"          level="'..dnl( 1)..'"   whenBelow="25"   whenAbove=""       color="yellow" /> <!-- threshold unit is "percentage" -->'
 ,''
 ,'        <!-- Animal husbandry - Food group fill-level -->'
-,'        <!--                                "husbandry[:<animalTypeName>]:foodGroup[:<foodGroupName>]"  -->'
 ,'        <notification  enabled="true"  type="husbandry:sheep:foodGroup:grass"   level="'..dnl( 1)..'"   whenBelow="25"  whenAbove=""  color="yellow" /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="true"  type="husbandry:cow:foodGroup:grass"     level="'..dnl( 1)..'"   whenBelow="25"  whenAbove=""  color="yellow" /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="true"  type="husbandry:cow:foodGroup:bulk"      level="'..dnl( 1)..'"   whenBelow="25"  whenAbove=""  color="yellow" /> <!-- threshold unit is "percentage" -->'
@@ -451,7 +449,6 @@ function Glance:getDefaultConfig()
 ,'        <notification  enabled="true"  type="husbandry:pig:foodGroup:earth"     level="'..dnl( 1)..'"   whenBelow="25"  whenAbove=""  color="yellow" /> <!-- threshold unit is "percentage" -->'
 ,''
 ,'        <!-- Placeable - Fill-level -->'
-,'        <!--                                "placeable:Greenhouse[:<fillTypeName>]"  -->'
 ,'        <notification  enabled="true"  type="placeable:Greenhouse:water"    level="'..dnl(0)..'"   whenBelow="5"  whenAbove="-1"  color="yellow" /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="true"  type="placeable:Greenhouse:manure"   level="'..dnl(0)..'"   whenBelow="5"  whenAbove="-1"  color="yellow" /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="false" type="placeable:Greenhouse"          level="'..dnl(0)..'"   whenBelow="5"  whenAbove="-1"  color="yellow" /> <!-- threshold unit is "percentage" -->'
@@ -464,50 +461,26 @@ function Glance:getDefaultConfig()
 ,'        <notification  enabled="false" type="placeable:MischStation:silage"           level="'..dnl(-1)..'"   whenBelow="1"   whenAbove=""  color="yellow"  text="Silage" /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="true"  type="placeable:MischStation:forage"           level="'..dnl( 0)..'"   whenBelow="10"  whenAbove=""  color="yellow"  text="TMR"    /> <!-- threshold unit is "percentage" -->'
 ,'        <notification  enabled="false" type="placeable:MischStation"                  level="'..dnl(-1)..'"   whenBelow="10"  whenAbove=""  color="yellow"                /> <!-- threshold unit is "percentage" -->'
-
-,'        <notification  enabled="true" type="placeable:Saegewerk:woodChips"   level="'..dnl(-1)..'" > <!-- threshold unit is "percentage" -->'
-,'              <threshold  level="'..dnl( 1)..'"  whenAbove="99.99" color="red"       />'
-,'              <threshold  level="'..dnl( 0)..'"  whenAbove="95"    color="yellow"    />'
-,'        </notification>'
-,'        <notification  enabled="true" type="placeable:Saegewerk:boardWood"   level="'..dnl(-1)..'" > <!-- threshold unit is "percentage" -->'
-,'              <threshold  level="'..dnl( 1)..'"  whenAbove="99.99" color="red"       />'
-,'              <threshold  level="'..dnl( 0)..'"  whenAbove="95"    color="yellow"    />'
-,'        </notification>'
-,'        <notification  enabled="false" type="placeable:Saegewerk:fuel"        level="'..dnl(-1)..'" > <!-- threshold unit is "percentage" -->'
-,'              <threshold  level="'..dnl( 1)..'"  whenBelow="1"     color="red"       />'
-,'              <threshold  level="'..dnl( 0)..'"  whenBelow="3"     color="yellow"    />'
-,'        </notification>'
-,'        <notification  enabled="false" type="placeable:Saegewerk:logs"        level="'..dnl(-1)..'" > <!-- threshold unit is "percentage" -->'
-,'              <threshold  level="'..dnl( 1)..'"  whenBelow="1"     color="red"       />'
-,'              <threshold  level="'..dnl( 0)..'"  whenBelow="5"     color="yellow"    />'
-,'        </notification>'
-
-,'        <notification  enabled="true" type="placeable:LettuceGreenhouse:lettuce"     level="'..dnl(-1)..'" > <!-- threshold unit is "percentage" -->'
-,'              <threshold  level="'..dnl( 1)..'"  whenAbove="99.99" color="red"    />'
-,'              <threshold  level="'..dnl( 0)..'"  whenAbove="95"    color="yellow" />'
-,'        </notification>'
-,'        <notification  enabled="true" type="placeable:LettuceGreenhouse:chaff"       level="'..dnl(-1)..'" > <!-- threshold unit is "percentage" -->'
-,'              <threshold  level="'..dnl( 1)..'"  whenAbove="99.99" color="red"    />'
-,'              <threshold  level="'..dnl( 0)..'"  whenAbove="95"    color="yellow" />'
-,'        </notification>'
-,'        <notification  enabled="false" type="placeable:LettuceGreenhouse:fuel"        level="'..dnl(-1)..'" > <!-- threshold unit is "percentage" -->'
-,'              <threshold  level="'..dnl( 1)..'"  whenBelow="1"     color="red"       />'
-,'              <threshold  level="'..dnl( 0)..'"  whenBelow="3"     color="yellow"    />'
-,'        </notification>'
-,'        <notification  enabled="false" type="placeable:LettuceGreenhouse:water"       level="'..dnl(-1)..'" > <!-- threshold unit is "percentage" -->'
-,'              <threshold  level="'..dnl( 1)..'"  whenBelow="1"     color="red"       />'
-,'              <threshold  level="'..dnl( 0)..'"  whenBelow="3"     color="yellow"    />'
-,'        </notification>'
-,'        <notification  enabled="false" type="placeable:LettuceGreenhouse:seeds"       level="'..dnl(-1)..'" > <!-- threshold unit is "percentage" -->'
-,'              <threshold  level="'..dnl( 1)..'"  whenBelow="1"     color="red"       />'
-,'              <threshold  level="'..dnl( 0)..'"  whenBelow="3"     color="yellow"    />'
-,'        </notification>'
-,'        <notification  enabled="false" type="placeable:LettuceGreenhouse:fertilizer"  level="'..dnl(-1)..'" > <!-- threshold unit is "percentage" -->'
-,'              <threshold  level="'..dnl( 1)..'"  whenBelow="1"     color="red"       />'
-,'              <threshold  level="'..dnl( 0)..'"  whenBelow="3"     color="yellow"    />'
-,'        </notification>'
-,''
 --]]
+,'        <!-- mod support - FS17_Saegewerk_placeable.ZIP -->'
+,'        <notification  enabled="true"  type="placeable:Sägewerk:input:Brennstoffe"  level="'..dnl(0)..'"  whenBelow="5"   whenAbove="-1"    color="yellow"  text="Fuel"       /> <!-- threshold unit is "percentage" -->'
+,'        <notification  enabled="true"  type="placeable:Sägewerk:input:Holz"         level="'..dnl(0)..'"  whenBelow="10"  whenAbove="-1"    color="yellow"  text="Wood"       /> <!-- threshold unit is "percentage" -->'
+,'        <notification  enabled="true"  type="placeable:Sägewerk:output:woodChips"   level="'..dnl(0)..'"                  whenAbove="99.9"  color="yellow"  text="WoodChips"  /> <!-- threshold unit is "percentage" -->'
+,'        <notification  enabled="true"  type="placeable:Sägewerk:output:boardwood"   level="'..dnl(0)..'"                  whenAbove="99.9"  color="yellow"  text="Planks"     /> <!-- threshold unit is "percentage" -->'
+,''
+,'        <!-- mod support - FS17_slow_bee_placeable.zip -->'
+,'        <!-- bee-hive producer -->'
+,'        <notification  enabled="true"  type="placeable:Slow schreiner:input:slow_schreiner_wood"  level="'..dnl(0)..'"  whenBelow="5"   whenAbove="-1"    color="yellow"  text="Wood/Planks"  /> <!-- threshold unit is "percentage" -->'
+,'        <notification  enabled="true"  type="placeable:Slow schreiner:output:slow_schreiner_bee"  level="'..dnl(0)..'"  whenBelow=""    whenAbove="99.9"  color="yellow"  text="BeeHives"     /> <!-- threshold unit is "percentage" -->'
+,'        <!-- honey producer -->'
+,'        <notification  enabled="true"  type="placeable:Slow bee:input:slow_bee_bee"               level="'..dnl(0)..'"  whenBelow="5"   whenAbove="-1"    color="yellow"  text="BeeHives"     /> <!-- threshold unit is "percentage" -->'
+,'        <notification  enabled="true"  type="placeable:Slow bee:output:slow_bee_honey"            level="'..dnl(0)..'"  whenBelow=""    whenAbove="99.9"  color="yellow"  text="Honey"        /> <!-- threshold unit is "percentage" -->'
+,'        <!-- honeymilk producer -->'
+,'        <notification  enabled="false" type="placeable:Slow bee kuhl:input:slow_kuhl_wood"        level="'..dnl(0)..'"  whenBelow="100" whenAbove="0"     color="yellow"  text="Wood/Planks"  /> <!-- threshold unit is "percentage" -->'
+,'        <notification  enabled="true"  type="placeable:Slow bee kuhl:input:slow_kuhl_honey"       level="'..dnl(0)..'"  whenBelow="5"   whenAbove="-1"    color="yellow"  text="Honey"        /> <!-- threshold unit is "percentage" -->'
+,'        <notification  enabled="true"  type="placeable:Slow bee kuhl:input:slow_kuhl_milk"        level="'..dnl(0)..'"  whenBelow="5"   whenAbove="-1"    color="yellow"  text="Milk"         /> <!-- threshold unit is "percentage" -->'
+,'        <notification  enabled="true"  type="placeable:Slow bee kuhl:output:slow_kuhl_honeymilk"  level="'..dnl(0)..'"  whenBelow=""    whenAbove="99.9"  color="yellow"  text="HoneyMilk"    /> <!-- threshold unit is "percentage" -->'
+,''
 ,'    </notifications>'
 ,''
 ,'    <!-- The following line, controls how the formatting of animals/placeables should be.'
@@ -1024,7 +997,7 @@ function Glance:makePlaceablesLine(dt, notifyList)
       and nil ~= oi.storeItem.xmlFilenameLower
       then
         local funcTestPlaceable = nil
-        local plcTable = oi.items
+        local firstItem = next(oi.items)
         local plcXmlFilename = oi.storeItem.xmlFilenameLower
 
         --
@@ -1069,6 +1042,45 @@ function Glance:makePlaceablesLine(dt, notifyList)
                     end
                 end
             end
+        elseif firstItem ~= nil and firstItem.Produkte ~= nil and firstItem.Rohstoffe ~= nil and firstItem.StoffeIdToName ~= nil then
+            -- Found variables which could indicate usage of Marhu's FabrikScript
+            local placeableType = oi.storeItem.name
+            
+            funcTestPlaceable = function(plc)
+--print(placeableType .. " / " .. tostring(oi))
+
+                local itemCount = nil
+                for k,v in pairs(plc.Rohstoffe) do
+                    local fillType = plc.StoffeIdToName[v.id]
+                    if fillType ~= nil then
+                        if v.fillLevel ~= nil and v.capacity ~= nil and v.capacity > 0 then
+                            local fillPct = 100 * v.fillLevel / v.capacity
+--print(placeableType .. ": In " .. fillType .. "@" .. fillPct .. "%")
+                            if fillPct < 25 then -- TODO use getNotification()
+                                updateNotification(placeableType, nil, fillType, fillPct, nil, nil)
+                                itemCount = 1
+                            end
+                        end
+                    end
+                end
+                for k,v in pairs(plc.Produkte) do
+                    local fillType = plc.StoffeIdToName[v.id]
+                    if fillType ~= nil then
+                        if v.fillLevel ~= nil and v.capacity ~= nil and v.capacity > 0 then
+                            local fillPct = 100 * v.fillLevel / v.capacity
+--print(placeableType .. ": Out " .. fillType .. "@" .. fillPct .. "%")
+                            if fillPct > 99 then -- TODO use getNotification()
+                                updateNotification(placeableType, nil, fillType, nil, fillPct, nil)
+                                itemCount = 1
+                            end
+                        end
+                    end
+                end
+                if itemCount ~= nil then
+                    updateNotification(placeableType, itemCount)
+                end
+            end
+        
         --elseif string.find(plcXmlFilename, "lettuce_greenhouse") ~= nil then
         --    local placeableType = "LettuceGreenhouse"
         --    local ntfyLettuceGreenhouse = {}
@@ -1255,8 +1267,8 @@ function Glance:makePlaceablesLine(dt, notifyList)
         end
 
         --
-        if funcTestPlaceable ~= nil and plcTable ~= nil then
-            for _,plc in pairs(plcTable) do
+        if funcTestPlaceable ~= nil and oi.items ~= nil then
+            for _,plc in pairs(oi.items) do
                 funcTestPlaceable(plc)
             end
         end
@@ -1265,11 +1277,15 @@ function Glance:makePlaceablesLine(dt, notifyList)
    
     --
     local function getFillType_NameI18N(fillType)
-        local fillDesc = FillUtil.fillTypeIndexToDesc[fillType]
-        if nil ~= fillDesc and nil ~= fillDesc.nameI18N then
-            return fillDesc.nameI18N
+        if type(fillType) == "number" then
+            local fillDesc = FillUtil.fillTypeIndexToDesc[fillType]
+            if nil ~= fillDesc and nil ~= fillDesc.nameI18N then
+                return fillDesc.nameI18N
+            end
+            return ("(unknown:%s)"):format(tostring(fillType))
         end
-        return ("(unknown:%s)"):format(tostring(fillType))
+        
+        return fillType
     end
     
     for typ,elem in pairs(foundNotifications) do
