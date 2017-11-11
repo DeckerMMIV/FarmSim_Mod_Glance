@@ -8,6 +8,19 @@ To read more about this mod, find it on;
 - http://modcentral.co.uk - http://modcentral.co.uk/resources/authors/decker_mmiv.18/
 
 ## FS17 - Change-log
+1.0.8.47
+- Ability to 'sort-by-fill-percent'
+  - Must set XML-attribute; `<vehiclesColumnOrder sortByFillPct="true">`
+
+1.0.7.46
+- Misc. code tweaks
+
+1.0.5.44
+- (WIP) Minor threshold tweaks for 'Slow Bee Pack'
+
+1.0.4.43
+- (WIP) Support for placeables that use FabrikScript.LUA
+
 1.0.3.41
 - Translation updates
 
