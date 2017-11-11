@@ -1,8 +1,10 @@
 [b]Glance[/b]
 
+Mod for Farming Simulator 17
+
+
 [i]Remember to check the support topic for any additional information regarding this mod[/i]
 
-[color=red]Note: Requires FS17 game patch 1.3.1.0 or higher[/color]
 
 [b][u]Changelog[/u][/b]
 1.0.3.41
