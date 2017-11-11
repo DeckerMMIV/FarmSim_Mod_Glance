@@ -72,6 +72,9 @@ Glance.collisionDetection_belowThreshold = 1;
 Glance.updateIntervalMS = 2000;
 Glance.sumTime = 0;
 
+--
+Glance.sortByFillPct = false
+
 -- For debugging
 local function log(...)
     if true then
@@ -521,7 +524,7 @@ function Glance:getDefaultConfig()
 ,'    <allFillLvls  separator=","  fillLevelFormat="%s%s(%s)" />'
 ,'    <allFillPcts  separator=","  fillLevelFormat="%s%s@%s" />'
 ,''
-,'    <vehiclesColumnOrder>'
+,'    <vehiclesColumnOrder sortByFillPct="false">'
 ,'        <!-- Set  enabled="false"  to disable a column.'
 ,'             It is possible to reorder columns. -->'
 ,'        <column  enabled="true"  contains="VehicleGroupsSwitcherNumber"  color="gray"            align="right"   minWidthText=""                  />'
@@ -738,6 +741,8 @@ function Glance:loadConfig()
 
     --
     Glance.columnSpacing = Utils.getNoNil(getTextWidth(Glance.cFontSize, "I"), 0.001)
+
+    Glance.sortByFillPct = Utils.getNoNil(getXMLBool(xmlFile, "glanceConfig.vehiclesColumnOrder#sortByFillPct"), false)
 
     local i=0
     while true do
@@ -1664,10 +1669,21 @@ function Glance:makeVehiclesLines()
         local infoLevel, lineColor = Glance.getNotificationsForSteerable(self, dt, cells, steerable)
         if infoLevel >= Glance.minNotifyLevel then
             local sortValue = lines
-            
-            local modVeGS = steerable.modVeGS
-            if modVeGS ~= nil then
-                sortValue = modVeGS.group*100 + modVeGS.pos
+
+            if Glance.sortByFillPct then
+                local fillPct = cells["FillPct"]
+                if fillPct ~= nil then
+                    local maxFillPct = 0
+                    for _,elem in pairs(fillPct) do
+                        maxFillPct = math.max(maxFillPct, Utils.getNoNil(elem[3],0))
+                    end
+                    sortValue = maxFillPct + lines/10000
+                end
+            else
+                local modVeGS = steerable.modVeGS
+                if modVeGS ~= nil then
+                    sortValue = modVeGS.group*100 + modVeGS.pos
+                end
             end
 
             local columns = { sortValue } -- First element of linesVehicles.columns contain `sortValue`
@@ -1695,9 +1711,15 @@ function Glance:makeVehiclesLines()
     end
     
     -- First element of linesVehicles.columns contain `sortValue`
-    table.sort(self.linesVehicles, function(l,r)
-        return l[1] < r[1]
-    end);
+    if Glance.sortByFillPct then
+        table.sort(self.linesVehicles, function(l,r)
+            return l[1] > r[1]
+        end);
+    else
+        table.sort(self.linesVehicles, function(l,r)
+            return l[1] < r[1]
+        end);
+    end
     
     --
     local columns = { -1 } -- First element of linesVehicles.columns contain `sortValue`
@@ -2414,9 +2436,9 @@ function Glance:static_fillTypeLevelPct(dt, staticParms, veh, implements, cells,
             fillNme = g_i18n:getText("unknownFillType")
         end
         --
-        table.insert(cells["FillLevel"], { fillClr, string.format("%d", fillLvl)        } );
-        table.insert(cells["FillPct"],   { fillClr, string.format("(%d%%)", fillPct)    } );
-        table.insert(cells["FillType"],  { fillClr, fillNme } );
+        table.insert(cells["FillLevel"], { fillClr ,string.format("%d", fillLvl)     ,fillLvl } );
+        table.insert(cells["FillPct"],   { fillClr ,string.format("(%d%%)", fillPct) ,fillPct } );
+        table.insert(cells["FillType"],  { fillClr ,fillNme } );
         --
         allFillLvls = allFillLvls .. Glance.allFillLvlsFormat:format(delimLvls, fillNme, tostring(math.floor(fillLvl)))
         allFillPcts = allFillPcts .. Glance.allFillPctsFormat:format(delimPcts, fillNme, string.format("%d%%", fillPct))

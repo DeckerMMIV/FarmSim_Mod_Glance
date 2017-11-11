@@ -12,7 +12,7 @@
         Vanquish081, Dzi4d3k, shermy, mngrazy, Ziuta, Marco Elli
     </contributors>
 
-    <version>1.0.7.46</version>
+    <version>1.0.8.47</version>
 
     <title>
         <en>Glance</en>
@@ -27,6 +27,10 @@
     </title>
 
     <changeLog><![CDATA[
+1.0.8.47
+- Ability to 'sort-by-fill-percent'
+-- Must set XML-attribute; <vehiclesColumnOrder sortByFillPct="true">
+
 1.0.7.46
 - Misc. code tweaks
 
