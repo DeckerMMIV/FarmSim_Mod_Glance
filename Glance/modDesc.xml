@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<modDesc descVersion="37">
+<modDesc descVersion="42">
     <author>Decker_MMIV (DCK)</author>
     <author_contact>fs-uk.com, modcentral.co.uk, forum.farming-simulator.com</author_contact>
 
@@ -9,10 +9,10 @@
 -->
     <contributors>
         SchorschiBW, ja_pizgam, Gonimy_Vetrom, JakobT, pokers, gighen, SicFR57, Promgames,
-        Vanquish081, Dzi4d3k, shermy, mngrazy, Ziuta, Marco Elli
+        Vanquish081, Dzi4d3k, shermy, mngrazy, Ziuta
     </contributors>
 
-    <version>1.0.8.47</version>
+    <version>1.0.3.40</version>
 
     <title>
         <en>Glance</en>
@@ -27,28 +27,12 @@
     </title>
 
     <changeLog><![CDATA[
-1.0.8.47
-- Ability to 'sort-by-fill-percent'
--- Must set XML-attribute; <vehiclesColumnOrder sortByFillPct="true">
-
-1.0.7.46
-- Misc. code tweaks
-
-1.0.5.44
-- (WIP) Minor threshold tweaks for 'Slow Bee Pack'
-
-1.0.4.43
-- (WIP) Support for placeables that use FabrikScript.LUA
-
-1.0.3.41
-- Translation updates
-
 1.0.3.40
 - Set so 'AllFillPcts' is the new default when recreating the Glance_Config.XML file in modsSettings folder.
 - Fix for TF 1500 and BTF 4000 combination, so actual selected seed-type is shown (Kuhn DLC).
 - Fix no more showing '(Hired)' when other mod actually controls vehicle.
 - Fix for text-shadow (aspect ratio on very wide screen).
-
+    
 1.0.1.37
 - Added new column-fields 'AllFillLvls' and 'AllFillPcts' (not enabled by default). Needs a new Glance_Config.XML to be generated, before becoming editable
 - Now actually reads the 'minimumLevel' from config-file
@@ -62,7 +46,7 @@
 0.0.0.6
 - Contributions of translated files put into hidden development-branch.
 ]]></changeLog>
-
+    
     <description>
         <en>
 <![CDATA[A notification-and-status utility that can be configured to show only what you need to see.
@@ -193,7 +177,15 @@ Changelog (1.0.3.40)
     </extraSourceFiles>
 
     <inputBindings>
-        <input visible="true" name="GLANCE_MORE" category="ONFOOT VEHICLE" key1="KEY_lalt KEY_m" />
-        <input visible="true" name="GLANCE_LESS" category="ONFOOT VEHICLE" key1="KEY_lalt KEY_l" />
+        <actionBinding action="GLANCE_MORE">
+                <binding device="KB_MOUSE_DEFAULT" input="KEY_lalt KEY_m" />>
+        </actionBinding>
+        <actionBinding action="GLANCE_LESS">
+                <binding device="KB_MOUSE_DEFAULT" input="KEY_lalt KEY_b" />>
+        </actionBinding>
     </inputBindings>
+    <actions>
+        <action name="GLANCE_MORE" />
+        <action name="GLANCE_LESS" />
+    </actions>
 </modDesc>
