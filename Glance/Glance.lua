@@ -1022,9 +1022,9 @@ function Glance:makePlaceablesLine(dt, notifyList)
         if string.find(plcXmlFilename, "greenhouse") ~= nil then
             local placeableType = "Greenhouse"
             local ntfyGreenhouse = {}
-            ntfyGreenhouse[FillUtil.FILLTYPE_WATER]   = getNotification(placeableType, "water")
-            ntfyGreenhouse[FillUtil.FILLTYPE_MANURE]  = getNotification(placeableType, "manure")
-            ntfyGreenhouse[FillUtil.FILLTYPE_UNKNOWN] = getNotification(placeableType)
+            ntfyGreenhouse[FillType.WATER]   = getNotification(placeableType, "water")
+            ntfyGreenhouse[FillType.MANURE]  = getNotification(placeableType, "manure")
+            ntfyGreenhouse[FillType.UNKNOWN] = getNotification(placeableType)
             --
             funcTestPlaceable = function(plc)
                 -- Make sure the variables we expect, are actually there.
@@ -1035,19 +1035,19 @@ function Glance:makePlaceablesLine(dt, notifyList)
                 end
                 --
                 local fillLevels = {}
-                fillLevels[FillUtil.FILLTYPE_WATER]  = 100 * plc.waterTankFillLevel / plc.waterTankCapacity;
-                fillLevels[FillUtil.FILLTYPE_MANURE] = 100 * plc.manureFillLevel    / plc.manureCapacity;
+                fillLevels[FillType.WATER]  = 100 * plc.waterTankFillLevel / plc.waterTankCapacity;
+                fillLevels[FillType.MANURE] = 100 * plc.manureFillLevel    / plc.manureCapacity;
                 
-                if isNotifyEnabled(ntfyGreenhouse[FillUtil.FILLTYPE_UNKNOWN]) then
-                    local minPct = math.min(fillLevels[FillUtil.FILLTYPE_WATER], fillLevels[FillUtil.FILLTYPE_MANURE])
-                    local res = isBreakingThresholds(ntfyGreenhouse[FillUtil.FILLTYPE_UNKNOWN], minPct)
+                if isNotifyEnabled(ntfyGreenhouse[FillType.UNKNOWN]) then
+                    local minPct = math.min(fillLevels[FillType.WATER], fillLevels[FillType.MANURE])
+                    local res = isBreakingThresholds(ntfyGreenhouse[FillType.UNKNOWN], minPct)
                     if res then
-                        updateNotification(placeableType, 1, FillUtil.FILLTYPE_UNKNOWN, res.value, nil, res.threshold.color)
+                        updateNotification(placeableType, 1, FillType.UNKNOWN, res.value, nil, res.threshold.color)
                     end
                 else
                     local itemCount = nil
                     for fillType,ntfy in pairs(ntfyGreenhouse) do
-                        if fillType ~= FillUtil.FILLTYPE_UNKNOWN then
+                        if fillType ~= FillType.UNKNOWN then
                             local res = isBreakingThresholds(ntfy, fillLevels[fillType])
                             if res then
                                 updateNotification(placeableType, nil, fillType, res.value, nil, res.threshold.color)
@@ -1256,9 +1256,9 @@ function Glance:makePlaceablesLine(dt, notifyList)
    
     --
     local function getFillType_NameI18N(fillType)
-        local fillDesc = FillUtil.fillTypeIndexToDesc[fillType]
-        if nil ~= fillDesc and nil ~= fillDesc.nameI18N then
-            return fillDesc.nameI18N
+        local fillDesc = g_currentMission.fillTypeManager.getFillTypeNameByIndex(fillType)
+        if nil ~= fillDesc then
+            return fillDesc
         end
         return ("(unknown:%s)"):format(tostring(fillType))
     end
@@ -1273,12 +1273,12 @@ function Glance:makePlaceablesLine(dt, notifyList)
         if elem.itemCount ~= nil and elem.itemCount > 1 then
             txt = txt .. ("(x%d)"):format(elem.itemCount)
         end
-        if elem.fillLevels[FillUtil.FILLTYPE_UNKNOWN] ~= nil then
-            txt = txt .. (Glance.nonVehiclesFillLevelFormat):format("", "", ("%.0f%%"):format(elem.fillLevels[FillUtil.FILLTYPE_UNKNOWN]))
+        if elem.fillLevels[FillType.UNKNOWN] ~= nil then
+            txt = txt .. (Glance.nonVehiclesFillLevelFormat):format("", "", ("%.0f%%"):format(elem.fillLevels[FillType.UNKNOWN]))
         else
             local prefix=":"
             for fillType,fillPct in pairs(elem.fillLevels) do
-                if fillType ~= FillUtil.FILLTYPE_UNKNOWN then
+                if fillType ~= FillType.UNKNOWN then
                     txt = txt .. (Glance.nonVehiclesFillLevelFormat):format(prefix, getFillType_NameI18N(fillType), ("%.0f%%"):format(fillPct))
                     prefix=","
                 end
@@ -1324,11 +1324,6 @@ end
 
 ---
     
-function Glance.getLiquidManureFillTriggerInfo(fillTrigger)
-    print(fillTrigger)
-    local txt = FillUtil.fillTypeIndexToDesc[fillTrigger.getCurrentFillType()].nameI18N .. " " ..g_i18n:getText("info_fillLevel").." "..math.floor(fillTrigger.fillLevel).." ("..math.floor(100*fillTrigger.fillLevel/fillTrigger.capacity).."%)"
-    return txt
-end
 
 ---
 
@@ -1351,8 +1346,8 @@ function getBunkerSiloFillTypeName(siloObj,useOutput)
         fillType = siloObj.outputFillType;
     end
     local fillTypeName = "";
-    if FillUtil.fillTypeIndexToDesc[fillType] ~= nil then
-        fillTypeName = FillUtil.fillTypeIndexToDesc[fillType].nameI18N;
+    if g_currentMission.fillTypeManager.getFillTypeNameByIndex(fillType) ~= nil then
+        fillTypeName = g_currentMission.fillTypeManager.getFillTypeNameByIndex(fillType);
     end
     return fillTypeName
 end
@@ -1408,12 +1403,8 @@ function Glance:makeHusbandriesLine(dt, notifyList)
                 return tostring(ntfy.text)
             end
             if fillTypeIndex ~= nil then
-                if FillUtil.fillTypeIndexToDesc[fillTypeIndex] ~= nil then
-                    if FillUtil.fillTypeIndexToDesc[fillTypeIndex].nameI18N ~= nil then
-                        return FillUtil.fillTypeIndexToDesc[fillTypeIndex].nameI18N
-                    else
-                        return FillUtil.fillTypeIndexToDesc[fillTypeIndex].name
-                    end
+                if g_currentMission.fillTypeManager.getFillTypeNameByIndex(fillTypeIndex) ~= nil then
+                    return g_currentMission.fillTypeManager.getFillTypeNameByIndex(fillTypeIndex)
                 end
             end
             if i18nName ~= nil then
@@ -1479,8 +1470,8 @@ function Glance:makeHusbandriesLine(dt, notifyList)
 
             -- Fill-levels
             local ntfyStorage = {}
-            for fillType,fillDesc in pairs(FillUtil.fillTypeIndexToDesc) do
-                if fillType ~= FillUtil.FILLTYPE_UNKNOWN then
+            for fillType,fillDesc in pairs(g_currentMission.fillTypeManager.getFillTypesByNames()) do
+                if fillType ~= FillType.UNKNOWN then
                     local ntfy = getNotification(animalType, fillDesc.name)
                     if ntfy ~= nil then
                         ntfyStorage[fillType] = ntfy
@@ -1492,9 +1483,9 @@ function Glance:makeHusbandriesLine(dt, notifyList)
             local ntfyFoodGroups = {}
             if  mainHusbandry.animalDesc ~= nil
             and mainHusbandry.animalDesc.index ~= nil
-            and FillUtil.foodGroups[mainHusbandry.animalDesc.index] ~= nil
+            and g_animalFoodManager.foodGroups[mainHusbandry.animalDesc.index] ~= nil
             then
-                for _,foodGroup in pairs(FillUtil.foodGroups[mainHusbandry.animalDesc.index]) do
+                for _,foodGroup in pairs(g_animalFoodManager.foodGroups[mainHusbandry.animalDesc.index]) do
                     local ntfy = getNotification(animalType, ("foodGroup:%s"):format(foodGroup.groupName))
                     if ntfy ~= nil then
                         ntfyFoodGroups[foodGroup] = ntfy
@@ -1581,7 +1572,7 @@ function Glance:makeHusbandriesLine(dt, notifyList)
                 
                 -- Fill-Levels
                 for fillType,ntfy in pairs(ntfyStorage) do
-                    if fillType == FillUtil.FILLTYPE_MILK then
+                    if fillType == FillType.MILK then
                         local fillLevel = husbandry.fillLevelMilk
                         if hasNumberValue(fillLevel) then
                             local fillName = getFillName(ntfy, nil, fillType)
@@ -1591,7 +1582,7 @@ function Glance:makeHusbandriesLine(dt, notifyList)
                                 updateInfoValue(fillName, 1, res.value, "");
                             end
                         end
-                    elseif fillType == FillUtil.FILLTYPE_MANURE then
+                    elseif fillType == FillType.MANURE then
                         local fillLevel = husbandry.manureFillLevel
                         if hasNumberValue(fillLevel) then
                             local fillName = getFillName(ntfy, nil, fillType)
@@ -1601,7 +1592,7 @@ function Glance:makeHusbandriesLine(dt, notifyList)
                                 updateInfoValue(fillName, 1, res.value, "");
                             end
                         end
-                    elseif fillType == FillUtil.FILLTYPE_LIQUIDMANURE then
+                    elseif fillType == FillType.LIQUIDMANURE then
                         local liquidManure = Utils.getNoNil(husbandry.liquidManureTrigger, husbandry.liquidManureSiloTrigger)
                         if liquidManure ~= nil 
                         and hasNumberValue(liquidManure.fillLevel) 
@@ -1615,7 +1606,7 @@ function Glance:makeHusbandriesLine(dt, notifyList)
                                 updateInfoValue(fillName, 1, res.value, "%");
                             end
                         end
-                    elseif fillType <= FillUtil.NUM_FILLTYPES and husbandry.getFillLevel ~= nil and husbandry.getCapacity ~= nil then
+                    elseif fillType <= table.getn(FillType) and husbandry.getFillLevel ~= nil and husbandry.getCapacity ~= nil then
                         local capacity = husbandry:getCapacity(fillType, nil)
                         if hasNumberValue(capacity,0) then
                             local pct = math.floor(100 * husbandry:getFillLevel(fillType) / capacity)
@@ -1985,8 +1976,8 @@ end
 
 function Glance:notify_engineOnButNotControlled(dt, notifyParms, veh)
     if veh.isMotorStarted then
-        if veh.isControlled
-        or veh.isHired
+        if veh:getIsControlled()
+        or veh:getIsAIActive()
         or (veh.getIsCourseplayDriving ~= nil and veh:getIsCourseplayDriving())
         or (veh.getIsFollowMeActive ~= nil and veh:getIsFollowMeActive())
         or (g_currentMission.AutoDrive ~= nil and veh.ad ~= nil and veh.bActive == true) -- AutoDrive
@@ -2015,7 +2006,7 @@ function Glance:static_controllerAndMovement(dt, _, veh, implements, cells, noti
             if ntfy ~= nil and ntfy.enabled == true then
                 notifyLevel = math.max(notifyLevel, ntfy.level)
                 notifyLineColor = Glance.lineColorVehicleControlledByMe
-                table.insert(cells["VehicleController"], { getNotificationColor(Glance.lineColorVehicleControlledByMe), veh.controllerName } );
+                table.insert(cells["VehicleController"], { getNotificationColor(Glance.lineColorVehicleControlledByMe), veh:getControllerName() } );
             end
             vehIsControlled = true
         else
@@ -2024,7 +2015,7 @@ function Glance:static_controllerAndMovement(dt, _, veh, implements, cells, noti
             if ntfy ~= nil and ntfy.enabled == true then
                 notifyLevel = math.max(notifyLevel, ntfy.level)
                 notifyLineColor = Glance.lineColorVehicleControlledByPlayer
-                table.insert(cells["VehicleController"], { getNotificationColor(Glance.lineColorVehicleControlledByPlayer), veh.controllerName } );
+                table.insert(cells["VehicleController"], { getNotificationColor(Glance.lineColorVehicleControlledByPlayer), veh:getControllerName() } );
             end
             vehIsControlled = true
         end
@@ -2085,7 +2076,7 @@ function Glance:static_controllerAndMovement(dt, _, veh, implements, cells, noti
         else
             local ntfy = Glance.notifications["hiredWorkerFinished"]
             if ntfy ~= nil and ntfy.enabled == true and self:getProperty(veh, "wasHired") then
-                if veh.isControlled then
+                if veh:getIsControlled() then
                     -- Remove reminder, when a player gets into vehicle
                     self:setProperty(veh, "wasHired", nil)
                 else
